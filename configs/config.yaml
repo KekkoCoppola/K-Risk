@@ -1,0 +1,37 @@
+seed: 42
+
+data:
+  raw: data/raw/Dataset for diabetes research.xlsx
+  processed: data/processed
+  augmented: data/augmented
+
+columns:
+  id: "NO"
+  target: DN
+  diabetes: DM
+
+split:
+  test_size: 0.25
+  stratify: [DN, DM]
+
+analytics:
+  output: analytics
+  dpi: 300
+  # variabili cliniche usate per il controllo di bilanciamento train/test
+  balance_columns:
+    - Age
+    - Gender
+    - BMI
+    - waist1
+    - Bpsys
+    - Bpdia
+    - FPG
+    - HbA1c
+    - CHOL
+    - TG
+    - HDL
+    - LDL
+    - SUA
+    - ALT
+    - HGB
+  simulation_runs: 1000

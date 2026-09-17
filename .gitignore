@@ -1,4 +1,4 @@
-# Byte-compiled / optimized / cache
+# Bytecode e cache Python
 __pycache__/
 *.py[cod]
 *$py.class
@@ -10,17 +10,20 @@ venv/
 env/
 ENV/
 
-# Jupyter Notebook checkpoints
+# Checkpoint dei notebook Jupyter
 .ipynb_checkpoints/
 */.ipynb_checkpoints/*
 
-# Dati e dataset (non versionare file grezzi pesanti)
+# Dati e dataset
+# data/raw: dataset originale incluso nel repository (CC BY 4.0, fonte in data/README.md)
 data/raw/*
+!data/raw/Dataset for diabetes research.xlsx
+!data/raw/Supplementary Information.pdf
+# data/processed e data/augmented: generati dagli script, non versionati
 data/processed/*
-!data/raw/.gitkeep
-!data/processed/.gitkeep
+data/augmented/*
 
-# Checkpoint e Pesi dei modelli
+# Checkpoint e pesi dei modelli
 models/*.pt
 models/*.pth
 models/*.onnx
@@ -28,14 +31,14 @@ models/*.pkl
 models/*.joblib
 models/*.h5
 
-# Output di log e tracking
+# Log e tracciamento degli esperimenti
 logs/
 wandb/
 mlruns/
 outputs/
 results/figures/
 
-# File di sistema e IDE
+# File di sistema e dell'IDE
 .DS_Store
 Thumbs.db
 .vscode/
