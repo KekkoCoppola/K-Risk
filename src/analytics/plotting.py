@@ -10,6 +10,9 @@ DPI = CONFIG["analytics"]["dpi"]
 
 BLUE = "#2a78d6"
 ORANGE = "#eb6834"
+YELLOW = "#eda100"
+RED = "#e34948"
+LIGHT_BLUE = "#cde2fb"
 GRAY = "#8a8985"
 TEXT = "#0b0b0b"
 TEXT_SECONDARY = "#52514e"

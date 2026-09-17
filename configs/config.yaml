@@ -7,12 +7,23 @@ data:
 
 columns:
   id: "NO"
-  target: DN
   diabetes: DM
+  age: Age
+  gender: Gender
+  creatinine: SCRE   # µmol/l
+  acr: UMAUCR        # mg/g
+
+# marcatori di malattia renale cronica secondo KDIGO:
+# eGFR (CKD-EPI 2021) < 60 ml/min/1.73 m2 oppure ACR >= 30 mg/g
+target:
+  egfr_threshold: 60
+  acr_threshold: 30
+  gender_female_code: 2
 
 split:
   test_size: 0.25
-  stratify: [DN, DM]
+  # kdigo_level e target sono calcolati, le altre voci sono colonne del dataset
+  stratify: [kdigo_level, DM]
 
 analytics:
   output: analytics
