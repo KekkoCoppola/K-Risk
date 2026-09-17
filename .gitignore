@@ -14,10 +14,15 @@ ENV/
 .ipynb_checkpoints/
 */.ipynb_checkpoints/*
 
-# Dati e dataset (non versionare file grezzi pesanti)
+# Dati e dataset
+# data/raw: dataset originale incluso nel repository (CC BY 4.0, fonte in data/README.md)
 data/raw/*
-data/processed/*
+!data/raw/Dataset for diabetes research.xlsx
+!data/raw/Supplementary Information.pdf
 !data/raw/.gitkeep
+# data/processed e data/augmented: generati dagli script, non versionati
+data/processed/*
+data/augmented/*
 !data/processed/.gitkeep
 
 # Checkpoint e Pesi dei modelli
