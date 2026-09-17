@@ -1,10 +1,10 @@
 cff-version: 1.2.0
-message: "If you use this software or thesis pipeline, please cite both this repository and the original dataset."
+message: "Se utilizzi questo software o la pipeline della tesi, cita sia questo repository sia il dataset originale."
 title: "Machine Learning Pipeline for Diabetes Risk Prediction"
 authors:
-  - family-names: "Francesco Coppola"
-    given-names: "Francesco Coppola"
-    orcid: "https://orcid.org/0009-0009-0758-8226" # Se lo hai, altrimenti ometti
+  - family-names: "Coppola"
+    given-names: "Francesco"
+    orcid: "https://orcid.org/0009-0009-0758-8226"
 version: 0.0.1
 date-released: 2026-09-08
 references:
