@@ -4,18 +4,28 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 from src.config import CONFIG, resolve
-from src.data.load import DIABETES, TARGET, binary_target, load_labeled
+from src.data.kidney import kdigo_level, target
+from src.data.load import DIABETES, load_eligible
 
 PROCESSED = resolve(CONFIG["data"]["processed"])
 TEST_SIZE = CONFIG["split"]["test_size"]
 STRATIFY = CONFIG["split"]["stratify"]
 SEED = CONFIG["seed"]
 
+DERIVED = {"kdigo_level": kdigo_level, "target": target}
+
+
+def column(df, name):
+    """Colonna del dataset oppure variabile calcolata (kdigo_level, target)."""
+    if name in DERIVED:
+        return DERIVED[name](df)
+    return df[name]
+
 
 def strata(df, columns=STRATIFY):
-    """Etichetta combinata delle colonne di stratificazione (target binarizzato)."""
-    parts = [binary_target(df) if c == TARGET else df[c] for c in columns]
-    return reduce(lambda a, b: a + "_" + b, (p.astype(str) for p in parts))
+    """Etichetta combinata delle colonne di stratificazione."""
+    parts = (column(df, c).astype(str) for c in columns)
+    return reduce(lambda a, b: a + "_" + b, parts)
 
 
 def split_dataset(df, test_size=TEST_SIZE, seed=SEED, stratify=STRATIFY):
@@ -41,17 +51,26 @@ def load_split():
 def summary(train, test):
     rows = []
     for name, d in [("train", train), ("test", test)]:
-        dn = binary_target(d) == 1
+        y = target(d) == 1
         dm = d[DIABETES] == 1
         rows.append({
             "set": name,
             "n": len(d),
-            "DN+": int(dn.sum()),
-            "DN+ %": round(100 * dn.mean(), 2),
+            "positivi": int(y.sum()),
+            "positivi %": round(100 * y.mean(), 2),
             "DM": int(dm.sum()),
-            "DM & DN+": int((dm & dn).sum()),
+            "DM positivi": int((dm & y).sum()),
         })
     return pd.DataFrame(rows)
+
+
+def kdigo_summary(train, test):
+    counts = pd.DataFrame({
+        "train": kdigo_level(train).value_counts(),
+        "test": kdigo_level(test).value_counts(),
+    })
+    counts["% nel test"] = (100 * counts["test"] / counts.sum(axis=1)).round(1)
+    return counts
 
 
 def smd(a, b):
@@ -62,7 +81,7 @@ def smd(a, b):
 
 
 def balance_table(train, test, columns):
-    rows = {"DN > 0": smd(binary_target(train), binary_target(test))}
+    rows = {"target": smd(target(train), target(test))}
     rows[DIABETES] = smd(train[DIABETES], test[DIABETES])
     for c in columns:
         rows[c] = smd(train[c], test[c])
@@ -70,9 +89,10 @@ def balance_table(train, test, columns):
 
 
 if __name__ == "__main__":
-    train, test = split_dataset(load_labeled())
+    train, test = split_dataset(load_eligible())
     save_split(train, test)
     print(summary(train, test).to_string(index=False))
     print()
-    cols = CONFIG["analytics"]["balance_columns"]
-    print(balance_table(train, test, cols).to_string())
+    print(kdigo_summary(train, test).to_string())
+    print()
+    print(balance_table(train, test, CONFIG["analytics"]["balance_columns"]).to_string())

@@ -43,3 +43,6 @@ results/figures/
 Thumbs.db
 .vscode/
 .idea/
+
+#Paper da studiare
+papers/*
