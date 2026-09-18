@@ -40,7 +40,7 @@ Perché non una regressione: l'ACR è fortemente asimmetrica, le tecniche di aug
 
 ## Impianto sperimentale
 1. **Split 75/25**, stratificato su livello KDIGO × diabete, seed fisso. Test congelato: nessuna tecnica lo tocca.
-2. **Preprocessing** (codice 9, valori mancanti, encoding) stimato solo sul training, dentro ogni fold.
+2. **Preprocessing**: selezione di 74 feature (nessuna variabile renale, nessuna colonna con codice 9, NA ≤ 15%), codifiche senza one-hot, imputazione e scaling stimati solo sul training, dentro ogni fold. Metodo di imputazione scelto con un confronto in cross-validation: **MissForest** (motivazione in Notepad, Passi 9–10).
 3. **Fase A — modelli sui dati originali**, senza augmentation: baseline (classificatore di maggioranza, regressione logistica semplice), regressione logistica regolarizzata, Random Forest, Gradient Boosting.
 4. **Fase B — stesse domande per ogni tecnica di bilanciamento**: nessuna correzione, undersampling, oversampling, SMOTE, CTGAN (anche condizionato al livello KDIGO).
 5. **Fase C — conclusioni** sul confronto fra tecniche e sul sottogruppo diabetico.

@@ -1,12 +1,30 @@
 cff-version: 1.2.0
 message: "Se utilizzi questo software o la pipeline della tesi, cita sia questo repository sia il dataset originale."
-title: "Machine Learning Pipeline for Diabetes Risk Prediction"
+type: software
+title: "K-Risk: screening dei marcatori di malattia renale cronica senza esami renali"
+abstract: >-
+  Pipeline di machine learning riproducibile che stima, da dati di screening metabolico
+  e senza esami renali, la presenza di marcatori di malattia renale cronica secondo i criteri
+  KDIGO (ACR >= 30 mg/g oppure eGFR CKD-EPI 2021 < 60 ml/min/1,73 m2). Le stime sono
+  confrontate con la stratificazione clinica KDIGO e con tecniche di data augmentation
+  per classi sbilanciate (undersampling, oversampling, SMOTE, CTGAN). Progetto di tesi
+  di laurea triennale.
 authors:
   - family-names: "Coppola"
     given-names: "Francesco"
     orcid: "https://orcid.org/0009-0009-0758-8226"
-version: 0.0.1
-date-released: 2026-09-08
+repository-code: "https://github.com/KekkoCoppola/K-Risk"
+license: MIT
+keywords:
+  - chronic kidney disease
+  - KDIGO
+  - machine learning
+  - clinical prediction model
+  - class imbalance
+  - data augmentation
+  - missing data imputation
+version: 0.2.0
+date-released: 2026-09-18
 references:
   - type: article
     title: "A bimodal dataset for diabetes research"
@@ -18,3 +36,11 @@ references:
     year: 2026
     doi: "10.1038/s41597-026-06923-y"
     url: "https://doi.org/10.1038/s41597-026-06923-y"
+  - type: data
+    title: "A bimodal dataset for diabetes research (Zenodo archive)"
+    authors:
+      - family-names: "Li"
+        given-names: "Jiandun"
+    doi: "10.5281/zenodo.18270337"
+    url: "https://doi.org/10.5281/zenodo.18270337"
+    license: CC-BY-4.0
