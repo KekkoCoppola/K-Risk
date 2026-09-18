@@ -46,3 +46,67 @@ analytics:
     - ALT
     - HGB
   simulation_runs: 1000
+
+# selezione delle feature: ogni colonna del dataset sta in esattamente un gruppo
+# (escluso per un motivo, oppure numerica / categorica in input). Motivi in Notepad.md
+features:
+  exclude:
+    # il target è calcolato da queste colonne (o ne è una copia)
+    leakage: [SCRE, UMAUCR, UmALB, UCRE, GFR, highCr, HighUmALB, HighACR, ACR3degree,
+              GFR5lev, GFR6levG5, EUGFRabACR012, EUGFR90UACR01, EUGFR60abACR012, UACRGFR, DN]
+    # esami o diagnosi renali: violano "senza esami renali"
+    renal_exams: [BUN, RF]
+    admin: ["NO", Data, filter, GAnum, GAstudy]
+    undocumented: [VAR00001, ALT.1, DF]
+    # > 50% NA, costanti o compilate solo da un sottogruppo
+    sparse: [CDSMS, GLU, HPLC, PLCR, DMnew3class, Cancer, EyeDia, DR, ThalussemiaHPLC,
+             DyslipideHis, DMhighrisk, SmokingAge, SmokingRange, DrinkingAge, DrinkYears,
+             Drink50g, EscDrink, EscDrinkM, EscDrinkT, EscDrinkR, EscDrinkD, EscDrinkO]
+    knowledge_survey: [Known, OPD, ToChilren, DietExcise, Compl, Check, GlucoseLev]
+    # soglie o classificazioni di variabili già presenti
+    derived: [Age3Group, AgeGroup, BMI4Class, overweight, obesity, WGOCobBMI, BMI25,
+              WC9085, WC8580, WC9080, BP13085, WHO1999hbp, Fat2Class, Fat3Class, ALTn, TBILn,
+              TGdis, DysHDLIDFNCEP, JCDHDLdis, CDSdyelip, HighUA, Hb4per, Anemia, FIB4n,
+              FPGover7, P2PGover11, A1cover6575, PGclass3, PGclass6, Smoking2, Drinking2,
+              FatherDM, MotherDM, BSDM, ChildDM, ThalussemiaAND, ThalussemiaOR]
+    duplicate_measures: [Waist2]
+    linear_combinations: [IDBIL, GLO]
+    # 9 = sconosciuto: dopo la ricodifica > 15% NA e nessun segnale
+    comorbidities: [Angina, Arrhythmia, PAD, Hyper16, Hyper13, Blind, CerebralHe, CerebralIn,
+                    TIA, MI, HF, CAP, Hypo14, Amputation, WeightLoss]
+    # Homaβ = 20·FINS/(FPG − 3,5): la formula esplode con glicemia vicina a 3,5 (valori > 1000)
+    unstable_indices: [Homaβ]
+    # > 15% NA sul training
+    high_missing: [leg, LC, LCcount, ALY, ALYcount]
+  max_missing: 0.15
+  numeric: [Age, Height, Weight, BMI, waist1, hip, WHR, HR, Bpsys, Bpdia, Fat, GA, FPG, PG2h,
+            HbA1c, FINS, FCP, INS2h, CP2h, HomaIR, ISIGutt, ALT, AST, ASTALT, GGT, ALP,
+            TBIL, DBIL, TP, ALB, AG, CHOL, TG, HDL, LDL, SUA, WBC, RBC, RDWCV, RDWSD, MCV, HCT,
+            LYMPH, LYMPHcount, MCH, MCHC, MPV, BASO, BASOcount, EO, EOcount, HGB, PLT, PDW, PCT,
+            MONO, MONOcount, NEUT, NEUTcount, FIB4]
+  categorical: [Gender, DM, DMhis, Smoking, Drinking, Tea, DMfamilyHistory, HypertenHis,
+                DRyd, cataract, MADPN, TFDPN, HbsAg, HCVAb]
+  # 1 = no, 2 = occasionalmente, 3 = regolarmente -> 0, 1, 2
+  ordinal: [Smoking, Drinking, Tea]
+  # colonne in cui il dizionario usa 9 = sconosciuto: nessuna deve restare in input
+  unknown_code: 9
+  unknown_columns: [Angina, Arrhythmia, PAD, Hyper16, Hyper13, Blind, Cancer, CerebralHe,
+                    CerebralIn, TIA, MI, HF, CAP, Hypo14, RF, Amputation, WeightLoss, FatherDM,
+                    MotherDM, Known, OPD, ToChilren, DietExcise, Compl, Check, GlucoseLev]
+  # alterate dalla malattia renale: escluse nel set di sensibilità "no_consequence"
+  consequence: [HGB, RBC, HCT, SUA, ALB, TP, GA]
+
+# confronto dei metodi di imputazione (solo training, cross-validation)
+imputation:
+  output: analytics/preprocessing
+  # metodo adottato per tutti i set e per entrambe le fasi (A e B); motivazione nel Notepad,
+  # passi 8-10: regola in due fasi al margine, decide il confronto appaiato sui fold
+  method: MissForest
+  cv_folds: 5
+  mask_fraction: 0.1
+  knn_neighbors: 5
+  mice_max_iter: 10
+  # MissForest "con freni": pochi alberi, poche iterazioni, colonne complete solo come predittori
+  forest_trees: 50
+  forest_min_samples_leaf: 5
+  forest_max_iter: 5
