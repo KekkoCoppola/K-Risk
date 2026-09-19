@@ -60,8 +60,8 @@ Perché non target a 4 classi (livelli KDIGO):
 - **esclusione rigorosa (leakage, non-feature, collinearità, missing > 15%)**: vedi sezione dettagliata "Preprocessing e selezione delle feature"
 - **output**:
   1. probabilità `p ∈ [0, 1]` di marcatori di malattia renale (KDIGO moderato o superiore)
-  2. classe 0/1 (soglia ottimizzata sul training)
-  3. fascia di rischio (bassa / media / alta)
+  2. classe 0/1 (soglia con sensibilità 0,90 sulle previsioni out-of-fold del training; vedi "Valutazione: scelte fissate prima dei risultati")
+  3. fascia di rischio (fascia 1–4, con le proporzioni dei livelli KDIGO nel training; decisione del 19/09/2026, prima erano previste 3 fasce)
 
 Esempio:
 ```
@@ -309,10 +309,10 @@ Riferimenti completi nella sezione **Bibliografia** in fondo al file (Collins, O
 - [ ] oversampling
 - [ ] SMOTE (SMOTE-NC per variabili categoriche; Chawla et al. 2002)
 - [ ] CTGAN (anche nella variante condizionata al livello KDIGO; Xu et al. 2019)
+- [ ] pesi di classe (apprendimento sensibile al costo: gli errori sui positivi pesano circa 9 volte di più; Elkan 2001; Brima & Atemkeng 2026)
 - [ ] analisi di sensibilità dell'imputer: una tecnica (es. SMOTE) ripetuta con KNN al posto di MissForest (Passo 10)
-- [ ] ...
 
-Per ogni tecnica: stesse 4 domande della Fase A, probabilità ricalibrate (van den Goorbergh et al. 2022), confronto KDIGO solo su soggetti reali.
+Per ogni tecnica: gli stessi 5 modelli della Fase A (sezione "Fase A — modelli e protocollo"), stesse 4 domande della Fase A, probabilità ricalibrate (van den Goorbergh et al. 2022), confronto KDIGO solo su soggetti reali.
 
 ## Preprocessing e selezione delle feature
 
@@ -444,7 +444,7 @@ Ogni test protegge da un errore preciso:
   - "MICE" qui è **una sola imputazione** (la versione con più dataset imputati e risultati combinati serve per l'inferenza statistica, non per un modello predittivo: van Buuren 2018; Sisk et al. 2023)
 - **imputare è già allenare modelli**: KNN memorizza le righe del training, MICE allena una regressione per colonna, MissForest una foresta per colonna, e anche la mediana "impara" un numero. Per questo l'imputer si stima solo sul training di ogni fold. La differenza rispetto al classificatore: l'imputer predice **una feature dalle altre feature** e non vede mai y
 - **due criteri**, nello stesso fold (cross-validation a 5 fold stratificata sul livello KDIGO, seed 42):
-  - (a) **errore di ricostruzione**: nel fold di validazione si nasconde il 10% dei valori osservati, l'imputer stimato sul fold di training li ricostruisce, si misurano RMSE e MAE in unità standardizzate. Si nascondono valori **solo nelle colonne che hanno NA nel training**, cioè quelle che l'imputer deve davvero imparare a riempire (protocollo di Tiwaskar 2025 e Hameed & Ali 2025)
+  - (a) **errore di ricostruzione**: nel fold di validazione si nasconde il 10% dei valori osservati, l'imputer stimato sul fold di training li ricostruisce, si misurano RMSE e MAE in unità standardizzate. Si nascondono valori **solo nelle colonne che hanno NA nel training**, cioè quelle che l'imputer deve davvero imparare a riempire (protocollo di Tiwaskar et al. 2025 e Hameed & Ali 2025)
   - (b) **prestazioni a valle**: una regressione logistica fissa (`class_weight="balanced"`) usata come **strumento di misura**, non come modello della tesi → PR-AUC (metrica principale, adatta a classi sbilanciate: Saito & Rehmsmeier 2015) e AUC
 - **regola di scelta**: il metodo più semplice con PR-AUC entro 1 errore standard dal migliore (Hastie, Tibshirani & Friedman 2009, §7.10). Motivo: con differenze dentro il rumore della CV non ha senso pagare la complessità
 - **controllo anti-leakage**: se una qualsiasi AUC supera 0,9 il programma lo segnala (con sole feature non renali sarebbe implausibile)
@@ -493,7 +493,7 @@ Regola di scelta **rivista dopo aver visto i risultati** (da dichiarare così ne
 1. si tengono i metodi con PR-AUC entro 1 errore standard dal migliore (prestazioni a valle)
 2. fra questi, si sceglie il più semplice con RMSE entro 1 errore standard dal migliore (ricostruzione dei valori)
 
-Perché la regola è cambiata: quella originale guardava solo il criterio (b) e ignorava il criterio (a), che faceva già parte del protocollo (ripreso da Tiwaskar 2025) ed è l'unico che distingue i metodi. Il criterio (a) conta per la Fase B, dove SMOTE e CTGAN lavorano sulla distribuzione congiunta delle variabili.
+Perché la regola è cambiata: quella originale guardava solo il criterio (b) e ignorava il criterio (a), che faceva già parte del protocollo (ripreso da Tiwaskar et al. 2025) ed è l'unico che distingue i metodi. Il criterio (a) conta per la Fase B, dove SMOTE e CTGAN lavorano sulla distribuzione congiunta delle variabili.
 
 Esito della regola in due fasi:
 - set `main` → **KNN**: RMSE 0,774, entro la soglia di 0,789 (MissForest 0,724 + 0,065); PR-AUC 0,253, entro la soglia di 0,224
@@ -502,7 +502,7 @@ Esito della regola in due fasi:
 
 Perché non la mediana:
 - RMSE ~1,0 in unità standardizzate: non ricostruisce nulla del valore mancante (equivale a prevedere la media)
-- attenua varianza e correlazioni (Tiwaskar 2025) e crea masse puntiformi: i 397 soggetti senza `HbA1c` ricevono tutti 5,5, compresi 28 diabetici (i diabetici con valore misurato hanno in media 6,57)
+- attenua varianza e correlazioni (Tiwaskar et al. 2025) e crea masse puntiformi: i 397 soggetti senza `HbA1c` ricevono tutti 5,5, compresi 28 diabetici (i diabetici con valore misurato hanno in media 6,57)
 - rischio sistematico **atteso** (non misurato) per la Fase B: SMOTE interpola fra punti identici e moltiplica i picchi, CTGAN li impara come parte della distribuzione. Evitarlo costa ~9 secondi
 
 Perché non MissForest:
@@ -683,9 +683,334 @@ Fissato in `configs/config.yaml` (`imputation.method: MissForest`). Sostituisce 
 
 ---
 
+## Fase A — modelli e protocollo (decisione del 19/09/2026)
+
+### I cinque modelli (gli stessi in Fase A e in Fase B)
+
+| # | modello | famiglia e ruolo | implementazione | riferimenti |
+|---|---|---|---|---|
+| 1 | classificatore di maggioranza | soglia minima; controllo di coerenza della pipeline | `DummyClassifier(strategy="prior")` | PR-AUC attesa = prevalenza (Saito & Rehmsmeier 2015) |
+| 2 | regressione logistica SCORED | punteggio clinico: predittori del punteggio SCORED disponibili nello screening, coefficienti ristimati | `LogisticRegression` senza penalizzazione su `Age`, `Gender`, `HGB`, `Bpsys`, `DM` | Bang et al. 2007; Echouffo-Tcheugui & Kengne 2012 |
+| 3 | regressione logistica penalizzata | modello lineare di riferimento, tutte le 74 feature | `LogisticRegression`, penalizzazione L1 / L2 / elastic net e sua forza scelte in CV interna | Christodoulou et al. 2019; Pavlou et al. 2015; Tibshirani 1996; Hoerl & Kennard 1970; Zou & Hastie 2005 |
+| 4 | Random Forest | ensemble ad albero, bagging | `RandomForestClassifier` | Breiman 2001; Yildiz & Kalayci 2025; Brima & Atemkeng 2026 |
+| 5 | XGBoost | ensemble ad albero, gradient boosting | `XGBClassifier` | Chen & Guestrin 2016; Brima & Atemkeng 2026; Yildiz & Kalayci 2025 |
+
+Stessi modelli nelle due fasi: il confronto fra Fase A e Fase B misura solo l'effetto delle tecniche di bilanciamento.
+
+### Motivazione (testo per la tesi)
+I modelli sono stati selezionati per famiglia teorica e per ruolo metodologico, dai modelli lineari agli ensemble ad albero, e sono gli stessi nelle due fasi sperimentali, così che il confronto misuri solo l'effetto delle tecniche di bilanciamento. Come termini di confronto si utilizzano un classificatore di maggioranza (Dummy), che fissa la soglia minima di prestazione e fa da controllo di coerenza della pipeline, e una regressione logistica con i predittori del punteggio clinico SCORED (Bang et al. 2007) disponibili nello screening, ristimata sui dati dello studio; SCORED è il modello di rischio per la malattia renale cronica più validato esternamente secondo una revisione sistematica (Echouffo-Tcheugui & Kengne 2012). Il modello lineare di riferimento è la regressione logistica penalizzata (L1, L2 o elastic net): nei modelli di predizione clinica la regressione logistica non è risultata inferiore ai metodi di machine learning (Christodoulou et al. 2019), e la penalizzazione è raccomandata quando gli eventi per variabile sono pochi (Peduzzi et al. 1996; Pavlou et al. 2015; Riley et al. 2020), come in questo studio (circa 5,7). Per valutare il contributo delle relazioni non lineari e delle interazioni si impiegano due ensemble ad albero, uno per famiglia: Random Forest per il bagging (Breiman 2001) e XGBoost per il gradient boosting (Chen & Guestrin 2016), entrambi competitivi su dati clinici tabellari sbilanciati (Brima & Atemkeng 2026). Fra le implementazioni di gradient boosting le differenze riportate sono piccole (Yildiz & Kalayci 2025); XGBoost è stato scelto perché è risultato il migliore nel contesto più vicino a quello dello studio, i dati clinici sbilanciati (Brima & Atemkeng 2026). Reti neurali e modelli tabellari pre-addestrati sono stati esclusi: sui dati tabellari non mostrano un vantaggio sistematico sugli ensemble ad albero (Grinsztajn et al. 2022; Yildiz & Kalayci 2025; Ye et al. 2025) e sono meno interpretabili.
+
+### Regressione logistica SCORED: predittori e adattamenti
+- SCORED (Bang et al. 2007) è un punteggio per individuare la malattia renale occulta nella popolazione generale. Elementi, confermati dall'abstract originale e dalla tabella della revisione di Echouffo-Tcheugui & Kengne 2012: età, sesso femminile, ipertensione, diabete, arteriopatia periferica, storia di malattia cardiovascolare, scompenso cardiaco, proteinuria, anemia
+- sviluppato su 8.530 adulti della survey NHANES 1999–2002 (Stati Uniti), studio trasversale di popolazione, target eGFR < 60 (MDRD). AUC 0,88 nella validazione interna e 0,71 nella validazione esterna (coorte ARIC); con soglia ≥ 4 punti: sensibilità 92%, specificità 68%, valore predittivo positivo 18%, negativo 99% (Bang et al. 2007)
+- **perché proprio SCORED**: secondo la revisione sistematica dei modelli di rischio per la malattia renale cronica è il modello più affidabile, perché è il più validato esternamente, con discriminazione ragionevole (Echouffo-Tcheugui & Kengne 2012). È anche l'unico pensato esplicitamente per lo screening della popolazione generale, come il nostro dataset
+- la stessa revisione indica come predittori più frequenti nei modelli di rischio età, sesso, BMI, diabete, pressione sistolica, creatinina, proteinuria e albumina o proteine sieriche (Echouffo-Tcheugui & Kengne 2012): usare la pressione sistolica misurata al posto dell'anamnesi di ipertensione è coerente con la letteratura
+- predittori usati:
+  - `Age`, continua invece delle fasce
+  - `Gender`
+  - `HGB`, continua invece del flag di anemia (`Anemia` è esclusa come derivata a soglia)
+  - `Bpsys`, la pressione misurata, invece dell'anamnesi di ipertensione (`HypertenHis` ha solo 147 "sì" nel training)
+  - `DM`
+- predittori non disponibili: malattia cardiovascolare, scompenso cardiaco, arteriopatia periferica (escluse per il codice 9) e proteinuria (esame renale)
+- i coefficienti sono **ristimati** sui nostri dati: **non** è una validazione esterna di SCORED e non va chiamato "punteggio validato"
+- SCORED è stato costruito per eGFR < 60; il nostro target è per il 90% albuminuria → differenza da dichiarare
+- set `no_consequence`: `HGB` esce, restano 4 predittori
+- circa 85 eventi per variabile (425 / 5): nessuna penalizzazione necessaria
+
+### Perché la logistica penalizzata e non quella completa senza penalizzazione
+- 425 eventi nel training su 74 predittori ≈ **5,7 eventi per variabile** (circa 4,6 nei fold di training della CV esterna), sotto la soglia di 10 (Peduzzi et al. 1996). Il criterio degli eventi per variabile è una semplificazione, ma anche i criteri di Riley et al. 2020 vanno nella stessa direzione: rischio di sovradattamento
+- la penalizzazione riduce i coefficienti verso zero e migliora le previsioni su dati nuovi quando gli eventi sono pochi (Pavlou et al. 2015)
+- tipo di penalizzazione (L1: Tibshirani 1996; L2: Hoerl & Kennard 1970; elastic net: Zou & Hastie 2005) e forza sono iperparametri scelti nella CV interna
+
+### Modelli esclusi e perché
+- **LightGBM e CatBoost**: in Yildiz & Kalayci 2025 le posizioni medie in classifica sono vicine (LightGBM 2,6, CatBoost 3,1, XGBoost 4,4, con barre d'errore sovrapposte); nel contesto più vicino al nostro vince XGBoost (Brima & Atemkeng 2026). Un solo gradient boosting, per parsimonia. Il vantaggio di CatBoost sulle categoriche non serve: le nostre sono tutte binarie o ordinali già codificate
+- **KNN e SVM**: ultimi in classifica in Yildiz & Kalayci 2025; SVM non produce probabilità in modo nativo
+- **reti neurali (MLP, TabNet) e modelli pre-addestrati (TabPFN, TabICL)**: nessun vantaggio sistematico sui dati tabellari (Grinsztajn et al. 2022; Yildiz & Kalayci 2025; Ye et al. 2025), meno interpretabili. TabPFN e TabICL non addestrano i parametri, quindi si combinano male con il bilanciamento della Fase B. Possibile sviluppo futuro
+- **regressione logistica completa senza penalizzazione**: vedi sopra, 5,7 eventi per variabile
+
+### Il classificatore di maggioranza in Fase B
+- le metriche di **ordinamento** non cambiano: PR-AUC sempre pari alla prevalenza, AUC sempre 0,5
+- le **probabilità** invece cambiano: dopo un oversampling al 50% il modello prevede 0,5
+- serve da **controllo di coerenza**: se in una tecnica la sua PR-AUC si discosta dalla prevalenza, nella pipeline c'è un errore
+
+### Protocollo di addestramento e valutazione
+- **cross-validation annidata** (Varma & Simon 2006; Cawley & Talbot 2010):
+  - **5 fold esterni**, gli stessi del confronto delle imputazioni (stratificati sul livello KDIGO, seed 42): producono le previsioni sui soggetti non visti, usate per l'analisi per livello KDIGO
+  - **5 fold interni** dentro ogni fold esterno, per ottimizzare gli iperparametri. Ottimizzare e valutare sugli stessi fold renderebbe le previsioni ottimiste
+- **ottimizzazione**: Optuna (Akiba et al. 2019) con il campionatore TPE (Bergstra et al. 2011)
+  - **stesso numero di tentativi per ogni modello**, così le differenze dipendono dai modelli e non dall'ottimizzazione (Brima & Atemkeng 2026: 100 tentativi con CV a 5 fold)
+  - numero di tentativi e spazi di ricerca fissati **prima** di vedere i risultati, dopo una stima dei tempi; un eventuale budget inferiore a 100, per il costo della Fase B, va dichiarato
+- **metrica di ottimizzazione**: PR-AUC (Saito & Rehmsmeier 2015), dichiarata prima
+- **imputazione**: MissForest stimato sul training di ogni fold, interno ed esterno (circa 30 stime per set di feature, circa 30 minuti), una volta sola; i fold imputati vengono salvati e riusati da tutti i modelli
+- **nessun peso di classe in Fase A**: è una tecnica di bilanciamento, va in Fase B
+- **confronto fra modelli**: appaiato sui 5 fold esterni (Nadeau & Bengio 2003), riportato comunque, senza scegliere un modello "vincitore" prima della Fase B
+- **soglia di classificazione**: scelta sulle previsioni della CV, mai sul test
+- **modello finale**: iperparametri scelti con CV a 5 fold sull'intero training, riaddestramento sull'intero training, **una sola valutazione** sul test set
+- **interpretazione**: SHAP per Random Forest e XGBoost (Lundberg & Lee 2017; esempio di uso clinico in Moulaei et al. 2024), coefficienti per le logistiche; attenzione alle coppie molto correlate (Passo 7), fra cui l'importanza si divide
+
+### Protocollo fissato prima dei risultati (19/09/2026, opzione A)
+Scritto in `configs/config.yaml` (sezione `phase_a`) prima di lanciare qualsiasi addestramento; i tempi misurati prima (un fold interno, nessuna metrica calcolata) servivano solo per il budget.
+
+| elemento | scelta | fonte |
+|---|---|---|
+| budget | **100 tentativi** di Optuna per modello e per fold | Brima & Atemkeng 2026 |
+| campionatore | TPE, seed 42 | Brima & Atemkeng 2026; Bergstra et al. 2011; Akiba et al. 2019 |
+| interruzione anticipata | `MedianPruner` con i valori predefiniti di Optuna: dopo ogni fold interno, un tentativo si interrompe se la sua PR-AUC media è sotto la mediana dei tentativi precedenti allo stesso passo (dal 6° tentativo) | Brima & Atemkeng 2026 |
+| metrica | PR-AUC media sui fold interni | Saito & Rehmsmeier 2015 |
+| set ottimizzato | solo `main`; `no_consequence` **riusa gli iperparametri** di `main` fold per fold: l'analisi di sensibilità cambia solo le variabili | scelta nostra (opzione A) |
+| modello finale | iperparametri scelti con i 5 fold esterni come CV dell'intero training, riaddestramento sull'intero training | Varma & Simon 2006; Cawley & Talbot 2010 |
+
+Spazi di ricerca:
+
+| modello | iperparametri e intervalli | fonte |
+|---|---|---|
+| logistica penalizzata | `C` 10⁻⁴–10 (scala log); `l1_ratio` 0–1 (0 = L2, 1 = L1, intermedi = elastic net); solver `saga` | Zou & Hastie 2005; Friedman et al. 2010. Il limite superiore di `C` è 10: valori più alti equivalgono alla logistica senza penalizzazione, esclusa per gli eventi per variabile |
+| Random Forest | alberi 100–1000; profondità 3–25; `min_samples_split` 2–50; `min_samples_leaf` 1–20; `max_features` sqrt / log2 / 0,25 / 0,5 / 0,75; criterio gini / entropy | Brima & Atemkeng 2026, App. A6. Le frazioni di `max_features` sono una scelta nostra (l'articolo dice solo "frazioni fisse") |
+| XGBoost | alberi 200–1200; learning rate 0,01–0,3; profondità 3–12; `subsample` 0,6–1,0; `colsample_bytree` 0,5–1,0; `reg_alpha` e `reg_lambda` 0–5 | Brima & Atemkeng 2026, App. A6. Learning rate in scala logaritmica: scelta nostra (l'articolo non la specifica) |
+| classificatore di maggioranza, logistica SCORED | nessun iperparametro | — |
+
+Costo stimato: circa 3,5 ore per modello ottimizzato (3 modelli), ridotte dall'interruzione anticipata dei tentativi; il set `no_consequence` costa pochi minuti (nessuna ottimizzazione).
+
+Altre regole implementate:
+- nessun peso di classe e nessun bilanciamento
+- la convergenza della logistica si registra per ogni modello (campo `converged`); gli avvisi di mancata convergenza durante l'ottimizzazione non vengono mostrati
+- ogni risultato si salva appena pronto (l'esecuzione si può interrompere e riprendere)
+- il test set non viene letto
+
+Codice:
+- `src/models/zoo.py`: i cinque modelli e gli spazi di ricerca letti dalla config
+- `src/models/phase_a.py` (`python -m src.models.phase_a`): per ogni modello e fold esterno salva `analytics/phase_a/<set>/<modello>_<fold>.json` (iperparametri, PR-AUC interna, tentativi interrotti, tempi, previsioni out-of-fold), i tentativi di Optuna in `analytics/phase_a/trials/`, i modelli finali in `models/`; alla fine `analytics/phase_a/oof_predictions.csv`
+- `tests/test_phase_a.py`: 11 test su dati imputati con la mediana (veloci); tra l'altro verificano che ogni soggetto abbia esattamente una previsione out-of-fold, che il set `no_consequence` riusi gli iperparametri senza ottimizzare e che l'analisi di sensibilità modifichi solo lo spazio del suo modello
+
+### Valutazione: scelte fissate prima dei risultati (19/09/2026)
+Fissate dopo l'addestramento ma **prima di calcolare qualsiasi metrica**: dei risultati era stata letta solo la struttura (60 file, 43.500 previsioni out-of-fold = 5 modelli × 2 set × 4.350 soggetti, una per soggetto, nessun valore mancante, logistiche tutte convergenti), nessuna prestazione. Scritte anche in `configs/config.yaml` (sezione `evaluation`). Valgono identiche per ogni tecnica della Fase B.
+
+Dati: solo le previsioni out-of-fold del training (4.350 soggetti, 425 positivi: 354 moderato, 50 alto, 21 molto alto). Il test set non viene letto; soglia e fasce stimate qui si applicano **una volta sola** al test, con il modello finale.
+
+| elemento | scelta | motivazione e fonte |
+|---|---|---|
+| soglia di classificazione | la più alta con **sensibilità ≥ 0,90** sulle previsioni out-of-fold aggregate | la soglia deve riflettere le conseguenze delle decisioni, non un criterio statistico (Wynants et al. 2019): nello screening un falso negativo è un caso mancato, un falso positivo costa un ACR urinario. Punto operativo vicino a quello di SCORED (sensibilità 92% con ≥ 4 punti, Bang et al. 2007). Dipende solo dall'ordinamento delle previsioni, non dalla calibrazione: resta confrontabile in Fase B, dove il bilanciamento sposta le probabilità (van den Goorbergh et al. 2022). A parità di sensibilità complessiva, la sensibilità per livello dice se i casi gravi sono riconosciuti più degli altri (domande 3 e 5) |
+| altri punti operativi | sensibilità 0,80 / 0,85 / 0,90 / 0,95, solo descrittivi | riportare più soglie (Wynants et al. 2019) |
+| metriche alla soglia | precision, recall, specificità, quota di soggetti da testare | le ultime due servono a leggere il costo della soglia |
+| fasce di rischio | **4 fasce** ("fascia 1–4", per non confonderle con i livelli) dai quantili delle previsioni, con le stesse proporzioni dei livelli KDIGO nel training (90,2 / 8,1 / 1,1 / 0,5%) | il kappa richiede le stesse categorie e dipende da prevalenza e differenza fra le distribuzioni marginali (Feinstein & Cicchetti 1990; Byrt et al. 1993; Sim & Wright 2005): con marginali uguali la componente di disaccordo sistematico sparisce. Basate sull'ordinamento, quindi confrontabili in Fase B |
+| concordanza fasce/livelli | kappa pesato con pesi **lineari** (Cohen 1968), con tabella 4 × 4 e accordo osservato | i livelli KDIGO sono ordinali: i pesi quadratici equivalgono a un coefficiente di correlazione intraclasse, che tratta la scala come a intervalli (Fleiss & Cohen 1973) |
+| AUC e PR-AUC | sulle previsioni out-of-fold aggregate (principali) e come media dei 5 fold | l'aggregato serve per l'analisi per livello e per la soglia, ma penalizza i modelli non calibrati fra un fold e l'altro (Forman & Scholz 2010): la differenza fra le due fa da diagnostica. PR-AUC stimata come average precision (Boyd et al. 2013) |
+| tendenza per livello | Jonckheere-Terpstra unilaterale (il rischio cresce con il livello), approssimazione normale con correzione per i pareggi (Hollander, Wolfe & Chicken 2014). Dimensione dell'effetto: **concordanza** = quota di coppie di soggetti di livelli diversi ordinate come KDIGO (pareggi 1/2; 0,5 = nessuna tendenza) | con 4.350 soggetti il p-value è piccolo per qualsiasi modello sensato: conta la dimensione dell'effetto |
+| intervalli di confidenza (95%) | AUC: DeLong et al. 1988. PR-AUC: intervallo logit con n = numero di positivi (Boyd et al. 2013). Precision, recall, specificità, sensibilità per livello: Wilson (Wilson 1927; Brown, Cai & DasGupta 2001). Kappa, probabilità medie per livello, concordanza: bootstrap percentile **stratificato sul livello KDIGO**, 2000 campioni, fasce ristimate a ogni campione (Boyd et al. 2013; Carpenter & Bithell 2000) | intervalli analitici dove esistono formule valide con pochi casi: il bootstrap copre meno del 95% quando i positivi sono pochi (Boyd et al. 2013, letto dal testo); Wilson è raccomandato per n ≤ 40 (Brown, Cai & DasGupta 2001), come i 21 "molto alto". Il bootstrap stratificato conserva le numerosità dei livelli in ogni campione. Scelta proposta da noi: l'utente non ha espresso preferenze |
+| confronto fra modelli | t appaiato sui 5 fold esterni con varianza corretta (Nadeau & Bengio 2003), su PR-AUC (metrica primaria) e AUC; 10 coppie per set, p-value corretti con Holm 1979 | nessun "vincitore" prima della Fase B; 4 gradi di libertà, potenza bassa |
+| analisi di sensibilità | domande 1–4 anche sul set `no_consequence`; differenza no_consequence − main per ogni modello, stesso test | — |
+| classificatore di maggioranza | solo controllo di coerenza: in ogni fold AUC = 0,5 e PR-AUC = prevalenza (Saito & Rehmsmeier 2015); soglia e fasce non definite (previsione costante) | — |
+
+Alternative scartate:
+- **soglia di Youden** (Youden 1950): è il solo criterio "ottimo" coerente a pesi uguali (Perkins & Schisterman 2006), ma assume che falsi negativi e falsi positivi costino uguale, uno dei tre miti di Wynants et al. 2019
+- **soglia 0,90 contro 0,80**: 0,80 riduce i soggetti da testare ma non ha un ancoraggio in letteratura; resta nella griglia descrittiva
+- **p ≥ prevalenza** e **fasce a soglie di probabilità fisse**: richiedono probabilità calibrate (la calibrazione della Random Forest non è garantita) e mescolano discriminazione e calibrazione; le soglie fisse sono arbitrarie
+- **3 fasce contro KDIGO ridotto a 3 livelli**: più stabile, ma perde la distinzione alto / molto alto
+- **intervalli solo bootstrap** (copertura bassa con pochi positivi) o **sui 5 fold** (4 gradi di libertà, impossibili per livello, copertura bassa: Bates, Hastie & Tibshirani 2024; Boyd et al. 2013)
+
+Limiti da dichiarare:
+- gli intervalli sono condizionati ai modelli addestrati: non includono la variabilità dell'addestramento, che entra solo nei confronti fra fold (Bates, Hastie & Tibshirani 2024)
+- soglia e fasce sono stimate sulle stesse previsioni su cui si valutano (un parametro ciascuna): leggero ottimismo, verificato sul test
+- con la soglia a sensibilità fissata il recall sulle previsioni out-of-fold è 0,90 per costruzione: diventa informativo solo sul test
+- la fascia 4 contiene circa 21 soggetti: stime instabili; il kappa resta influenzato dalla prevalenza dei livelli (90% basso)
+- fuori dalle domande 1–4: calibrazione (Van Calster et al. 2019) e curve di decisione (Vickers & Elkin 2006), da riconsiderare in Fase B, dove la ricalibrazione è prevista
+
+Codice:
+- `src/models/evaluation.py` (`python -m src.models.evaluation`, circa 2 minuti): tabelle in `analytics/phase_a/evaluation/` — `q1_discrimination`, `q1_operating_points`, `q2_levels`, `q2_trend`, `q3_sensitivity`, `q4_bands`, `q4_kappa`, `folds` (metriche per fold), `comparison_models`, `comparison_sets`, `cutpoints` (soglia e limiti delle fasce da applicare al test)
+- `tests/test_evaluation.py`: 15 test su dati sintetici; tra l'altro il test di Jonckheere confrontato con quello di Kendall (sono lo stesso test), DeLong con il calcolo diretto, la formula dell'intervallo della PR-AUC, il bootstrap che conserva le numerosità dei livelli, nessuna lettura del test set (anche nello script delle figure)
+- `tests/test_interpretation.py`: 5 test su dati sintetici (intervallo di Wald contro l'Hessiana calcolata a mano, somma dei valori SHAP uguale alla previsione, contributi di XGBoost identici a quelli del pacchetto `shap`, nessuna lettura del test set)
+- suite completa: 56 test verdi (19/09/2026)
+
+### Valutazione: risultati (19/09/2026)
+Calcolati con le scelte della sezione precedente, fissate prima. Solo previsioni out-of-fold del training (4.350 soggetti, 425 positivi); il test set non è stato toccato e servirà da conferma finale. Tabelle in `analytics/phase_a/evaluation/`, figure `analytics/phase_a/01`–`08` (vedi "Indice delle figure"). Valori del set `main` salvo dove indicato; IC al 95%.
+
+**Controllo di coerenza**: il classificatore di maggioranza ha AUC = 0,5 e PR-AUC = prevalenza (0,098) in tutti i 10 fold (5 × 2 set): la pipeline è coerente. Le prevalenze dei training dei 5 fold coincidono (0,0977; fold stratificati sul livello KDIGO), quindi le sue previsioni sono costanti anche aggregate.
+
+**Domanda 1 — discriminazione** (figure 01, 02, 03)
+
+| modello | AUC (IC) | AUC media fold | PR-AUC (IC) | PR-AUC media fold |
+|---|---|---|---|---|
+| logistica SCORED | 0,675 (0,646–0,704) | 0,679 | 0,224 (0,187–0,266) | 0,243 |
+| logistica penalizzata | 0,697 (0,669–0,725) | 0,700 | 0,242 (0,204–0,285) | 0,255 |
+| Random Forest | 0,703 (0,676–0,731) | 0,708 | 0,246 (0,207–0,289) | 0,261 |
+| XGBoost | 0,699 (0,671–0,726) | 0,704 | 0,251 (0,212–0,295) | 0,262 |
+| maggioranza | 0,500 | 0,500 | 0,098 | 0,098 |
+
+Alla soglia con sensibilità 0,90:
+
+| modello | soglia su p | precision (IC) | recall | specificità (IC) | soggetti da testare |
+|---|---|---|---|---|---|
+| logistica SCORED | 0,050 | 0,110 (0,100–0,121) | 0,901 | 0,209 (0,197–0,222) | 80,2% |
+| logistica penalizzata | 0,048 | 0,112 (0,102–0,123) | 0,901 | 0,223 (0,211–0,237) | 78,9% |
+| Random Forest | 0,058 | 0,113 (0,103–0,124) | 0,901 | 0,232 (0,219–0,246) | 78,1% |
+| XGBoost | 0,042 | 0,114 (0,104–0,126) | 0,901 | 0,245 (0,232–0,259) | 76,9% |
+
+Quota di soggetti da testare agli altri punti operativi (solo descrittivi): sensibilità 0,80 → 55–65% (Random Forest 55,0%, XGBoost 58,7%, logistica penalizzata 60,7%, SCORED 64,8%); 0,85 → 66–74%; 0,95 → 88–89%. Scegliendo i soggetti a caso, per trovare il 90% dei positivi bisognerebbe testarne il 90%: il modello fa risparmiare 10–13 punti percentuali.
+
+- discriminazione **modesta**: AUC circa 0,70, PR-AUC circa 2,5 volte la prevalenza. Ordine di grandezza simile all'AUC di SCORED in validazione esterna (0,71; Bang et al. 2007), che però aveva un altro target (eGFR < 60)
+- la PR-AUC aggregata è più bassa della media dei fold di 0,011–0,019 (AUC: 0,003–0,005): piccole differenze di calibrazione fra i modelli dei diversi fold (Forman & Scholz 2010). La stima aggregata è quella prudente
+- il recall è 0,901 per costruzione (soglia a sensibilità fissata); il confronto fra modelli alla soglia sta nella specificità, i cui IC si sovrappongono
+
+**Domanda 2 — il rischio stimato cresce con la gravità KDIGO?** (figura 04)
+
+| modello | basso | moderato | alto | molto alto | concordanza (IC) |
+|---|---|---|---|---|---|
+| logistica SCORED | 0,092 | 0,139 | 0,178 | 0,230 | 0,674 (0,646–0,702) |
+| logistica penalizzata | 0,091 | 0,152 | 0,202 | 0,247 | 0,696 (0,668–0,723) |
+| Random Forest | 0,093 | 0,137 | 0,164 | 0,195 | 0,702 (0,674–0,728) |
+| XGBoost | 0,086 | 0,142 | 0,194 | 0,284 | 0,698 (0,671–0,724) |
+
+Valori = probabilità media per livello (IC bootstrap nelle tabelle). Jonckheere-Terpstra: z da 12,0 a 13,9, p < 10⁻³² per tutti i modelli.
+
+- **sì**: in tutti i modelli la probabilità media cresce a ogni livello, e circa il 70% delle coppie di soggetti di livelli diversi è ordinato come KDIGO
+- la separazione più netta è fra "basso" e gli altri livelli; fra "moderato" e "alto" le distribuzioni si sovrappongono molto (mediane 0,11–0,12 contro 0,13–0,15), e gli IC delle medie di "alto" e "molto alto" si sovrappongono in tutti i modelli
+- XGBoost e logistica penalizzata separano meglio il "molto alto" (media 0,28 e 0,25); la Random Forest comprime le probabilità (media del "molto alto" 0,195)
+
+**Domanda 3 — quanti casi gravi riconosce?** (figura 05; soglia con sensibilità complessiva 0,90)
+
+| modello | moderato (n = 354) | alto (n = 50) | molto alto (n = 21) |
+|---|---|---|---|
+| logistica SCORED | 317 (0,895) | 47 (0,94) | 19 (0,905; IC 0,711–0,973) |
+| logistica penalizzata | 316 (0,893) | 47 (0,94) | 20 (0,952; IC 0,773–0,992) |
+| Random Forest | 319 (0,901) | 46 (0,92) | 18 (0,857; IC 0,654–0,950) |
+| XGBoost | 318 (0,898) | 47 (0,94) | 18 (0,857; IC 0,654–0,950) |
+
+- "molto alto" mancati: 1 (logistica penalizzata), 2 (SCORED), 3 (Random Forest, XGBoost)
+- a parità di sensibilità complessiva i casi gravi **non** sono riconosciuti chiaramente più dei moderati: sensibilità simili, e con 21 casi gli IC vanno da circa 0,65 a 0,99. Il test set (6 "molto alto") non potrà cambiare questa conclusione: è il limite dichiarato sui livelli poco numerosi
+- set `no_consequence`: differenze di al massimo 2 soggetti per livello; "molto alto" invariati salvo SCORED (18/21)
+
+**Domanda 4 — le fasce del modello corrispondono ai livelli KDIGO?** (figura 06)
+
+| modello | kappa pesato (IC) | accordo osservato | "molto alto" in fascia 4 | "molto alto" in fascia 1 |
+|---|---|---|---|---|
+| logistica SCORED | 0,197 (0,156–0,236) | 0,851 | 3 su 21 | 10 |
+| logistica penalizzata | 0,207 (0,171–0,245) | 0,854 | 0 su 21 | 8 |
+| Random Forest | 0,209 (0,165–0,246) | 0,854 | 3 su 21 | 9 |
+| XGBoost | 0,228 (0,183–0,266) | 0,855 | 5 su 21 | 6 |
+
+- concordanza **bassa**: kappa circa 0,2 (set `no_consequence`: 0,19–0,21). L'accordo osservato alto (0,85) dipende quasi tutto dal livello "basso", il 90% dei soggetti: è il paradosso della prevalenza (Feinstein & Cicchetti 1990)
+- il 72–75% dei "moderato" e il 62–70% degli "alto" finiscono nella fascia 1, e fino a metà dei "molto alto" nella fascia 1: le fasce del modello non riproducono la stratificazione per gravità. Il modello separa soprattutto la presenza di marcatori, non il loro grado
+- inizio della fascia 4: p ≥ 0,56 (logistica penalizzata), 0,46 (XGBoost), 0,43 (SCORED), 0,32 (Random Forest): conferma le probabilità compresse della Random Forest, da tenere presente per la ricalibrazione in Fase B
+
+**Confronto fra modelli** (figura 07; Nadeau & Bengio 2003 sui 5 fold esterni, p corretti con Holm)
+- PR-AUC (metrica primaria): tutte le differenze fra modelli sono ≤ 0,019 in valore assoluto, p corretto = 1,00
+- AUC: la logistica SCORED perde 0,021 contro la logistica penalizzata (IC da −0,003 a 0,046), 0,029 contro la Random Forest (da −0,008 a 0,066), 0,025 contro XGBoost (da −0,004 a 0,054); p non corretti 0,07–0,10, corretti 0,44. Le altre differenze sono ≤ 0,008
+- **nessuna differenza dimostrata**: una logistica con 5 predittori da screening è vicina ai modelli con 74 feature, coerente con Christodoulou et al. 2019. Con 4 gradi di libertà la potenza è bassa: "non dimostrata" non significa "assente"
+
+**Analisi di sensibilità `no_consequence`** (figure 02 e 08): togliendo HGB, RBC, HCT, SUA, ALB, TP, GA
+- AUC: da −0,012 (XGBoost) a +0,001 (SCORED); PR-AUC: da −0,021 (XGBoost) a −0,002 (SCORED); nessuna differenza significativa (p 0,23–0,64)
+- le prestazioni **non dipendono** in modo rilevante dalle variabili alterate dalla malattia renale
+
+**Sintesi per la tesi**
+1. senza esami renali i modelli riconoscono i marcatori di malattia renale in modo modesto (AUC circa 0,70): con sensibilità 0,90 andrebbe testato circa il 78% della popolazione, contro il 90% di una scelta casuale
+2. il rischio stimato cresce con la gravità KDIGO (concordanza circa 0,70), ma le fasce del modello concordano poco con i livelli (kappa circa 0,2): il modello riconosce la presenza dei marcatori più che il loro grado
+3. i casi gravi non sono riconosciuti più dei moderati; 1–3 "molto alto" su 21 mancati alla soglia scelta
+4. nessun modello è migliore degli altri in modo dimostrabile; la logistica SCORED a 5 predittori è poco distante
+5. le variabili-conseguenza non spiegano le prestazioni
+6. punto di partenza per la Fase B (domanda 5): le tecniche di bilanciamento migliorano il riconoscimento dei casi gravi a parità di sensibilità complessiva, o solo le metriche medie?
+
+Da confermare sul test set, una sola volta, con i modelli finali e la soglia e le fasce di `analytics/phase_a/evaluation/cutpoints.csv`.
+
+### Analisi di sensibilità: profondità di XGBoost (decisa dopo i risultati, 19/09/2026)
+Controllo degli iperparametri scelti da Optuna (set main):
+- **XGBoost**: `max_depth` = 3, cioè il **limite inferiore** dello spazio (3–12, Brima & Atemkeng 2026), in 6 ottimizzazioni su 6 (5 fold esterni e modello finale), con learning rate basso (0,010–0,025). L'ottimo è probabilmente sotto il limite: alberi molto poco profondi, poche interazioni. È coerente con il risultato "logistica ≈ XGBoost": il segnale è quasi additivo
+- Random Forest: scelte instabili fra i fold (profondità da 3 a 25), tipico di un ottimo piatto; nessun limite sistematico
+- logistica penalizzata: `C` nel mezzo dello spazio (scala logaritmica), `l1_ratio` spesso vicino a 0 (quasi solo L2); 0 è un estremo naturale, non un limite dello spazio
+
+Decisione, **dichiarata come presa dopo aver visto i risultati**:
+- i risultati primari restano quelli del protocollo fissato prima (spazio 3–12)
+- XGBoost viene rilanciato con `max_depth` 1–12, stesso protocollo (100 tentativi, TPE, MedianPruner, stessi fold; il set `no_consequence` riusa gli iperparametri): `python -m src.models.phase_a --sensitivity depth_1_12` (config `phase_a.sensitivity`), risultati e modelli in cartelle separate (`analytics/phase_a/sensitivity/depth_1_12/`, `models/sensitivity/depth_1_12/`)
+- valutazione: `python -m src.models.evaluation --sensitivity depth_1_12`, con il modello `xgboost_depth_1_12` confrontato con gli altri sugli stessi fold
+- lo spazio 1–12 è quello della **Fase B**, così "nessuna correzione" e le tecniche di bilanciamento usano lo stesso spazio
+
+Risultati (19/09/2026, circa 45 minuti; tabelle in `analytics/phase_a/sensitivity/depth_1_12/evaluation/`; file primari non modificati, verificato dalle date):
+- profondità scelta: **1** in 5 ottimizzazioni su 6, **2** nell'altra. Con alberi a un solo nodo di divisione il modello è una somma di effetti delle singole variabili, senza interazioni: conferma che il segnale è additivo
+- set main: AUC 0,696 (0,668–0,724) contro 0,699 del protocollo primario; PR-AUC 0,250 (0,211–0,293) contro 0,251
+- differenza appaiata sui 5 fold (primario − profondità 1–12, Nadeau & Bengio): AUC +0,007 (da −0,004 a 0,017; p = 0,15), PR-AUC +0,003 (da −0,022 a 0,027; p = 0,78). Set `no_consequence`: AUC +0,001, PR-AUC +0,000
+- alla soglia con sensibilità 0,90: specificità 0,256 contro 0,245, soggetti da testare 75,9% contro 76,9%; "molto alto" riconosciuti 18/21 in entrambi, "alto" 48/50 contro 47/50; kappa 0,235 contro 0,228; concordanza 0,695 contro 0,698
+- **conclusione**: il limite inferiore dello spazio non ha penalizzato XGBoost. I risultati primari sono robusti, e le interazioni fra variabili non aggiungono informazione, coerentemente con "logistica ≈ XGBoost"
+- nota: in questa valutazione la famiglia di Holm comprende 15 coppie (6 modelli); per il confronto fra le due versioni di XGBoost si riporta il p non corretto
+
+### Interpretazione: scelte fissate prima del calcolo (19/09/2026)
+Fissate prima di calcolare coefficienti e valori SHAP (erano stati misurati solo i tempi di calcolo).
+
+| elemento | scelta | fonte |
+|---|---|---|
+| modelli interpretati | i **modelli finali** (iperparametri scelti in CV, riaddestrati sull'intero training), set `main`; `no_consequence` solo in tabella | protocollo della Fase A |
+| logistica SCORED | odds ratio per 1 deviazione standard (numeriche, standardizzate nel preprocessing) o per unità (categoriche: `Gender` 1 = maschio → 2 = femmina, `DM` 0 → 1), con **intervallo di Wald al 95%**: il modello non è penalizzato | Hosmer, Lemeshow & Sturdivant 2013 |
+| logistica penalizzata | odds ratio per 1 DS o per unità, **senza intervalli** (la penalizzazione riduce i coefficienti: gli errori standard usuali non valgono); numero di coefficienti azzerati; prime 15 variabili per valore assoluto del coefficiente | Tibshirani 1996; Zou & Hastie 2005 |
+| Random Forest, XGBoost | valori SHAP **esatti** con TreeSHAP, su tutti i 4.350 soggetti del training (circa 5 minuti): Random Forest sulla scala della probabilità, XGBoost sulla scala logit. Per XGBoost si usa il TreeSHAP interno di XGBoost (`pred_contribs`): i contributi sono identici a quelli del pacchetto `shap` 0.52, che però con XGBoost 3.4 sbaglia il valore base di una costante (verificato su dati sintetici, test in `tests/test_interpretation.py`) | Lundberg & Lee 2017; Lundberg et al. 2020 |
+| importanza globale | media del valore assoluto SHAP per variabile; prime 15; grafico a sciame (beeswarm) per il verso dell'effetto | Lundberg et al. 2020 |
+| confronto fra modelli | prime 15 variabili di ciascun modello affiancate; conta quante sono comuni | — |
+
+Cautele da dichiarare:
+- SHAP e coefficienti descrivono **il modello, non la causalità**: una variabile importante può essere conseguenza o marcatore della malattia renale, non causa
+- le variabili molto correlate (Passo 7) si dividono l'importanza: il peso di un gruppo va letto insieme
+- le spiegazioni sono calcolate sui dati di addestramento del modello finale (descrivono cosa ha imparato, non le prestazioni)
+
+### Interpretazione: risultati (19/09/2026)
+Calcolati con `python -m src.models.interpretation` (tabelle in `analytics/phase_a/interpretation/`, figure 09–11). Modelli finali, set `main` salvo dove indicato.
+
+**Logistica SCORED** (odds ratio, IC di Wald al 95%; DS di `Age` = 13,8 anni, di `Bpsys` = 16,5 mmHg nel training):
+
+| predittore | odds ratio (IC) | p |
+|---|---|---|
+| `DM` (diabete sì contro no) | 2,58 (1,89–3,52) | < 10⁻⁸ |
+| `Age` (per 13,8 anni) | 1,47 (1,32–1,64) | < 10⁻¹¹ |
+| `Bpsys` (per 16,5 mmHg) | 1,34 (1,22–1,47) | < 10⁻⁸ |
+| `HGB` (per 1 DS) | 0,92 (0,81–1,04) | 0,19 |
+| `Gender` (femmina contro maschio) | 0,96 (0,75–1,22) | 0,73 |
+
+- i tre fattori di rischio classici della malattia renale (diabete, età, pressione) portano il segnale; emoglobina e sesso non aggiungono nulla di dimostrabile. Set `no_consequence` (senza `HGB`): valori praticamente identici (DM 2,54; Age 1,50; Bpsys 1,34)
+
+**Logistica penalizzata** (modello finale: `C` = 1,53, `l1_ratio` = 0,85; 6 coefficienti azzerati su 74):
+- primo coefficiente: `DRyd` (retinopatia), odds ratio 3,48. Riguarda però solo 27 soggetti (0,6%; positivi il 37% contro il 9,6% degli altri): effetto forte ma raro. La retinopatia è una complicanza microvascolare come il danno renale del diabete
+- blocco ematologico con segni opposti: `HGB` 0,45, `MCV` 1,92, `RBC` 1,87, `MCHC` 1,41 per DS. Sono variabili legate fra loro (emoglobina ≈ globuli rossi × volume medio × concentrazione media): i coefficienti singoli sono instabili e va letto il blocco, non la singola variabile (cautela già dichiarata)
+- poi `HypertenHis` 1,74, `Gender` 1,73 (a parità di emoglobina), circonferenza vita 1,51 contro fianchi 0,66 (obesità addominale), `WBC` 1,46, `FCP` 1,37
+- la classifica per coefficiente mescola unità diverse (1 DS per le numeriche, 0 → 1 per le binarie): non è confrontabile con l'importanza SHAP
+
+**Random Forest e XGBoost** (SHAP, figure 10–11):
+- prime variabili comuni ai due modelli: 11 su 15 (`Age`, `ALP`, `FIB4`, `CP2h`, `FCP`, `GA`, `FPG`, `GGT`, `SUA`, `LDL`, `TG`). La logistica penalizzata ne condivide con entrambi solo `FCP`
+- **`Age` è la prima variabile in entrambi**, e pesa anche attraverso `FIB4`, che contiene l'età nella formula. `ALP` è seconda in entrambi. Coerente con le AUC univariate del Passo 2 (età 0,653, `ALP` 0,631, `FIB4` 0,623)
+- gruppi: assetto glicemico e insulinico (`FCP`, `CP2h`, `FPG`, `PG2h`, `GA`, `ISIGutt`, `INS2h`), lipidi (`LDL`, `HDL`, `TG`, `CHOL`), fegato (`FIB4`, `GGT`, `AST`); `Bpsys` è settima nella Random Forest, fuori dalle prime 15 in XGBoost
+- importanza **diffusa**: le prime 5 variabili spiegano solo il 23–26% dell'importanza totale (set main). Molti predittori deboli, coerente con l'AUC modesta
+- versi dell'effetto (figura 11): valori alti di età, `ALP`, `FIB4`, peptide C, glicemie, `LDL`, `TG`, `SUA` e `GGT` alzano il rischio stimato; `ISIGutt` basso (resistenza all'insulina) lo alza; `GA` **basso** lo alza in entrambi i modelli; in XGBoost `INS2h` e `AST` alti lo abbassano (effetti condizionati da variabili correlate: `CP2h`, `ALT`/`FIB4`)
+- variabili-conseguenza fra le prime 15: `SUA` (quinta in XGBoost) e `GA`; togliendole le prestazioni non cambiano (analisi `no_consequence`): altre variabili ne compensano il contributo
+
+**Ipotesi da verificare in letteratura prima di scriverle nella tesi** (non sono risultati):
+1. il peptide C è eliminato in gran parte dal rene: `FCP` e `CP2h` alti potrebbero riflettere in parte una ridotta clearance renale, cioè funzionare come variabili-conseguenza non dichiarate. Il segno opposto di `INS2h` (a parità di peptide C) suggerisce che il modello usi il rapporto peptide C / insulina
+2. `GA` basso associato al rischio: l'albumina glicata dipende dal ricambio dell'albumina, che la perdita urinaria di albumina può alterare
+3. se confermate, sono candidate a un'analisi di sensibilità aggiuntiva (da decidere e dichiarare, non ora)
+
+### Revisione indipendente del codice (19/09/2026)
+Revisione di `src/models/evaluation.py`, `src/analytics/phase_a_report.py` e delle modifiche a `src/models/phase_a.py`, fatta da un agente revisore separato (sola lettura): **nessun errore critico o grave**. Verificati numericamente DeLong, soglia a sensibilità fissata (anche pareggi e arrotondamenti), Jonckheere-Terpstra, Holm, Nadeau-Bengio, allineamento righe/etichette; nessuna lettura del test set. Osservazioni minori:
+- la famiglia di Holm comprende le 10 coppie, compresi i confronti con il classificatore di maggioranza (come scritto nel protocollo: "10 coppie per set"). Verificato: escludendoli, i p corretti delle 6 coppie di modelli reali non cambiano (differenza massima 2 · 10⁻¹⁶). Protocollo mantenuto e dichiarato nella figura 07
+- aggiunti controlli sui casi degeneri (`delong` senza positivi o negativi, PR-AUC = 0 o 1 → intervallo non definito); nessun effetto sui risultati
+- test più stringenti: formula dell'intervallo della PR-AUC verificata numericamente; controllo "nessuna lettura del test set" esteso allo script delle figure
+
+### Fase B — decisioni preliminari (19/09/2026)
+Approvate prima di scrivere il protocollo completo della Fase B:
+- **stessi 5 modelli** della Fase A: il confronto deve misurare solo l'effetto delle tecniche di bilanciamento
+- spazio di XGBoost con `max_depth` 1–12 (vedi analisi di sensibilità sopra)
+- **esito primario della domanda 5**: sensibilità sui casi gravi (alto + molto alto: 71 soggetti nelle previsioni out-of-fold) alla soglia con sensibilità complessiva 0,90, stimata per ogni tecnica. Confronto appaiato con "nessuna correzione" **sugli stessi soggetti** con il test di McNemar esatto (McNemar 1947). Secondario: PR-AUC con il test di Nadeau & Bengio 2003
+- da dichiarare: con 71 casi gravi si possono dimostrare solo differenze grandi
+- **cautela su CTGAN**: ogni fold di training esterno ha circa 340 positivi (circa 270 nei fold interni), pochi per addestrare una rete generativa; la sua adeguatezza va verificata in letteratura prima di includerlo
+- ancora da decidere, prima del lancio: elenco definitivo delle tecniche con fonti verificate; valutazione "ingenua" alla soglia 0,5 come analisi secondaria fissata in anticipo; riottimizzazione degli iperparametri per tecnica o riuso, e budget; ricalibrazione (serve per le probabilità medie della domanda 2, non per soglia e fasce, che dipendono solo dall'ordinamento)
+
+### Fonti lette per la Fase A
+- Echouffo-Tcheugui & Kengne 2012: testo completo, `papers/kdigo/file.pdf`
+- Boyd et al. 2013 e Forman & Scholz 2010: testo completo (PDF d'autore), per gli intervalli della PR-AUC e per il calcolo delle metriche in cross-validation
+- Bang et al. 2007: solo abstract (pagina salvata `papers/kdigo/00000779-200702260-00016~screening-for-occult-renal-disease-scored-a-simple.html`); basta per i predittori e le prestazioni, il testo completo servirebbe solo per i pesi del punteggio, che non usiamo perché i coefficienti sono ristimati
+
+### Ambiente
+- installati `xgboost` 3.4.1 e `optuna` 5.0.0 (19/09/2026); `numpy`, `pandas` e `scikit-learn` restano alle versioni fissate nel file di lock
+- installato `shap` 0.52.0 (19/09/2026) per l'interpretazione, con `numba` 0.67.0, `llvmlite` 0.49.0 e `slicer` 0.0.8; `numpy` resta 2.5.3 (il timore che `numba` la cambiasse non si è verificato)
+
+---
+
 ## Indice delle figure
 
-Rigenerare con `python -m src.analytics.dataset_overview`, `python -m src.analytics.split_report` e (dopo `python -m src.data.imputation`) `python -m src.analytics.preprocessing_report`.
+Rigenerare con `python -m src.analytics.dataset_overview`, `python -m src.analytics.split_report`, (dopo `python -m src.data.imputation`) `python -m src.analytics.preprocessing_report` e (dopo `python -m src.models.evaluation` e `python -m src.models.interpretation`) `python -m src.analytics.phase_a_report`.
 
 | file | cosa mostra | sezione |
 |------|-------------|---------|
@@ -704,6 +1029,17 @@ Rigenerare con `python -m src.analytics.dataset_overview`, `python -m src.analyt
 | `analytics/preprocessing/02_univariate_auc.png` | AUC univariato: feature in input vs colonne renali | Preprocessing → Passo 2 |
 | `analytics/preprocessing/03_missing_values.png` | % di NA per colonna con soglia 15% | Preprocessing → Passo 2 |
 | `analytics/preprocessing/04_imputation_*.png` | confronto dei 4 imputer (RMSE e PR-AUC) | Preprocessing → Passi 5–6 |
+| `analytics/phase_a/01_roc_pr.png` | curve ROC e precision-recall dei 4 modelli (set main, previsioni out-of-fold), maggioranza come riferimento | Fase A → Valutazione: risultati, domanda 1 |
+| `analytics/phase_a/02_discrimination_ci.png` | AUC e PR-AUC con IC 95%, set main (pieno) e no_consequence (vuoto) | domanda 1 e analisi di sensibilità |
+| `analytics/phase_a/03_operating_points.png` | sensibilità contro % di soggetti da testare, confronto con la scelta casuale | domanda 1 (costo della soglia) |
+| `analytics/phase_a/04_probability_by_level.png` | probabilità stimata per livello KDIGO (scatole, media con IC, singoli soggetti gravi), concordanza di Jonckheere-Terpstra | domanda 2 |
+| `analytics/phase_a/05_sensitivity_by_level.png` | sensibilità per livello KDIGO alla soglia scelta, IC di Wilson, riconosciuti/totale | domanda 3 |
+| `analytics/phase_a/06_bands_vs_levels.png` | tabella 4 × 4 fasce del modello contro livelli KDIGO, kappa pesato | domanda 4 |
+| `analytics/phase_a/07_model_comparison.png` | differenze fra modelli (PR-AUC e AUC) con IC di Nadeau-Bengio e p di Holm | confronto fra modelli |
+| `analytics/phase_a/08_no_consequence.png` | differenze no_consequence − main per modello | analisi di sensibilità |
+| `analytics/phase_a/09_odds_ratios.png` | odds ratio della logistica SCORED (IC di Wald, main e no_consequence) e prime 15 della logistica penalizzata | Interpretazione: risultati |
+| `analytics/phase_a/10_shap_importance.png` | importanza SHAP media, prime 15 variabili, Random Forest e XGBoost | Interpretazione: risultati |
+| `analytics/phase_a/11_shap_beeswarm.png` | valori SHAP per soggetto (posizione) e valore della variabile (colore), prime 15 | Interpretazione: risultati |
 
 ## Punti da verificare
 - [x] **formula dell'eGFR** — verificato: la colonna `GFR` **non coincide** con nessuna formula standard
@@ -729,21 +1065,33 @@ Rigenerare con `python -m src.analytics.dataset_overview`, `python -m src.analyt
 - [x] modulo di preprocessing (`src/data/preprocess.py`): selezione, codifiche, preprocessor (imputazione + scaling) stimato solo sul train
 - [x] confronto dei metodi di imputazione (`src/data/imputation.py`) e test (`tests/test_preprocess.py`)
 - [x] fissare in config il metodo di imputazione scelto (MissForest, Passo 9; prima KNN, Passo 6)
-- [ ] Fasi A e B: stimare l'imputer una volta per fold e salvare su disco i fold imputati, per ogni set di feature
-- [ ] modelli da scegliere (baseline, regressione logistica regolarizzata, Random Forest, Gradient Boosting). Riferimenti: Random Forest (Breiman 2001), Gradient Boosting (Friedman 2001); sui dati tabellari i metodi ad albero restano competitivi o superiori al deep learning (Grinsztajn et al. 2022; Ye et al. 2025), anche in ambito clinico e con classi sbilanciate (Yildiz & Kalayci 2025; Brima & Atemkeng 2026; Moulaei et al. 2024)
+- [x] Fasi A e B: stimare l'imputer una volta per fold e salvare su disco i fold imputati, per ogni set di feature (`src/data/imputed.py`)
+- [x] modelli scelti: Dummy, logistica SCORED, logistica penalizzata, Random Forest, XGBoost, con protocollo e riferimenti (sezione "Fase A — modelli e protocollo"). Gradient Boosting in generale: Friedman 2001
 - [ ] stesso test set congelato per tutti i confronti e le tecniche di data augmentation
 
-### Da fare all'inizio della Fase A
-- [ ] stimare l'imputer (MissForest) una volta per fold e salvare su disco i fold imputati, per ogni set di feature, da riusare in tutte le combinazioni di Fase A e B
+### Fase A: stato
 - [ ] procurare il PDF della linea guida KDIGO 2024 sulla CKD (Kidney Int 105(4S), doi:10.1016/j.kint.2023.10.018) e ricontrollare le citazioni che la usano
-- [ ] scegliere l'implementazione del Gradient Boosting: XGBoost / LightGBM / CatBoost, usati nei paper di `papers/best_models/` (Yildiz & Kalayci 2025; Brima & Atemkeng 2026), oppure `HistGradientBoostingClassifier` di scikit-learn
-- [ ] aggiungere a `requirements.txt` e `requirements-lock.txt` le librerie necessarie (modelli; per la Fase B `imbalanced-learn` e `ctgan`)
+- [x] scegliere l'implementazione del Gradient Boosting → XGBoost (sezione "Fase A — modelli e protocollo")
+- [x] aggiungere a `requirements.txt` e `requirements-lock.txt` le librerie della Fase A: `xgboost`, `optuna`
+- [x] stimare l'imputer una volta per fold e salvare i fold imputati: `src/data/folds.py`, `src/data/imputed.py` (`python -m src.data.imputed`), test in `tests/test_folds.py`
+- [x] `shap` 0.52.0 aggiunto (19/09/2026; porta `numba` 0.67.0, `llvmlite` 0.49.0, `slicer` 0.0.8; `numpy` resta 2.5.3)
+- [ ] librerie ancora da aggiungere per la Fase B: `imbalanced-learn`, `ctgan`
+- [x] interpretazione della Fase A (odds ratio, SHAP) e revisione indipendente del codice
+- [x] analisi di sensibilità XGBoost `max_depth` 1–12: nessuna differenza con il protocollo primario (sezione "Analisi di sensibilità: profondità di XGBoost")
+- [ ] verificare in letteratura le ipotesi su peptide C e albumina glicata (sezione "Interpretazione: risultati")
+- [x] fissare spazi di ricerca e numero di tentativi di Optuna dopo una stima dei tempi, prima di vedere i risultati (sezione "Protocollo fissato prima dei risultati")
+- [x] pipeline di addestramento della Fase A: `src/models/zoo.py`, `src/models/phase_a.py`, `tests/test_phase_a.py`
+- [x] lanciare la Fase A (19/09/2026, notte): 5 modelli × 6 fold × 2 set, previsioni out-of-fold in `analytics/phase_a/oof_predictions.csv`
+- [x] fissare le scelte della valutazione prima dei risultati (soglia, fasce, intervalli: sezione "Valutazione: scelte fissate prima dei risultati") e scrivere il modulo (`src/models/evaluation.py`)
+- [x] calcolare la valutazione della Fase A e riportare i risultati (sezione "Valutazione: risultati", figure `analytics/phase_a/01`–`08`)
+- [ ] conferma finale sul test set (una sola volta, a fine progetto): modelli finali, soglia e fasce di `cutpoints.csv`
+- [x] procurare i PDF di Bang et al. 2007 (SCORED, solo abstract) ed Echouffo-Tcheugui & Kengne 2012 (testo completo)
 
 ---
 
 ## Bibliografia
 
-Citazioni nel testo in formato autore-anno. ✅ = PDF in `papers/`, metadati letti dal file. Tutte le voci con DOI sono state verificate su Crossref il 18/09/2026 (titolo, autori, rivista, volume, fascicolo, pagine, anno). Senza DOI e quindi non verificabili su Crossref: linee guida WHO, bozze KDIGO 2026, Platt 1999 (capitolo di libro), Hastie et al. 2009 (libro), Xu et al. 2019 e Lundberg & Lee 2017 (atti NeurIPS, indicato l'identificativo arXiv).
+Citazioni nel testo in formato autore-anno. ✅ = PDF in `papers/`, metadati letti dal file. Tutte le voci con DOI sono state verificate su Crossref il 18/09/2026, quelle della sezione "Fase A" il 19/09/2026 (titolo, primo autore, rivista, volume, fascicolo, pagine, anno). Senza DOI e quindi non verificabili su Crossref: linee guida WHO, bozze KDIGO 2026, Platt 1999 (capitolo di libro), Hastie et al. 2009 (libro), Xu et al. 2019 e Lundberg & Lee 2017 (atti NeurIPS, indicato l'identificativo arXiv), Bergstra et al. 2011 (atti NeurIPS), Cawley & Talbot 2010 (JMLR), Elkan 2001 (atti IJCAI).
 
 ### Dataset
 - **Li et al. 2026** — Li J. et al. *A bimodal dataset for diabetes research.* Scientific Data 13 (2026). doi:10.1038/s41597-026-06923-y. Dati: Zenodo, doi:10.5281/zenodo.18270337
@@ -817,3 +1165,48 @@ Citazioni nel testo in formato autore-anno. ✅ = PDF in `papers/`, metadati let
 - **Terpstra 1952** — Terpstra T.J. *The asymptotic normality and consistency of Kendall's test against trend, when ties are present in one ranking.* Indagationes Mathematicae 14 (Proc. KNAW, Serie A, 55):327–333 (1952). doi:10.1016/S1385-7258(52)50043-X
 - **Jonckheere 1954** — Jonckheere A.R. *A distribution-free k-sample test against ordered alternatives.* Biometrika 41(1/2):133–145 (1954). doi:10.2307/2333011
 - **Cohen 1968** — Cohen J. *Weighted kappa: nominal scale agreement with provision for scaled disagreement or partial credit.* Psychol Bull 70(4):213–220 (1968). doi:10.1037/h0026256
+
+### Valutazione della Fase A: soglia, concordanza, intervalli, confronti
+Verificate su Crossref il 19/09/2026. Contenuto letto dal testo completo: Boyd et al. 2013, Forman & Scholz 2010; dall'abstract: Wynants et al. 2019, Perkins & Schisterman 2006, Bates, Hastie & Tibshirani 2024, Brown, Cai & DasGupta 2001, Sim & Wright 2005, Feinstein & Cicchetti 1990, Byrt et al. 1993, Carpenter & Bithell 2000, Van Calster et al. 2019. Holm 1979 non ha DOI.
+- **Wynants et al. 2019** — Wynants L., van Smeden M., McLernon D.J., Timmerman D., Steyerberg E.W., Van Calster B. *Three myths about risk thresholds for prediction models.* BMC Med 17:192 (2019). doi:10.1186/s12916-019-1425-3
+- **Youden 1950** — Youden W.J. *Index for rating diagnostic tests.* Cancer 3(1):32–35 (1950). doi:10.1002/1097-0142(1950)3:1<32::AID-CNCR2820030106>3.0.CO;2-3
+- **Perkins & Schisterman 2006** — Perkins N.J., Schisterman E.F. *The inconsistency of "optimal" cutpoints obtained using two criteria based on the receiver operating characteristic curve.* Am J Epidemiol 163(7):670–675 (2006). doi:10.1093/aje/kwj063
+- **Van Calster et al. 2019** — Van Calster B., McLernon D.J., van Smeden M., Wynants L., Steyerberg E.W. *Calibration: the Achilles heel of predictive analytics.* BMC Med 17:230 (2019). doi:10.1186/s12916-019-1466-7
+- **Vickers & Elkin 2006** — Vickers A.J., Elkin E.B. *Decision curve analysis: a novel method for evaluating prediction models.* Med Decis Making 26(6):565–574 (2006). doi:10.1177/0272989X06295361
+- **Feinstein & Cicchetti 1990** — Feinstein A.R., Cicchetti D.V. *High agreement but low kappa: I. The problems of two paradoxes.* J Clin Epidemiol 43(6):543–549 (1990). doi:10.1016/0895-4356(90)90158-L
+- **Byrt et al. 1993** — Byrt T., Bishop J., Carlin J.B. *Bias, prevalence and kappa.* J Clin Epidemiol 46(5):423–429 (1993). doi:10.1016/0895-4356(93)90018-V
+- **Sim & Wright 2005** — Sim J., Wright C.C. *The kappa statistic in reliability studies: use, interpretation, and sample size requirements.* Phys Ther 85(3):257–268 (2005). doi:10.1093/ptj/85.3.257
+- **Fleiss & Cohen 1973** — Fleiss J.L., Cohen J. *The equivalence of weighted kappa and the intraclass correlation coefficient as measures of reliability.* Educ Psychol Meas 33(3):613–619 (1973). doi:10.1177/001316447303300309
+- **Hollander, Wolfe & Chicken 2014** — Hollander M., Wolfe D.A., Chicken E. *Nonparametric Statistical Methods*, 3ª ed. Wiley (2014; su Crossref 2015). doi:10.1002/9781119196037. Test di Jonckheere-Terpstra con pareggi; la formula implementata è verificata numericamente contro il test di Kendall
+- **Forman & Scholz 2010** — Forman G., Scholz M. *Apples-to-apples in cross-validation studies: pitfalls in classifier performance measurement.* SIGKDD Explor 12(1):49–57 (2010). doi:10.1145/1882471.1882479
+- **DeLong et al. 1988** — DeLong E.R., DeLong D.M., Clarke-Pearson D.L. *Comparing the areas under two or more correlated receiver operating characteristic curves: a nonparametric approach.* Biometrics 44(3):837–845 (1988). doi:10.2307/2531595
+- **Boyd et al. 2013** — Boyd K., Eng K.H., Page C.D. *Area under the precision-recall curve: point estimates and confidence intervals.* ECML PKDD 2013, LNCS 8190:451–466 (2013). doi:10.1007/978-3-642-40994-3_29
+- **Wilson 1927** — Wilson E.B. *Probable inference, the law of succession, and statistical inference.* J Am Stat Assoc 22(158):209–212 (1927). doi:10.1080/01621459.1927.10502953
+- **Brown, Cai & DasGupta 2001** — Brown L.D., Cai T.T., DasGupta A. *Interval estimation for a binomial proportion.* Stat Sci 16(2):101–133 (2001). doi:10.1214/ss/1009213286
+- **Carpenter & Bithell 2000** — Carpenter J., Bithell J. *Bootstrap confidence intervals: when, which, what? A practical guide for medical statisticians.* Stat Med 19(9):1141–1164 (2000). doi:10.1002/(SICI)1097-0258(20000515)19:9<1141::AID-SIM479>3.0.CO;2-F
+- **Bates, Hastie & Tibshirani 2024** — Bates S., Hastie T., Tibshirani R. *Cross-validation: what does it estimate and how well does it do it?* J Am Stat Assoc 119(546):1434–1445 (2024). doi:10.1080/01621459.2023.2197686
+- **Holm 1979** — Holm S. *A simple sequentially rejective multiple test procedure.* Scand J Stat 6(2):65–70 (1979)
+- **McNemar 1947** — McNemar Q. *Note on the sampling error of the difference between correlated proportions or percentages.* Psychometrika 12(2):153–157 (1947). doi:10.1007/BF02295996
+
+### Interpretazione dei modelli
+Verificate su Crossref il 19/09/2026; Lundberg et al. 2020 anche nell'abstract (algoritmo esatto in tempo polinomiale per gli alberi, con un'applicazione alla malattia renale cronica).
+- **Lundberg et al. 2020** — Lundberg S.M., Erion G., Chen H., DeGrave A., Prutkin J.M., Nair B., Katz R., Himmelfarb J., Bansal N., Lee S.-I. *From local explanations to global understanding with explainable AI for trees.* Nat Mach Intell 2(1):56–67 (2020). doi:10.1038/s42256-019-0138-9
+- **Hosmer, Lemeshow & Sturdivant 2013** — Hosmer D.W., Lemeshow S., Sturdivant R.X. *Applied Logistic Regression*, 3ª ed. Wiley (2013). doi:10.1002/9781118548387
+
+### Fase A: modelli, dimensione del campione e ottimizzazione
+- **Bang et al. 2007** — Bang H. et al. *SCreening for Occult REnal Disease (SCORED): a simple prediction model for chronic kidney disease.* Arch Intern Med 167(4):374 (2007). doi:10.1001/archinte.167.4.374 — abstract letto (`papers/kdigo/`), testo completo non ad accesso libero
+- **Echouffo-Tcheugui & Kengne 2012** — Echouffo-Tcheugui J.B., Kengne A.P. *Risk models to predict chronic kidney disease and its progression: a systematic review.* PLoS Med 9(11):e1001344 (2012). doi:10.1371/journal.pmed.1001344 ✅ (`papers/kdigo/file.pdf`)
+- **Christodoulou et al. 2019** — Christodoulou E. et al. *A systematic review shows no performance benefit of machine learning over logistic regression for clinical prediction models.* J Clin Epidemiol 110:12–22 (2019). doi:10.1016/j.jclinepi.2019.02.004
+- **Pavlou et al. 2015** — Pavlou M. et al. *How to develop a more accurate risk prediction model when there are few events.* BMJ 351:h3868 (2015). doi:10.1136/bmj.h3868
+- **Peduzzi et al. 1996** — Peduzzi P. et al. *A simulation study of the number of events per variable in logistic regression analysis.* J Clin Epidemiol 49(12):1373–1379 (1996). doi:10.1016/S0895-4356(96)00236-3
+- **Riley et al. 2020** — Riley R.D. et al. *Calculating the sample size required for developing a clinical prediction model.* BMJ 368:m441 (2020). doi:10.1136/bmj.m441
+- **Tibshirani 1996** — Tibshirani R. *Regression shrinkage and selection via the lasso.* J R Stat Soc B 58(1):267–288 (1996). doi:10.1111/j.2517-6161.1996.tb02080.x
+- **Hoerl & Kennard 1970** — Hoerl A.E., Kennard R.W. *Ridge regression: biased estimation for nonorthogonal problems.* Technometrics 12(1):55–67 (1970). doi:10.1080/00401706.1970.10488634
+- **Zou & Hastie 2005** — Zou H., Hastie T. *Regularization and variable selection via the elastic net.* J R Stat Soc B 67(2):301–320 (2005). doi:10.1111/j.1467-9868.2005.00503.x
+- **Friedman et al. 2010** — Friedman J. et al. *Regularization paths for generalized linear models via coordinate descent.* J Stat Softw 33(1) (2010). doi:10.18637/jss.v033.i01
+- **Chen & Guestrin 2016** — Chen T., Guestrin C. *XGBoost: a scalable tree boosting system.* Proc. KDD 2016, 785–794. doi:10.1145/2939672.2939785
+- **Varma & Simon 2006** — Varma S., Simon R. *Bias in error estimation when using cross-validation for model selection.* BMC Bioinformatics 7:91 (2006). doi:10.1186/1471-2105-7-91
+- **Cawley & Talbot 2010** — Cawley G.C., Talbot N.L.C. *On over-fitting in model selection and subsequent selection bias in performance evaluation.* J Mach Learn Res 11:2079–2107 (2010)
+- **Akiba et al. 2019** — Akiba T. et al. *Optuna: a next-generation hyperparameter optimization framework.* Proc. KDD 2019, 2623–2631. doi:10.1145/3292500.3330701
+- **Bergstra et al. 2011** — Bergstra J., Bardenet R., Bengio Y., Kégl B. *Algorithms for hyper-parameter optimization.* NeurIPS 24 (2011)
+- **Elkan 2001** — Elkan C. *The foundations of cost-sensitive learning.* Proc. IJCAI 2001, 973–978
