@@ -232,8 +232,8 @@ La scelta è stata fatta dopo aver visto i risultati ed è dichiarata come tale.
 
 | Fase | Contenuto |
 |------|-----------|
-| **A — dati originali** | classificatore di maggioranza e regressione logistica semplice (baseline), regressione logistica regolarizzata, Random Forest, Gradient Boosting |
-| **B — bilanciamento** | nessuna correzione, undersampling, oversampling, SMOTE, CTGAN (anche condizionato al livello KDIGO) |
+| **A — dati originali** | cinque modelli, uno per ruolo: classificatore di maggioranza (soglia minima), regressione logistica con i predittori del punteggio clinico SCORED (Bang et al. 2007), regressione logistica penalizzata, Random Forest, XGBoost. Cross-validation annidata, stesso budget di ottimizzazione per tutti |
+| **B — bilanciamento** | gli stessi cinque modelli con: nessuna correzione, pesi di classe, undersampling, oversampling, SMOTE, CTGAN (anche condizionato al livello KDIGO) |
 | **C — conclusioni** | confronto fra tecniche, analisi del sottogruppo diabetico |
 
 ### 6. Regole metodologiche
@@ -296,6 +296,13 @@ python -m src.analytics.dataset_overview      # figure in analytics/dataset/
 python -m src.analytics.split_report          # figure in analytics/split/
 python -m src.data.imputation                 # confronto imputazione (~10 min, MissForest è il più lento)
 python -m src.analytics.preprocessing_report  # figure in analytics/preprocessing/
+python -m src.data.imputed                    # fold imputati per la CV annidata (~1 ora, una volta sola)
+python -m src.models.phase_a                  # Fase A: 5 modelli, CV annidata, Optuna (diverse ore; riprende da dove si è fermata)
+python -m src.models.evaluation               # valutazione Fase A sulle previsioni out-of-fold (~2 min), tabelle in analytics/phase_a/evaluation/
+python -m src.models.interpretation           # odds ratio delle logistiche e SHAP di Random Forest e XGBoost (~5 min)
+python -m src.analytics.phase_a_report        # figure della valutazione e dell'interpretazione Fase A in analytics/phase_a/
+python -m src.models.phase_a --sensitivity depth_1_12       # analisi di sensibilità: XGBoost con max_depth 1-12 (~45 min)
+python -m src.models.evaluation --sensitivity depth_1_12    # sua valutazione, confrontata con i modelli primari
 python -m pytest                              # test automatici
 ```
 
@@ -316,7 +323,8 @@ K-Risk/
 ├── analytics/                 figure e tabelle generate
 │   ├── dataset/               esplorazione del dataset e del target
 │   ├── split/                 verifica dello split train/test
-│   └── preprocessing/         selezione feature e confronto imputazione
+│   ├── preprocessing/         selezione feature e confronto imputazione
+│   └── phase_a/               Fase A: previsioni out-of-fold, tabelle di valutazione (evaluation/), figure
 ├── configs/
 │   └── config.yaml            unica fonte di configurazione
 ├── data/
@@ -332,7 +340,14 @@ K-Risk/
 │   │   ├── kidney.py          eGFR CKD-EPI 2021 e livelli KDIGO
 │   │   ├── split.py           split stratificato e controlli di bilanciamento
 │   │   ├── preprocess.py      selezione feature, codifiche, preprocessor
-│   │   └── imputation.py      confronto dei metodi di imputazione
+│   │   ├── imputation.py      confronto dei metodi di imputazione
+│   │   ├── folds.py           fold della cross-validation annidata (esterni e interni)
+│   │   └── imputed.py         fold imputati salvati una volta sola
+│   ├── models/
+│   │   ├── zoo.py             i cinque modelli e gli spazi di ricerca
+│   │   ├── phase_a.py         addestramento della Fase A (CV annidata, Optuna)
+│   │   ├── evaluation.py      valutazione sulle previsioni out-of-fold (domande 1-4, confronti)
+│   │   └── interpretation.py  odds ratio delle logistiche, SHAP degli alberi
 │   └── analytics/             generazione delle figure
 ├── tests/                     test automatici (pytest)
 ├── Scope.md                   perimetro e domande della tesi

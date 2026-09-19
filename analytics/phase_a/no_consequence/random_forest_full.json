@@ -1,0 +1,16 @@
+{
+ "model": "random_forest",
+ "feature_set": "no_consequence",
+ "fold": "full",
+ "imputer": "MissForest",
+ "tuned": false,
+ "params": {
+  "n_estimators": 885,
+  "max_depth": 24,
+  "min_samples_split": 42,
+  "min_samples_leaf": 3,
+  "max_features": "log2",
+  "criterion": "entropy"
+ },
+ "seconds": 3.5
+}

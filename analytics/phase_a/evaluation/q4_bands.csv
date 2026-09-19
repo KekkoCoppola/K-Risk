@@ -1,0 +1,129 @@
+feature_set,model,level,band,n
+main,lr_penalized,basso,1,3632
+main,lr_penalized,basso,2,249
+main,lr_penalized,basso,3,34
+main,lr_penalized,basso,4,10
+main,lr_penalized,moderato,1,254
+main,lr_penalized,moderato,2,82
+main,lr_penalized,moderato,3,10
+main,lr_penalized,moderato,4,8
+main,lr_penalized,alto,1,31
+main,lr_penalized,alto,2,14
+main,lr_penalized,alto,3,2
+main,lr_penalized,alto,4,3
+main,lr_penalized,molto alto,1,8
+main,lr_penalized,molto alto,2,9
+main,lr_penalized,molto alto,3,4
+main,lr_penalized,molto alto,4,0
+main,lr_scored,basso,1,3618
+main,lr_scored,basso,2,265
+main,lr_scored,basso,3,31
+main,lr_scored,basso,4,11
+main,lr_scored,moderato,1,265
+main,lr_scored,moderato,2,75
+main,lr_scored,moderato,3,10
+main,lr_scored,moderato,4,4
+main,lr_scored,alto,1,32
+main,lr_scored,alto,2,9
+main,lr_scored,alto,3,6
+main,lr_scored,alto,4,3
+main,lr_scored,molto alto,1,10
+main,lr_scored,molto alto,2,5
+main,lr_scored,molto alto,3,3
+main,lr_scored,molto alto,4,3
+main,random_forest,basso,1,3625
+main,random_forest,basso,2,262
+main,random_forest,basso,3,30
+main,random_forest,basso,4,8
+main,random_forest,moderato,1,256
+main,random_forest,moderato,2,79
+main,random_forest,moderato,3,12
+main,random_forest,moderato,4,7
+main,random_forest,alto,1,35
+main,random_forest,alto,2,6
+main,random_forest,alto,3,6
+main,random_forest,alto,4,3
+main,random_forest,molto alto,1,9
+main,random_forest,molto alto,2,7
+main,random_forest,molto alto,3,2
+main,random_forest,molto alto,4,3
+main,xgboost,basso,1,3631
+main,xgboost,basso,2,255
+main,xgboost,basso,3,32
+main,xgboost,basso,4,7
+main,xgboost,moderato,1,257
+main,xgboost,moderato,2,80
+main,xgboost,moderato,3,12
+main,xgboost,moderato,4,5
+main,xgboost,alto,1,31
+main,xgboost,alto,2,12
+main,xgboost,alto,3,3
+main,xgboost,alto,4,4
+main,xgboost,molto alto,1,6
+main,xgboost,molto alto,2,7
+main,xgboost,molto alto,3,3
+main,xgboost,molto alto,4,5
+no_consequence,lr_penalized,basso,1,3632
+no_consequence,lr_penalized,basso,2,249
+no_consequence,lr_penalized,basso,3,33
+no_consequence,lr_penalized,basso,4,11
+no_consequence,lr_penalized,moderato,1,254
+no_consequence,lr_penalized,moderato,2,81
+no_consequence,lr_penalized,moderato,3,12
+no_consequence,lr_penalized,moderato,4,7
+no_consequence,lr_penalized,alto,1,30
+no_consequence,lr_penalized,alto,2,15
+no_consequence,lr_penalized,alto,3,2
+no_consequence,lr_penalized,alto,4,3
+no_consequence,lr_penalized,molto alto,1,9
+no_consequence,lr_penalized,molto alto,2,9
+no_consequence,lr_penalized,molto alto,3,3
+no_consequence,lr_penalized,molto alto,4,0
+no_consequence,lr_scored,basso,1,3618
+no_consequence,lr_scored,basso,2,265
+no_consequence,lr_scored,basso,3,31
+no_consequence,lr_scored,basso,4,11
+no_consequence,lr_scored,moderato,1,265
+no_consequence,lr_scored,moderato,2,75
+no_consequence,lr_scored,moderato,3,9
+no_consequence,lr_scored,moderato,4,5
+no_consequence,lr_scored,alto,1,31
+no_consequence,lr_scored,alto,2,10
+no_consequence,lr_scored,alto,3,6
+no_consequence,lr_scored,alto,4,3
+no_consequence,lr_scored,molto alto,1,11
+no_consequence,lr_scored,molto alto,2,4
+no_consequence,lr_scored,molto alto,3,4
+no_consequence,lr_scored,molto alto,4,2
+no_consequence,random_forest,basso,1,3623
+no_consequence,random_forest,basso,2,262
+no_consequence,random_forest,basso,3,31
+no_consequence,random_forest,basso,4,9
+no_consequence,random_forest,moderato,1,257
+no_consequence,random_forest,moderato,2,79
+no_consequence,random_forest,moderato,3,10
+no_consequence,random_forest,moderato,4,8
+no_consequence,random_forest,alto,1,34
+no_consequence,random_forest,alto,2,7
+no_consequence,random_forest,alto,3,6
+no_consequence,random_forest,alto,4,3
+no_consequence,random_forest,molto alto,1,11
+no_consequence,random_forest,molto alto,2,6
+no_consequence,random_forest,molto alto,3,3
+no_consequence,random_forest,molto alto,4,1
+no_consequence,xgboost,basso,1,3623
+no_consequence,xgboost,basso,2,262
+no_consequence,xgboost,basso,3,27
+no_consequence,xgboost,basso,4,13
+no_consequence,xgboost,moderato,1,260
+no_consequence,xgboost,moderato,2,78
+no_consequence,xgboost,moderato,3,13
+no_consequence,xgboost,moderato,4,3
+no_consequence,xgboost,alto,1,33
+no_consequence,xgboost,alto,2,7
+no_consequence,xgboost,alto,3,6
+no_consequence,xgboost,alto,4,4
+no_consequence,xgboost,molto alto,1,9
+no_consequence,xgboost,molto alto,2,7
+no_consequence,xgboost,molto alto,3,4
+no_consequence,xgboost,molto alto,4,1

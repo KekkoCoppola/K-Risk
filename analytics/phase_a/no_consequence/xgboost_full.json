@@ -1,0 +1,17 @@
+{
+ "model": "xgboost",
+ "feature_set": "no_consequence",
+ "fold": "full",
+ "imputer": "MissForest",
+ "tuned": false,
+ "params": {
+  "n_estimators": 392,
+  "learning_rate": 0.02498687894957195,
+  "max_depth": 3,
+  "subsample": 0.7357892341199581,
+  "colsample_bytree": 0.6435074310006301,
+  "reg_alpha": 1.0930166749852237,
+  "reg_lambda": 3.3839306367768685
+ },
+ "seconds": 0.4
+}

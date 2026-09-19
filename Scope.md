@@ -41,8 +41,15 @@ Perché non una regressione: l'ACR è fortemente asimmetrica, le tecniche di aug
 ## Impianto sperimentale
 1. **Split 75/25**, stratificato su livello KDIGO × diabete, seed fisso. Test congelato: nessuna tecnica lo tocca.
 2. **Preprocessing**: selezione di 74 feature (nessuna variabile renale, nessuna colonna con codice 9, NA ≤ 15%), codifiche senza one-hot, imputazione e scaling stimati solo sul training, dentro ogni fold. Metodo di imputazione scelto con un confronto in cross-validation: **MissForest** (motivazione in Notepad, Passi 9–10).
-3. **Fase A — modelli sui dati originali**, senza augmentation: baseline (classificatore di maggioranza, regressione logistica semplice), regressione logistica regolarizzata, Random Forest, Gradient Boosting.
-4. **Fase B — stesse domande per ogni tecnica di bilanciamento**: nessuna correzione, undersampling, oversampling, SMOTE, CTGAN (anche condizionato al livello KDIGO).
+3. **Fase A — cinque modelli sui dati originali**, senza augmentation, scelti per famiglia e ruolo (motivazione e bibliografia nel Notepad, sezione "Fase A — modelli e protocollo"):
+   - classificatore di maggioranza: soglia minima e controllo di coerenza
+   - regressione logistica con i predittori del punteggio clinico SCORED (Bang et al. 2007) disponibili nello screening, ristimata sui nostri dati
+   - regressione logistica penalizzata (L1, L2 o elastic net): modello lineare di riferimento
+   - Random Forest: ensemble ad albero, bagging
+   - XGBoost: ensemble ad albero, gradient boosting
+
+   Protocollo: cross-validation annidata (5 fold esterni per le previsioni, 5 interni per gli iperparametri), stesso budget di ottimizzazione per tutti i modelli (Optuna), metrica di ottimizzazione PR-AUC.
+4. **Fase B — stesse domande, stessi cinque modelli, per ogni tecnica di bilanciamento**: nessuna correzione, pesi di classe, undersampling, oversampling, SMOTE, CTGAN (anche condizionato al livello KDIGO).
 5. **Fase C — conclusioni** sul confronto fra tecniche e sul sottogruppo diabetico.
 
 ## Le domande della tesi

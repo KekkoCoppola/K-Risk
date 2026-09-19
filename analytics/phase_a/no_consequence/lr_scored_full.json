@@ -1,0 +1,10 @@
+{
+ "model": "lr_scored",
+ "feature_set": "no_consequence",
+ "fold": "full",
+ "imputer": "MissForest",
+ "tuned": false,
+ "params": {},
+ "converged": true,
+ "seconds": 0.0
+}

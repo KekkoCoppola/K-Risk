@@ -1,0 +1,16 @@
+rank,lr_penalized,random_forest,xgboost
+1,DRyd,Age,Age
+2,HGB,ALP,ALP
+3,MCV,FIB4,FCP
+4,RBC,CP2h,FIB4
+5,HypertenHis,FCP,SUA
+6,Gender,GA,FPG
+7,hip,Bpsys,LDL
+8,waist1,FPG,HDL
+9,MONO,GGT,CP2h
+10,WBC,PG2h,GGT
+11,MCHC,SUA,WBC
+12,Fat,ISIGutt,GA
+13,BASOcount,LDL,TG
+14,FCP,CHOL,INS2h
+15,NEUTcount,TG,AST

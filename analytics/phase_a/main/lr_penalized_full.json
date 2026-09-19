@@ -1,0 +1,16 @@
+{
+ "model": "lr_penalized",
+ "feature_set": "main",
+ "fold": "full",
+ "imputer": "MissForest",
+ "tuned": true,
+ "inner_pr_auc": 0.26861365912224644,
+ "trials": 100,
+ "pruned": 62,
+ "params": {
+  "C": 1.5323754268166232,
+  "l1_ratio": 0.8540232558422999
+ },
+ "converged": true,
+ "seconds": 1256.8
+}

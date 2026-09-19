@@ -10,6 +10,7 @@ DPI = CONFIG["analytics"]["dpi"]
 
 BLUE = "#2a78d6"
 ORANGE = "#eb6834"
+AQUA = "#1baf7a"
 YELLOW = "#eda100"
 RED = "#e34948"
 LIGHT_BLUE = "#cde2fb"
@@ -44,10 +45,11 @@ plt.rcParams.update({
 })
 
 
-def save(fig, section, name):
+def save(fig, section, name, rect=None):
+    """rect: area (sinistra, basso, destra, alto) lasciata agli assi, es. per una legenda di figura."""
     folder = OUTPUT / section
     folder.mkdir(parents=True, exist_ok=True)
-    fig.tight_layout()
+    fig.tight_layout(rect=rect)
     fig.savefig(folder / f"{name}.png", dpi=DPI)
     plt.close(fig)
 
