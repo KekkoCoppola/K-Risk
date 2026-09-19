@@ -21,11 +21,11 @@ from sklearn.ensemble import ExtraTreesRegressor
 from sklearn.impute import IterativeImputer, KNNImputer, SimpleImputer
 from sklearn.linear_model import BayesianRidge, LogisticRegression
 from sklearn.metrics import average_precision_score, roc_auc_score
-from sklearn.model_selection import StratifiedKFold
 from sklearn.pipeline import make_pipeline
 
 from src.config import CONFIG, resolve
-from src.data.kidney import kdigo_level, target
+from src.data.folds import outer_folds
+from src.data.kidney import target
 from src.data.preprocess import build_preprocessor, feature_types, select_features
 from src.data.split import PROCESSED
 
@@ -67,8 +67,7 @@ def imputers():
 
 
 def folds(df):
-    cv = StratifiedKFold(SETTINGS["cv_folds"], shuffle=True, random_state=SEED)
-    return list(cv.split(df, kdigo_level(df)))
+    return outer_folds(df)
 
 
 def reconstruction_error(preprocessor, train, valid, rng):

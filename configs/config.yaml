@@ -110,3 +110,72 @@ imputation:
   forest_trees: 50
   forest_min_samples_leaf: 5
   forest_max_iter: 5
+
+# fasi A e B: cross-validation annidata. Fold esterni = imputation.cv_folds (gli stessi del
+# confronto delle imputazioni); fold interni per ottimizzare gli iperparametri
+cv:
+  inner_folds: 5
+  # fold imputati salvati una volta sola (non versionati)
+  imputed: data/processed/imputed
+
+# fase A: protocollo fissato il 19/09/2026, prima di vedere i risultati (Notepad, sezione
+# "Fase A — modelli e protocollo"). Gli stessi modelli si usano in fase B
+phase_a:
+  output: analytics/phase_a
+  # modelli finali: models/phase_a_<modello>_<set>.joblib (non versionati)
+  models_dir: models
+  models: [dummy, lr_scored, lr_penalized, random_forest, xgboost]
+  # Optuna: TPE (seed del progetto) + MedianPruner, metrica PR-AUC (Brima & Atemkeng 2026)
+  n_trials: 100
+  # set su cui si ottimizzano gli iperparametri; no_consequence li riusa (opzione A)
+  tuning_set: main
+  # predittori del punteggio SCORED disponibili nello screening (Bang et al. 2007)
+  scored_predictors: [Age, Gender, HGB, Bpsys, DM]
+  spaces:
+    # forza della penalizzazione e mescolanza L1/L2: 0 = L2, 1 = L1 (Zou & Hastie 2005)
+    lr_penalized:
+      C: {type: float, low: 1.0e-4, high: 10.0, log: true}
+      l1_ratio: {type: float, low: 0.0, high: 1.0}
+    # Brima & Atemkeng 2026, App. A6; frazioni di max_features scelte da noi
+    random_forest:
+      n_estimators: {type: int, low: 100, high: 1000}
+      max_depth: {type: int, low: 3, high: 25}
+      min_samples_split: {type: int, low: 2, high: 50}
+      min_samples_leaf: {type: int, low: 1, high: 20}
+      max_features: {type: categorical, choices: [sqrt, log2, 0.25, 0.5, 0.75]}
+      criterion: {type: categorical, choices: [gini, entropy]}
+    # Brima & Atemkeng 2026, App. A6; learning rate in scala logaritmica scelta da noi
+    xgboost:
+      n_estimators: {type: int, low: 200, high: 1200}
+      learning_rate: {type: float, low: 0.01, high: 0.3, log: true}
+      max_depth: {type: int, low: 3, high: 12}
+      subsample: {type: float, low: 0.6, high: 1.0}
+      colsample_bytree: {type: float, low: 0.5, high: 1.0}
+      reg_alpha: {type: float, low: 0.0, high: 5.0}
+      reg_lambda: {type: float, low: 0.0, high: 5.0}
+  # analisi di sensibilità decise DOPO i risultati (dichiarate nel Notepad): stesso protocollo, un
+  # solo modello con lo spazio modificato; risultati in analytics/phase_a/sensitivity/<nome>/, i
+  # risultati primari restano quelli con gli spazi sopra
+  sensitivity:
+    # XGBoost ha scelto max_depth = 3 (limite inferiore) in 6 ottimizzazioni su 6: spazio allargato
+    # a 1-12, lo stesso che userà la Fase B
+    depth_1_12:
+      model: xgboost
+      space:
+        max_depth: {type: int, low: 1, high: 12}
+
+# valutazione della fase A sulle previsioni out-of-fold del training (domande 1-4 dello Scope).
+# fissata il 19/09/2026 prima di calcolare qualsiasi metrica (Notepad, "Valutazione: scelte fissate prima dei risultati")
+evaluation:
+  output: analytics/phase_a/evaluation
+  # soglia di classificazione: "sensitivity" (sensibilità fissata sui positivi) oppure "youden"
+  threshold_rule: sensitivity
+  target_sensitivity: 0.90
+  # altri punti operativi, solo descrittivi (Wynants et al. 2019)
+  sensitivity_grid: [0.80, 0.85, 0.90, 0.95]
+  # fasce di rischio: 4, con le stesse proporzioni dei livelli KDIGO nel training (quantili di p)
+  bands: kdigo_quantiles
+  kappa_weights: linear
+  alpha: 0.05
+  # bootstrap stratificato sul livello KDIGO (Boyd et al. 2013): kappa, medie per livello, tendenza
+  bootstrap: 2000

@@ -28,7 +28,7 @@ models/*.pt
 models/*.pth
 models/*.onnx
 models/*.pkl
-models/*.joblib
+models/**/*.joblib
 models/*.h5
 
 # Log e tracciamento degli esperimenti
@@ -46,3 +46,20 @@ Thumbs.db
 
 #Paper da studiare
 papers/*
+# valori SHAP per le figure (rigenerabili con python -m src.models.interpretation)
+analytics/phase_a/interpretation/*.npz
+
+# File temporanei LaTeX
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+*.nav
+*.snm
+*.vrb
+docs/thesis/*.pdf
