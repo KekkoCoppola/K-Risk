@@ -1,0 +1,385 @@
+technique,model,group,level,band,n
+none,lr_scored,diabetici,basso,1,52
+none,lr_scored,diabetici,basso,2,112
+none,lr_scored,diabetici,basso,3,23
+none,lr_scored,diabetici,basso,4,8
+none,lr_scored,diabetici,moderato,1,10
+none,lr_scored,diabetici,moderato,2,34
+none,lr_scored,diabetici,moderato,3,6
+none,lr_scored,diabetici,moderato,4,2
+none,lr_scored,diabetici,alto,1,2
+none,lr_scored,diabetici,alto,2,2
+none,lr_scored,diabetici,alto,3,4
+none,lr_scored,diabetici,alto,4,3
+none,lr_scored,diabetici,molto alto,1,0
+none,lr_scored,diabetici,molto alto,2,1
+none,lr_scored,diabetici,molto alto,3,1
+none,lr_scored,diabetici,molto alto,4,3
+none,lr_scored,non diabetici,basso,1,3566
+none,lr_scored,non diabetici,basso,2,153
+none,lr_scored,non diabetici,basso,3,8
+none,lr_scored,non diabetici,basso,4,3
+none,lr_scored,non diabetici,moderato,1,255
+none,lr_scored,non diabetici,moderato,2,41
+none,lr_scored,non diabetici,moderato,3,4
+none,lr_scored,non diabetici,moderato,4,2
+none,lr_scored,non diabetici,alto,1,30
+none,lr_scored,non diabetici,alto,2,7
+none,lr_scored,non diabetici,alto,3,2
+none,lr_scored,non diabetici,alto,4,0
+none,lr_scored,non diabetici,molto alto,1,10
+none,lr_scored,non diabetici,molto alto,2,4
+none,lr_scored,non diabetici,molto alto,3,2
+none,lr_scored,non diabetici,molto alto,4,0
+none,lr_scored,tutti,basso,1,3618
+none,lr_scored,tutti,basso,2,265
+none,lr_scored,tutti,basso,3,31
+none,lr_scored,tutti,basso,4,11
+none,lr_scored,tutti,moderato,1,265
+none,lr_scored,tutti,moderato,2,75
+none,lr_scored,tutti,moderato,3,10
+none,lr_scored,tutti,moderato,4,4
+none,lr_scored,tutti,alto,1,32
+none,lr_scored,tutti,alto,2,9
+none,lr_scored,tutti,alto,3,6
+none,lr_scored,tutti,alto,4,3
+none,lr_scored,tutti,molto alto,1,10
+none,lr_scored,tutti,molto alto,2,5
+none,lr_scored,tutti,molto alto,3,3
+none,lr_scored,tutti,molto alto,4,3
+none,lr_penalized,diabetici,basso,1,108
+none,lr_penalized,diabetici,basso,2,62
+none,lr_penalized,diabetici,basso,3,21
+none,lr_penalized,diabetici,basso,4,4
+none,lr_penalized,diabetici,moderato,1,17
+none,lr_penalized,diabetici,moderato,2,28
+none,lr_penalized,diabetici,moderato,3,3
+none,lr_penalized,diabetici,moderato,4,4
+none,lr_penalized,diabetici,alto,1,2
+none,lr_penalized,diabetici,alto,2,6
+none,lr_penalized,diabetici,alto,3,1
+none,lr_penalized,diabetici,alto,4,2
+none,lr_penalized,diabetici,molto alto,1,0
+none,lr_penalized,diabetici,molto alto,2,3
+none,lr_penalized,diabetici,molto alto,3,2
+none,lr_penalized,diabetici,molto alto,4,0
+none,lr_penalized,non diabetici,basso,1,3524
+none,lr_penalized,non diabetici,basso,2,187
+none,lr_penalized,non diabetici,basso,3,13
+none,lr_penalized,non diabetici,basso,4,6
+none,lr_penalized,non diabetici,moderato,1,237
+none,lr_penalized,non diabetici,moderato,2,54
+none,lr_penalized,non diabetici,moderato,3,7
+none,lr_penalized,non diabetici,moderato,4,4
+none,lr_penalized,non diabetici,alto,1,29
+none,lr_penalized,non diabetici,alto,2,8
+none,lr_penalized,non diabetici,alto,3,1
+none,lr_penalized,non diabetici,alto,4,1
+none,lr_penalized,non diabetici,molto alto,1,8
+none,lr_penalized,non diabetici,molto alto,2,6
+none,lr_penalized,non diabetici,molto alto,3,2
+none,lr_penalized,non diabetici,molto alto,4,0
+none,lr_penalized,tutti,basso,1,3632
+none,lr_penalized,tutti,basso,2,249
+none,lr_penalized,tutti,basso,3,34
+none,lr_penalized,tutti,basso,4,10
+none,lr_penalized,tutti,moderato,1,254
+none,lr_penalized,tutti,moderato,2,82
+none,lr_penalized,tutti,moderato,3,10
+none,lr_penalized,tutti,moderato,4,8
+none,lr_penalized,tutti,alto,1,31
+none,lr_penalized,tutti,alto,2,14
+none,lr_penalized,tutti,alto,3,2
+none,lr_penalized,tutti,alto,4,3
+none,lr_penalized,tutti,molto alto,1,8
+none,lr_penalized,tutti,molto alto,2,9
+none,lr_penalized,tutti,molto alto,3,4
+none,lr_penalized,tutti,molto alto,4,0
+none,random_forest,diabetici,basso,1,82
+none,random_forest,diabetici,basso,2,91
+none,random_forest,diabetici,basso,3,16
+none,random_forest,diabetici,basso,4,6
+none,random_forest,diabetici,moderato,1,7
+none,random_forest,diabetici,moderato,2,32
+none,random_forest,diabetici,moderato,3,7
+none,random_forest,diabetici,moderato,4,6
+none,random_forest,diabetici,alto,1,2
+none,random_forest,diabetici,alto,2,3
+none,random_forest,diabetici,alto,3,3
+none,random_forest,diabetici,alto,4,3
+none,random_forest,diabetici,molto alto,1,0
+none,random_forest,diabetici,molto alto,2,3
+none,random_forest,diabetici,molto alto,3,1
+none,random_forest,diabetici,molto alto,4,1
+none,random_forest,non diabetici,basso,1,3543
+none,random_forest,non diabetici,basso,2,171
+none,random_forest,non diabetici,basso,3,14
+none,random_forest,non diabetici,basso,4,2
+none,random_forest,non diabetici,moderato,1,249
+none,random_forest,non diabetici,moderato,2,47
+none,random_forest,non diabetici,moderato,3,5
+none,random_forest,non diabetici,moderato,4,1
+none,random_forest,non diabetici,alto,1,33
+none,random_forest,non diabetici,alto,2,3
+none,random_forest,non diabetici,alto,3,3
+none,random_forest,non diabetici,alto,4,0
+none,random_forest,non diabetici,molto alto,1,9
+none,random_forest,non diabetici,molto alto,2,4
+none,random_forest,non diabetici,molto alto,3,1
+none,random_forest,non diabetici,molto alto,4,2
+none,random_forest,tutti,basso,1,3625
+none,random_forest,tutti,basso,2,262
+none,random_forest,tutti,basso,3,30
+none,random_forest,tutti,basso,4,8
+none,random_forest,tutti,moderato,1,256
+none,random_forest,tutti,moderato,2,79
+none,random_forest,tutti,moderato,3,12
+none,random_forest,tutti,moderato,4,7
+none,random_forest,tutti,alto,1,35
+none,random_forest,tutti,alto,2,6
+none,random_forest,tutti,alto,3,6
+none,random_forest,tutti,alto,4,3
+none,random_forest,tutti,molto alto,1,9
+none,random_forest,tutti,molto alto,2,7
+none,random_forest,tutti,molto alto,3,2
+none,random_forest,tutti,molto alto,4,3
+none,xgboost,diabetici,basso,1,112
+none,xgboost,diabetici,basso,2,66
+none,xgboost,diabetici,basso,3,10
+none,xgboost,diabetici,basso,4,7
+none,xgboost,diabetici,moderato,1,18
+none,xgboost,diabetici,moderato,2,27
+none,xgboost,diabetici,moderato,3,4
+none,xgboost,diabetici,moderato,4,3
+none,xgboost,diabetici,alto,1,3
+none,xgboost,diabetici,alto,2,2
+none,xgboost,diabetici,alto,3,4
+none,xgboost,diabetici,alto,4,2
+none,xgboost,diabetici,molto alto,1,0
+none,xgboost,diabetici,molto alto,2,3
+none,xgboost,diabetici,molto alto,3,0
+none,xgboost,diabetici,molto alto,4,2
+none,xgboost,non diabetici,basso,1,3519
+none,xgboost,non diabetici,basso,2,192
+none,xgboost,non diabetici,basso,3,18
+none,xgboost,non diabetici,basso,4,1
+none,xgboost,non diabetici,moderato,1,237
+none,xgboost,non diabetici,moderato,2,55
+none,xgboost,non diabetici,moderato,3,8
+none,xgboost,non diabetici,moderato,4,2
+none,xgboost,non diabetici,alto,1,29
+none,xgboost,non diabetici,alto,2,7
+none,xgboost,non diabetici,alto,3,2
+none,xgboost,non diabetici,alto,4,1
+none,xgboost,non diabetici,molto alto,1,7
+none,xgboost,non diabetici,molto alto,2,2
+none,xgboost,non diabetici,molto alto,3,4
+none,xgboost,non diabetici,molto alto,4,3
+none,xgboost,tutti,basso,1,3631
+none,xgboost,tutti,basso,2,258
+none,xgboost,tutti,basso,3,28
+none,xgboost,tutti,basso,4,8
+none,xgboost,tutti,moderato,1,255
+none,xgboost,tutti,moderato,2,82
+none,xgboost,tutti,moderato,3,12
+none,xgboost,tutti,moderato,4,5
+none,xgboost,tutti,alto,1,32
+none,xgboost,tutti,alto,2,9
+none,xgboost,tutti,alto,3,6
+none,xgboost,tutti,alto,4,3
+none,xgboost,tutti,molto alto,1,7
+none,xgboost,tutti,molto alto,2,5
+none,xgboost,tutti,molto alto,3,4
+none,xgboost,tutti,molto alto,4,5
+level_weight,lr_scored,diabetici,basso,1,53
+level_weight,lr_scored,diabetici,basso,2,110
+level_weight,lr_scored,diabetici,basso,3,25
+level_weight,lr_scored,diabetici,basso,4,7
+level_weight,lr_scored,diabetici,moderato,1,10
+level_weight,lr_scored,diabetici,moderato,2,34
+level_weight,lr_scored,diabetici,moderato,3,4
+level_weight,lr_scored,diabetici,moderato,4,4
+level_weight,lr_scored,diabetici,alto,1,2
+level_weight,lr_scored,diabetici,alto,2,3
+level_weight,lr_scored,diabetici,alto,3,4
+level_weight,lr_scored,diabetici,alto,4,2
+level_weight,lr_scored,diabetici,molto alto,1,0
+level_weight,lr_scored,diabetici,molto alto,2,1
+level_weight,lr_scored,diabetici,molto alto,3,0
+level_weight,lr_scored,diabetici,molto alto,4,4
+level_weight,lr_scored,non diabetici,basso,1,3566
+level_weight,lr_scored,non diabetici,basso,2,153
+level_weight,lr_scored,non diabetici,basso,3,9
+level_weight,lr_scored,non diabetici,basso,4,2
+level_weight,lr_scored,non diabetici,moderato,1,254
+level_weight,lr_scored,non diabetici,moderato,2,42
+level_weight,lr_scored,non diabetici,moderato,3,4
+level_weight,lr_scored,non diabetici,moderato,4,2
+level_weight,lr_scored,non diabetici,alto,1,30
+level_weight,lr_scored,non diabetici,alto,2,7
+level_weight,lr_scored,non diabetici,alto,3,2
+level_weight,lr_scored,non diabetici,alto,4,0
+level_weight,lr_scored,non diabetici,molto alto,1,10
+level_weight,lr_scored,non diabetici,molto alto,2,4
+level_weight,lr_scored,non diabetici,molto alto,3,2
+level_weight,lr_scored,non diabetici,molto alto,4,0
+level_weight,lr_scored,tutti,basso,1,3619
+level_weight,lr_scored,tutti,basso,2,263
+level_weight,lr_scored,tutti,basso,3,34
+level_weight,lr_scored,tutti,basso,4,9
+level_weight,lr_scored,tutti,moderato,1,264
+level_weight,lr_scored,tutti,moderato,2,76
+level_weight,lr_scored,tutti,moderato,3,8
+level_weight,lr_scored,tutti,moderato,4,6
+level_weight,lr_scored,tutti,alto,1,32
+level_weight,lr_scored,tutti,alto,2,10
+level_weight,lr_scored,tutti,alto,3,6
+level_weight,lr_scored,tutti,alto,4,2
+level_weight,lr_scored,tutti,molto alto,1,10
+level_weight,lr_scored,tutti,molto alto,2,5
+level_weight,lr_scored,tutti,molto alto,3,2
+level_weight,lr_scored,tutti,molto alto,4,4
+level_weight,lr_penalized,diabetici,basso,1,110
+level_weight,lr_penalized,diabetici,basso,2,66
+level_weight,lr_penalized,diabetici,basso,3,17
+level_weight,lr_penalized,diabetici,basso,4,2
+level_weight,lr_penalized,diabetici,moderato,1,18
+level_weight,lr_penalized,diabetici,moderato,2,25
+level_weight,lr_penalized,diabetici,moderato,3,6
+level_weight,lr_penalized,diabetici,moderato,4,3
+level_weight,lr_penalized,diabetici,alto,1,2
+level_weight,lr_penalized,diabetici,alto,2,4
+level_weight,lr_penalized,diabetici,alto,3,2
+level_weight,lr_penalized,diabetici,alto,4,3
+level_weight,lr_penalized,diabetici,molto alto,1,0
+level_weight,lr_penalized,diabetici,molto alto,2,4
+level_weight,lr_penalized,diabetici,molto alto,3,1
+level_weight,lr_penalized,diabetici,molto alto,4,0
+level_weight,lr_penalized,non diabetici,basso,1,3515
+level_weight,lr_penalized,non diabetici,basso,2,195
+level_weight,lr_penalized,non diabetici,basso,3,12
+level_weight,lr_penalized,non diabetici,basso,4,8
+level_weight,lr_penalized,non diabetici,moderato,1,240
+level_weight,lr_penalized,non diabetici,moderato,2,48
+level_weight,lr_penalized,non diabetici,moderato,3,10
+level_weight,lr_penalized,non diabetici,moderato,4,4
+level_weight,lr_penalized,non diabetici,alto,1,32
+level_weight,lr_penalized,non diabetici,alto,2,6
+level_weight,lr_penalized,non diabetici,alto,3,1
+level_weight,lr_penalized,non diabetici,alto,4,0
+level_weight,lr_penalized,non diabetici,molto alto,1,8
+level_weight,lr_penalized,non diabetici,molto alto,2,6
+level_weight,lr_penalized,non diabetici,molto alto,3,1
+level_weight,lr_penalized,non diabetici,molto alto,4,1
+level_weight,lr_penalized,tutti,basso,1,3625
+level_weight,lr_penalized,tutti,basso,2,261
+level_weight,lr_penalized,tutti,basso,3,29
+level_weight,lr_penalized,tutti,basso,4,10
+level_weight,lr_penalized,tutti,moderato,1,258
+level_weight,lr_penalized,tutti,moderato,2,73
+level_weight,lr_penalized,tutti,moderato,3,16
+level_weight,lr_penalized,tutti,moderato,4,7
+level_weight,lr_penalized,tutti,alto,1,34
+level_weight,lr_penalized,tutti,alto,2,10
+level_weight,lr_penalized,tutti,alto,3,3
+level_weight,lr_penalized,tutti,alto,4,3
+level_weight,lr_penalized,tutti,molto alto,1,8
+level_weight,lr_penalized,tutti,molto alto,2,10
+level_weight,lr_penalized,tutti,molto alto,3,2
+level_weight,lr_penalized,tutti,molto alto,4,1
+level_weight,random_forest,diabetici,basso,1,88
+level_weight,random_forest,diabetici,basso,2,79
+level_weight,random_forest,diabetici,basso,3,19
+level_weight,random_forest,diabetici,basso,4,9
+level_weight,random_forest,diabetici,moderato,1,16
+level_weight,random_forest,diabetici,moderato,2,24
+level_weight,random_forest,diabetici,moderato,3,8
+level_weight,random_forest,diabetici,moderato,4,4
+level_weight,random_forest,diabetici,alto,1,3
+level_weight,random_forest,diabetici,alto,2,4
+level_weight,random_forest,diabetici,alto,3,1
+level_weight,random_forest,diabetici,alto,4,3
+level_weight,random_forest,diabetici,molto alto,1,0
+level_weight,random_forest,diabetici,molto alto,2,2
+level_weight,random_forest,diabetici,molto alto,3,3
+level_weight,random_forest,diabetici,molto alto,4,0
+level_weight,random_forest,non diabetici,basso,1,3535
+level_weight,random_forest,non diabetici,basso,2,180
+level_weight,random_forest,non diabetici,basso,3,13
+level_weight,random_forest,non diabetici,basso,4,2
+level_weight,random_forest,non diabetici,moderato,1,248
+level_weight,random_forest,non diabetici,moderato,2,49
+level_weight,random_forest,non diabetici,moderato,3,4
+level_weight,random_forest,non diabetici,moderato,4,1
+level_weight,random_forest,non diabetici,alto,1,28
+level_weight,random_forest,non diabetici,alto,2,9
+level_weight,random_forest,non diabetici,alto,3,1
+level_weight,random_forest,non diabetici,alto,4,1
+level_weight,random_forest,non diabetici,molto alto,1,7
+level_weight,random_forest,non diabetici,molto alto,2,7
+level_weight,random_forest,non diabetici,molto alto,3,1
+level_weight,random_forest,non diabetici,molto alto,4,1
+level_weight,random_forest,tutti,basso,1,3623
+level_weight,random_forest,tutti,basso,2,259
+level_weight,random_forest,tutti,basso,3,32
+level_weight,random_forest,tutti,basso,4,11
+level_weight,random_forest,tutti,moderato,1,264
+level_weight,random_forest,tutti,moderato,2,73
+level_weight,random_forest,tutti,moderato,3,12
+level_weight,random_forest,tutti,moderato,4,5
+level_weight,random_forest,tutti,alto,1,31
+level_weight,random_forest,tutti,alto,2,13
+level_weight,random_forest,tutti,alto,3,2
+level_weight,random_forest,tutti,alto,4,4
+level_weight,random_forest,tutti,molto alto,1,7
+level_weight,random_forest,tutti,molto alto,2,9
+level_weight,random_forest,tutti,molto alto,3,4
+level_weight,random_forest,tutti,molto alto,4,1
+level_weight,xgboost,diabetici,basso,1,106
+level_weight,xgboost,diabetici,basso,2,72
+level_weight,xgboost,diabetici,basso,3,13
+level_weight,xgboost,diabetici,basso,4,4
+level_weight,xgboost,diabetici,moderato,1,25
+level_weight,xgboost,diabetici,moderato,2,21
+level_weight,xgboost,diabetici,moderato,3,4
+level_weight,xgboost,diabetici,moderato,4,2
+level_weight,xgboost,diabetici,alto,1,3
+level_weight,xgboost,diabetici,alto,2,2
+level_weight,xgboost,diabetici,alto,3,4
+level_weight,xgboost,diabetici,alto,4,2
+level_weight,xgboost,diabetici,molto alto,1,0
+level_weight,xgboost,diabetici,molto alto,2,2
+level_weight,xgboost,diabetici,molto alto,3,2
+level_weight,xgboost,diabetici,molto alto,4,1
+level_weight,xgboost,non diabetici,basso,1,3511
+level_weight,xgboost,non diabetici,basso,2,197
+level_weight,xgboost,non diabetici,basso,3,17
+level_weight,xgboost,non diabetici,basso,4,5
+level_weight,xgboost,non diabetici,moderato,1,245
+level_weight,xgboost,non diabetici,moderato,2,48
+level_weight,xgboost,non diabetici,moderato,3,7
+level_weight,xgboost,non diabetici,moderato,4,2
+level_weight,xgboost,non diabetici,alto,1,29
+level_weight,xgboost,non diabetici,alto,2,8
+level_weight,xgboost,non diabetici,alto,3,1
+level_weight,xgboost,non diabetici,alto,4,1
+level_weight,xgboost,non diabetici,molto alto,1,6
+level_weight,xgboost,non diabetici,molto alto,2,4
+level_weight,xgboost,non diabetici,molto alto,3,2
+level_weight,xgboost,non diabetici,molto alto,4,4
+level_weight,xgboost,tutti,basso,1,3617
+level_weight,xgboost,tutti,basso,2,269
+level_weight,xgboost,tutti,basso,3,30
+level_weight,xgboost,tutti,basso,4,9
+level_weight,xgboost,tutti,moderato,1,270
+level_weight,xgboost,tutti,moderato,2,69
+level_weight,xgboost,tutti,moderato,3,11
+level_weight,xgboost,tutti,moderato,4,4
+level_weight,xgboost,tutti,alto,1,32
+level_weight,xgboost,tutti,alto,2,10
+level_weight,xgboost,tutti,alto,3,5
+level_weight,xgboost,tutti,alto,4,3
+level_weight,xgboost,tutti,molto alto,1,6
+level_weight,xgboost,tutti,molto alto,2,6
+level_weight,xgboost,tutti,molto alto,3,4
+level_weight,xgboost,tutti,molto alto,4,5
