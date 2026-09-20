@@ -179,3 +179,52 @@ evaluation:
   alpha: 0.05
   # bootstrap stratificato sul livello KDIGO (Boyd et al. 2013): kappa, medie per livello, tendenza
   bootstrap: 2000
+
+# fase B: tecniche di bilanciamento, protocollo fissato il 19/09/2026 prima di qualsiasi
+# addestramento (Notepad, "Fase B — protocollo fissato prima dei risultati"). Stessi modelli e fold
+# della fase A; bilanciamento solo sulla parte di training di ogni fold, validazione sempre reale
+phase_b:
+  output: analytics/phase_b
+  # modelli finali: models/phase_b/<tecnica>/phase_b_<tecnica>_<modello>_<set>.joblib (non versionati)
+  models_dir: models/phase_b
+  feature_sets: [main]
+  # 30 tentativi, il primo è l'ottimo della fase A per lo stesso fold (enqueue_trial): nei log della
+  # fase A a 30 tentativi la PR-AUC interna dista in mediana <= 0,005 dal valore a 100
+  n_trials: 30
+  warm_start: true
+  # spazio di XGBoost allargato (analisi di sensibilità depth_1_12 della fase A)
+  space_overrides:
+    xgboost:
+      max_depth: {type: int, low: 1, high: 12}
+  # "nessuna correzione" = risultati della fase A; per XGBoost l'analisi con max_depth 1-12
+  baseline:
+    records: analytics/phase_a
+    overrides: {xgboost: analytics/phase_a/sensitivity/depth_1_12}
+  # rapporto finale positivi / negativi delle tecniche di campionamento
+  ratio: 1.0
+  techniques:
+    # pesi inversamente proporzionali alla prevalenza, media dei pesi = 1 (Elkan 2001)
+    class_weight: {kind: weight}
+    # pesi per singolo esempio: costo dell'errore proporzionale al livello KDIGO (Zadrozny et al. 2003)
+    level_weight: {kind: weight, costs: {moderato: 1, alto: 2, molto alto: 3}}
+    undersampling: {kind: sample}
+    oversampling: {kind: sample}
+    # SMOTE-NC (Chawla et al. 2002): 14 categoriche/ordinali trattate come nominali
+    smote_nc: {kind: sample, k_neighbors: 5}
+    # SMOTE-NC dentro ogni livello positivo, proporzioni dei livelli conservate, k = min(5, n - 1)
+    smote_nc_level: {kind: sample, k_neighbors: 5}
+    # esplorative: nessuna ottimizzazione (iperparametri del braccio smote_nc), solo fold esterni e
+    # training intero, fuori dalla correzione di Holm
+    ctgan: {kind: sample, exploratory: true, epochs: 300, batch_size: 500, params_from: smote_nc, max_rounds: 200}
+    ctgan_level: {kind: sample, exploratory: true, epochs: 300, batch_size: 500, params_from: smote_nc, max_rounds: 200}
+  # ricalibrazione: Platt annidato sulle previsioni reali dei fold interni (Niculescu-Mizil & Caruana 2005)
+  calibration: platt
+  clip: 1.0e-6
+  evaluation:
+    output: analytics/phase_b/evaluation
+    # esito primario: sensibilità sui casi gravi alla soglia con sensibilità complessiva 0,90
+    severe_levels: [alto, molto alto]
+    # tecniche nella famiglia di Holm (per modello)
+    confirmatory: [class_weight, level_weight, undersampling, oversampling, smote_nc, smote_nc_level]
+    # valutazione "ingenua" (miglioramento apparente): soglia 0,5 sulle probabilita' grezze
+    naive_threshold: 0.5
