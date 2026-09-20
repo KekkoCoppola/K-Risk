@@ -1149,6 +1149,159 @@ Revisione di `src/data/augmented.py`, `src/models/phase_b.py`, `src/models/evalu
 
 ---
 
+## Fase C — protocollo fissato prima dei risultati (20/09/2026)
+Risponde alla **domanda 6** dello Scope: come si comporta lo stesso modello sui diabetici. Scritto **prima di calcolare qualsiasi numero sul sottogruppo**, come richiesto dalle regole metodologiche. Nessun riaddestramento e nessuna ottimizzazione: si filtrano le previsioni out-of-fold già salvate. Il test set non viene letto.
+
+### Numeri del sottogruppo (verificati su `data/processed/train.csv` il 20/09/2026)
+
+| gruppo | n | positivi | prevalenza | basso | moderato | alto | molto alto | casi gravi |
+|---|---|---|---|---|---|---|---|---|
+| diabetici (`DM` = 1) | 263 | 68 | 25,9% | 195 | 52 | 11 | 5 | 16 |
+| non diabetici | 4.087 | 357 | 8,7% | 3.730 | 302 | 39 | 16 | 55 |
+| training completo | 4.350 | 425 | 9,8% | 3.925 | 354 | 50 | 21 | 71 |
+
+Il sottogruppo è **arricchito di casi gravi**: 16 su 263 (6,1%) contro 55 su 4.087 (1,3%). È questo, più della prevalenza, il motivo per cui il sottogruppo interessa alla tesi.
+
+### Che cosa dice la letteratura (e perché queste scelte)
+Sei fonti, DOI verificati su Crossref il 20/09/2026, elencate in Bibliografia → "Fase C". Tre punti decidono il protocollo.
+
+1. **La PR-AUC non si confronta fra sottogruppi con prevalenza diversa.** Matos et al. 2026 (revisione sistematica delle metriche di equità, Lancet Digital Health): *"AUROC Parity is recommended for quantifying discrimination disparities, whereas AUPRC Parity is inadvisable due to its semi-proper scoring nature, lack of focus (mixing discrimination and clinical utility), and being a discriminatory metric that favours higher-prevalence subgroups"*. Stessa conclusione in Van Calster et al. 2025: *"The AUPRC has no clear interpretation and depends on the prevalence, which goes beyond assessing discrimination"*; la dimostrazione formale è in McDermott et al. 2024. Con 25,9% contro 8,7% la PR-AUC dei diabetici risulterebbe più alta **anche a parità di modello**: differenziarla produrrebbe un risultato inventato.
+2. **La soglia è una scelta medica, non statistica.** Van Calster et al. 2025, Box 1: *"the decision threshold should be defined based on medical rather than statistical arguments"*. Quindi la soglia globale non si ristima sul sottogruppo. Lo stesso paper però osserva che una regola come "almeno 90% di sensibilità" *"Depending on specificity and prevalence this could require very different decision thresholds"*, e Matos et al. 2026 raccomandano di *"prioritise probability-based fairness metrics (that are not dependent on thresholds)"* proprio perché le metriche a soglia fissa valutano *"at specific and arbitrarily chosen decision cut-offs"*. Da qui: confronto fra sottogruppi **senza soglia** (AUROC), tabelle a soglia globale fissa come secondarie, e una tabella descrittiva che misura **quanto si sposterebbe** la soglia fra i diabetici.
+3. **Con 68 positivi non si fanno test.** Riley et al. 2024 (parte 3): *"at least 100 events and 100 non-events are needed to estimate measures such as the c statistic ... and calibration slope"*. Ne abbiamo 68, e 16 casi gravi. TRIPOD+AI (Collins et al. 2024) item 23a chiede *"Report model performance estimates with confidence intervals, including for any key subgroups"*: stime con intervalli, non test.
+
+### Protocollo
+1. **Bracci: `none` e `level_weight`**, entrambi letti da `analytics/phase_b/oof_predictions.csv`.
+   - `none` ("nessuna correzione") è l'**analisi principale**.
+   - `level_weight` (pesi per livello KDIGO 1:2:3) è l'**unico** braccio di confronto, **descrittivo**, mai il titolo di un risultato. Motivo fissato ora: è l'unica tecnica progettata per i livelli gravi, e il sottogruppo diabetico è quello dove i casi gravi sono più densi (6,1% contro 1,3%). La domanda pre-registrata è: la tecnica costruita per i casi gravi si comporta diversamente proprio dove i casi gravi abbondano?
+   - Le altre tecniche di campionamento e i due bracci CTGAN **non entrano** in Fase C: in Fase B non hanno mostrato guadagno e aggiungerebbero colonne senza potenza.
+2. **Soglia e fasce: globali fisse**, lette da `analytics/phase_b/evaluation/cutpoints.csv`, riga per tecnica e modello. Non si ricalcolano sul sottogruppo.
+3. **Metriche dentro ciascun gruppo** (diabetici, non diabetici, e training completo come riferimento), per i 4 modelli reali più il classificatore di maggioranza:
+   - domanda 1: AUC (IC di DeLong) e PR-AUC (IC logit di Boyd), **sempre riportata accanto alla prevalenza del proprio gruppo**; precision, recall, specificità e quota di allerta alla soglia globale fissa (IC di Wilson);
+   - domanda 2: probabilità media per livello KDIGO e concordanza di Jonckheere-Terpstra, con bootstrap stratificato sul livello (2.000 campioni, seed 42), come in Fase A e B;
+   - domanda 3: sensibilità per livello alla soglia globale fissa, con riconosciuti/totale e IC di Wilson. **È il risultato principale: 16 casi gravi fra i diabetici**;
+   - domanda 4: fasce globali contro livelli KDIGO e kappa pesato.
+4. **Confronto diabetici − non diabetici: solo ΔAUROC.** I due gruppi sono disgiunti, quindi SE(Δ) = radice di (SE₁² + SE₂²) con gli errori standard di DeLong già implementati in `src/models/evaluation.py`. **La ΔPR-AUC non viene calcolata né riportata** (punto 1 della letteratura). La PR-AUC resta nelle tabelle solo dentro ciascun gruppo, accanto alla sua prevalenza.
+5. **Nessun test formale, nessuna correzione per confronti multipli**: non ci sono ipotesi da rifiutare. Solo stime con intervalli, dichiarate descrittive.
+6. **Controllo di coerenza**: fra i diabetici il classificatore di maggioranza deve dare AUC 0,5 e PR-AUC pari alla prevalenza del sottogruppo (0,259). Se non succede, c'è un errore di filtraggio.
+7. **Soglia descrittiva**: in una tabella separata, la soglia che darebbe sensibilità 0,90 fra i **soli** diabetici, con la sensibilità sui casi gravi e la quota di allerta che ne seguirebbero. Serve a misurare quanto la politica globale sia arbitraria su questo sottogruppo. Etichettata "descrittiva"; **non viene usata in nessun'altra tabella**.
+
+### Tabelle e figure
+Tabelle in `analytics/phase_c/evaluation/`: `q1_discrimination.csv`, `q1_operating_points.csv`, `q2_levels.csv`, `q2_trend.csv`, `q3_sensitivity.csv`, `q4_bands.csv`, `q4_kappa.csv`, `subgroup_comparison.csv` (solo ΔAUROC), `threshold_descriptive.csv`.
+
+Figure in `analytics/phase_c/`: `01_discrimination_diabetici.png` e `02_severe_cases.png`, descritte nell'Indice delle figure.
+
+### Codice
+Modulo nuovo `src/models/phase_c.py` più `tests/test_phase_c.py`. **Nessuna modifica ai moduli esistenti.**
+
+Verifica fatta il 20/09/2026: **`evaluation.evaluate()` non è riusabile così com'è** per la Fase C, perché rifitterebbe soglia e fasce sul sottogruppo:
+- `evaluate_model()` chiama `threshold(y, p)`, che ricalcola la soglia a sensibilità 0,90 sui soli soggetti passati;
+- `evaluate()` calcola `proportions` dalla distribuzione dei livelli dei soggetti passati, quindi le fasce diventerebbero i quantili del sottogruppo.
+
+Entrambe violerebbero il punto 2. `phase_c.py` inietta quindi soglia e fasce fisse e riusa gli helper di basso livello di `evaluation.py`: `delong`, `pr_auc`, `wilson`, `operating_point`, `jonckheere`, `assign_bands`, `stratified_indices`, `percentile_interval`.
+
+### Correzioni alla sezione "Da fare per concludere il progetto"
+Quella sezione è stata scritta prima di queste verifiche. Due punti della sua lista "Fase C" sono superati:
+- **punto 2** indicava `analytics/phase_a/evaluation/cutpoints.csv`. Si usa invece `analytics/phase_b/evaluation/cutpoints.csv`. Motivo verificato il 20/09/2026: Fase A (set `main`) e Fase B (tecnica `none`) danno previsioni **identiche** per logistica SCORED, logistica penalizzata, Random Forest e classificatore di maggioranza, ma **diverse per XGBoost** (differenza massima 0,38, correlazione 0,94), perché il riferimento della Fase B prende XGBoost dall'analisi `depth_1_12` — è la convenzione già scritta in `configs/config.yaml`, voce `phase_b.baseline.overrides`. Le due soglie globali di XGBoost differiscono (0,04250 contro 0,04189). Usando il file della Fase B, `none` e `level_weight` vengono da un'unica fonte coerente e la Fase C resta confrontabile con la Fase B;
+- **punto 7** dava per scontato che bastasse richiamare `evaluation.evaluate`. Non basta, per il motivo spiegato qui sopra in "Codice".
+
+### Limiti, dichiarati in anticipo
+- 68 positivi e 16 casi gravi: sotto la soglia minima di 100 eventi indicata da Riley et al. 2024. Gli intervalli saranno molto ampi e i risultati **non possono** sostenere una conclusione comparativa;
+- il livello "molto alto" ha **5 soggetti** fra i diabetici: il bootstrap stratificato sul livello ricampiona 5 persone, quindi l'intervallo della probabilità media di quel livello è degenere. Va letto come indicazione, non come stima;
+- il sottogruppo è definito dalla colonna `DM`, che è **anche una variabile in input** ai modelli (ed è uno dei predittori della logistica SCORED): non è un sottogruppo indipendente dal modello;
+- `level_weight` è descrittivo: con 16 casi gravi nessuna differenza fra bracci è interpretabile;
+- vale il limite generale già dichiarato nello Scope: sottogruppo diabetico piccolo, solo descrittivo.
+
+---
+
+## Fase C — risultati (20/09/2026)
+Calcolati con il protocollo fissato prima (sezione precedente), sulle previsioni out-of-fold della Fase B. Nessun riaddestramento, nessuna ottimizzazione, test set non letto. Tabelle in `analytics/phase_c/evaluation/`, figure `analytics/phase_c/01`–`02`. Esecuzione: 2 minuti e 31 secondi.
+
+**Controllo di coerenza superato**: il classificatore di maggioranza dà AUC 0,500 esatta e PR-AUC esattamente pari alla prevalenza in tutti e tre i gruppi.
+
+### Difetto trovato dal controllo di coerenza (20/09/2026)
+Alla prima esecuzione il controllo è **fallito**: fra i diabetici il classificatore di maggioranza del braccio `level_weight` dava AUC 0,454 invece di 0,500.
+
+Causa, verificata: con i pesi per livello quel classificatore prevede 0,5, ma il valore salvato è `0,4999999999999938`–`0,4999999999999941`, cioè **tre valori distinti che differiscono di 3·10⁻¹⁶**, costanti dentro ogni fold. Aggregando i fold quel residuo in virgola mobile crea un **ordinamento fittizio** fra soggetti, che sposta l'AUC di 0,046. La Fase B non se ne era accorta perché dichiarava "AUC 0,5 in tutti i fold": dentro un singolo fold i valori sono identici e il problema non compare.
+
+Correzione: `phase_c.denoise_constant` riporta alla media le previsioni che sono costanti dentro ogni fold (`evaluation.is_constant`) e il cui intervallo complessivo è sotto 10⁻¹². Sui quattro modelli reali la condizione non si verifica mai, quindi nessun risultato ne è toccato. È un difetto di **presentazione dei risultati del controllo**, non delle previsioni: nessuna tabella della Fase A o della Fase B va rifatta.
+
+### Domanda 1: discriminazione (braccio "nessuna correzione", 4 modelli reali)
+
+| gruppo | n | positivi | prevalenza | AUC | PR-AUC | PR-AUC / prevalenza |
+|---|---|---|---|---|---|---|
+| diabetici | 263 | 68 | 25,9% | 0,608–0,719 | 0,379–0,440 | **1,47–1,70** |
+| non diabetici | 4.087 | 357 | 8,7% | 0,647–0,677 | 0,185–0,213 | **2,12–2,44** |
+
+- **la PR-AUC dei diabetici sembra il doppio** (0,44 contro 0,19 per Random Forest) **ma è un artefatto della prevalenza**: rapportata alla prevalenza del proprio gruppo è più bassa, cioè il modello ordina i diabetici **peggio**, non meglio. È la conferma empirica di Matos et al. 2026 e McDermott et al. 2024 sui nostri dati, ed è il motivo per cui la differenza di PR-AUC non viene riportata
+- **l'AUC non cambia**: differenze diabetici − non diabetici da **−0,038 a +0,042**, con intervalli che vanno da −0,124 a +0,117 e **coprono lo zero per tutti e quattro i modelli**. Con 68 positivi non si poteva vedere altro (Riley et al. 2024)
+
+### Il risultato principale: alla soglia globale il modello segnala quasi tutti i diabetici
+
+| gruppo | recall | specificità | quota di allerta | precision | casi gravi riconosciuti |
+|---|---|---|---|---|---|
+| diabetici | 0,985–1,000 | **0,000–0,036** | **0,970–1,000** | 0,259–0,263 | **16 su 16** |
+| non diabetici | 0,882–0,885 | 0,220–0,268 | 0,746–0,789 | ~0,10 | 48–51 su 55 |
+
+- **tutti e 16 i casi gravi diabetici sono riconosciuti da ogni modello e da entrambi i bracci**, ma la sensibilità è massima **solo perché il modello segnala il 97–100% dei diabetici**: la specificità è praticamente zero. Alla soglia globale, dentro questo sottogruppo, il modello **non aggiunge nulla rispetto a "testare tutti"**
+- è la verifica empirica di quanto lo Scope già affermava per via clinica: *"nelle persone con diabete le linee guida prescrivono ACR ed eGFR ogni anno. L'utilità del modello è stabilire la priorità degli esami nella popolazione generale di screening"*. Ora non è più solo un'argomentazione: è un numero
+
+### Soglia descrittiva (non usata altrove)
+Per avere sensibilità 0,90 **fra i soli diabetici** servirebbe una soglia da **2,5 a 3,2 volte** quella globale (da 0,042–0,058 a 0,109–0,162). A quella soglia la quota di allerta scenderebbe a 0,707–0,829 e i casi gravi riconosciuti sarebbero 15 o 16 su 16.
+
+È la misura di quanto la politica globale sia arbitraria su questo sottogruppo, e conferma alla lettera Van Calster et al. 2025: *"Depending on specificity and prevalence this could require very different decision thresholds"*.
+
+### Domande 2 e 4
+- **tendenza** (concordanza di Jonckheere-Terpstra): diabetici 0,619–0,712, non diabetici 0,646–0,676. Il rischio stimato cresce con la gravità KDIGO anche nel sottogruppo, con intervalli molto più larghi
+- **fasce contro livelli** (kappa pesato): diabetici 0,124–0,219, non diabetici 0,144–0,197. Concordanza osservata molto più bassa fra i diabetici (0,35–0,55 contro 0,88): le fasce globali, applicate a un gruppo che il modello colloca quasi tutto in alto, si sbilanciano verso le fasce superiori. È l'informazione cercata, non un difetto
+
+### Braccio descrittivo: pesi per livello KDIGO
+Nessun beneficio nel sottogruppo dove i casi gravi sono più densi. Fra i diabetici l'AUC scende (0,607–0,650 contro 0,608–0,719 senza correzione) e la differenza contro i non diabetici resta negativa per tutti i modelli (da −0,040 a −0,029). I casi gravi riconosciuti restano 16 su 16, per lo stesso motivo di prima. Con 16 casi gravi nessuna di queste differenze è interpretabile: è materiale descrittivo, come fissato nel protocollo.
+
+### Sintesi per la tesi (risposta alla domanda 6)
+1. **La discriminazione non cambia** fra diabetici e non diabetici: differenze di AUC entro ±0,04, tutti gli intervalli coprono lo zero
+2. **La PR-AUC sembra molto migliore fra i diabetici e non lo è**: 0,44 contro 0,19 è l'effetto della prevalenza 25,9% contro 8,7%. Rapportata alla propria prevalenza è peggiore. È il secondo "miglioramento apparente" della tesi, dopo quello della soglia 0,5 in Fase B, e questa volta riguarda la scelta della metrica
+3. **Alla soglia globale il modello degenera in "testare tutti" sui diabetici**: specificità 0,000–0,036, quota di allerta 0,97–1,00. Riconosce tutti e 16 i casi gravi senza fornire informazione
+4. **La soglia che servirebbe davvero sui diabetici è 2,5–3,2 volte quella globale**: la stessa regola clinica ("almeno 90% di sensibilità") implica soglie molto diverse in popolazioni con prevalenza diversa
+5. **i pesi per livello KDIGO non aiutano nemmeno qui**, dove i casi gravi sono quasi cinque volte più densi (6,1% contro 1,3%)
+6. conclusione operativa: il modello ha senso **nella popolazione generale di screening**, non nei diabetici, dove le linee guida prescrivono già gli esami ogni anno
+
+### Limiti
+Quelli dichiarati in anticipo nel protocollo, tutti confermati dai numeri: 68 positivi e 16 casi gravi (sotto i 100 eventi minimi di Riley et al. 2024), 5 soggetti "molto alto" con bootstrap degenere, sottogruppo definito da `DM` che è anche una variabile in input, braccio `level_weight` solo descrittivo.
+
+---
+
+### Revisione indipendente del codice della Fase C (20/09/2026)
+Revisione di `src/models/phase_c.py`, `src/analytics/phase_c_report.py`, `tests/test_phase_c.py` e del blocco `phase_c` di `configs/config.yaml`, fatta da un agente revisore separato in sola lettura, con il protocollo pre-registrato come riferimento: **nessun difetto critico**.
+
+Verificati e confermati: soglia e fasce mai ristimate sul sottogruppo (`phase_c.py` non chiama mai `evaluate`, `evaluate_model`, `threshold` o `band_cutpoints`, solo gli helper di basso livello dichiarati); nessuna differenza di PR-AUC calcolata o esposta; nessuna colonna di p in nessuna delle 9 tabelle (`trend_row` scarta esplicitamente il `p_value` di Jonckheere); test set mai letto, né direttamente né tramite i moduli importati; bracci limitati a `none` e `level_weight`; somma in quadratura degli errori standard legittima perché i due gruppi sono disgiunti per costruzione; nessun NaN e nessuna riga persa nei `groupby` (cardinalità esatta 2 × 5 × 3 e 2 × 4 × 3); il livello "molto alto" con 5 soggetti non degenera in NaN; `denoise_constant` con soglia 10⁻¹² non può attivarsi su un modello reale (scarto tipico ≥ 10⁻²). Confermato anche che `test_threshold_is_the_given_one_not_refitted`, `test_bands_are_the_given_ones_not_quantiles` e `test_delong_se_matches_evaluation` non sono tautologici: fallirebbero davvero se il difetto che coprono fosse presente.
+
+- **corretto (problema maggiore)**: se un modello **vero** fosse assente da `cutpoints.csv` (rigenerazione parziale della Fase B, refuso nel nome, disallineamento fra i due file), veniva **escluso in silenzio** da `q3_sensitivity`, cioè dal risultato principale della Fase C, senza errore né avviso. È la stessa classe di difetto di `pooled()` in Fase B. Ora la soglia può mancare solo se le previsioni sono costanti dentro ogni fold (`evaluation.is_constant`), cioè solo per il classificatore di maggioranza; in ogni altro caso è un `RuntimeError` esplicito. Test aggiunto: `test_missing_cutpoints_for_a_real_model_is_an_error`
+- **corretto (minore)**: la chiave `phase_c.output` in `configs/config.yaml` non era letta da nessun modulo ed è stata tolta; la chiave `phase_c.primary` non era letta e la figura ricavava il braccio principale da `TECHNIQUES[0]`, cioè da una seconda fonte di verità che poteva divergere. Ora `phase_c.PRIMARY` e `phase_c.SECONDARY` vengono dalla config, con un controllo all'import che i bracci siano due e che `primary` sia fra loro
+- **non corretto, con motivazione**: `phase_c.delong_se` duplica la formula di `evaluation.delong`. Il revisore la giudica giustificata dal vincolo "nessuna modifica ai moduli esistenti" e dal fatto che l'intervallo di `evaluation.delong` è troncato a [0, 1], quindi non sempre permette di risalire all'errore standard. Il rischio di disallineamento futuro è coperto da `test_delong_se_matches_evaluation`
+
+Dopo le correzioni: 25 test della Fase C superati; tabelle e figure rigenerate; controllo di coerenza del classificatore di maggioranza ancora superato (AUC 0,500 esatta, PR-AUC uguale alla prevalenza).
+
+---
+
+## Conferma finale sul test set — preparazione (20/09/2026)
+Il test set **non è ancora stato letto**. Qui si annota solo quanto verificato per prepararne la trasformazione.
+
+### Il preprocessore ristimato riproduce la cache, bit a bit
+Il problema noto era che la cache dei fold (`src/data/imputed.py`) salva solo le matrici e non l'oggetto che imputa e standardizza, quindi per trasformare il test serve ristimarlo sull'intero training. Restava da dimostrare che la ristima dia **esattamente** quello che la Fase A e la Fase B hanno usato.
+
+Verificato il 20/09/2026, **senza leggere il test set**: ristimando `build_preprocessor(clone(chosen_imputer()), X.columns).fit(X)` sull'intero training e trasformando il training stesso, la matrice coincide con `data/processed/imputed/<set>/full.npz`:
+
+| set di feature | forma | colonne e ordine | differenza massima | identiche bit a bit | tempo |
+|---|---|---|---|---|---|
+| `main` | 4.350 × 74 | uguali | 0,000e+00 | sì | 101 s |
+| `no_consequence` | 4.350 × 67 | uguali | 0,000e+00 | sì | 75 s |
+
+Il fold `full` della cache è già stimato su tutto il training (`train_idx = arange(n)` in `imputed.all_folds`) e il seme è fisso dentro `imputation.imputers()` (`random_state=42` su `IterativeImputer` e `ExtraTreesRegressor`), quindi la ristima è deterministica. Conseguenza: **l'unica operazione che toccherà il test set sarà una singola `.transform`**, e questo confronto resta come test di riproducibilità permanente, eseguibile senza toccare il test.
+
+(`IterativeImputer` emette `ConvergenceWarning: Early stopping criterion not reached`: atteso con `forest_max_iter: 5`, il "MissForest con freni" scelto nei Passi 8–10. La cache era stata costruita con lo stesso avviso, tanto che le matrici coincidono.)
+
+---
+
 ## Da fare per concludere il progetto (scritto il 20/09/2026)
 Restano due blocchi: la **Fase C** (sottogruppo diabetico e conclusioni) e la **conferma finale sul test set**. Qui c'è esattamente cosa fare, nell'ordine consigliato.
 
@@ -1195,7 +1348,7 @@ Tempo stimato: un giorno di lavoro, più qualche minuto di calcolo.
 
 ## Indice delle figure
 
-Rigenerare con `python -m src.analytics.dataset_overview`, `python -m src.analytics.split_report`, (dopo `python -m src.data.imputation`) `python -m src.analytics.preprocessing_report` e (dopo `python -m src.models.evaluation` e `python -m src.models.interpretation`) `python -m src.analytics.phase_a_report`. Le figure della Fase B: `python -m src.analytics.phase_b_report` (dopo `python -m src.models.evaluation_b`).
+Rigenerare con `python -m src.analytics.dataset_overview`, `python -m src.analytics.split_report`, (dopo `python -m src.data.imputation`) `python -m src.analytics.preprocessing_report` e (dopo `python -m src.models.evaluation` e `python -m src.models.interpretation`) `python -m src.analytics.phase_a_report`. Le figure della Fase B: `python -m src.analytics.phase_b_report` (dopo `python -m src.models.evaluation_b`). Le figure della Fase C: `python -m src.analytics.phase_c_report` (dopo `python -m src.models.phase_c`).
 
 | file | cosa mostra | sezione |
 |------|-------------|---------|
@@ -1231,6 +1384,8 @@ Rigenerare con `python -m src.analytics.dataset_overview`, `python -m src.analyt
 | `analytics/phase_b/04_calibration.png` | calibrazione (intercetta e pendenza) grezza e dopo Platt | Fase B — risultati |
 | `analytics/phase_b/05_naive_vs_real.png` | miglioramento apparente alla soglia 0,5 contro guadagno reale a parità di sensibilità | Fase B — risultati |
 | `analytics/phase_b/06_kappa.png` | kappa pesato fasce/livelli per tecnica e modello | Fase B — risultati |
+| `analytics/phase_c/01_discrimination_diabetici.png` | AUC e PR-AUC con IC: diabetici, non diabetici e training completo; per la PR-AUC la prevalenza di ciascun gruppo è la linea di riferimento | Fase C — protocollo |
+| `analytics/phase_c/02_severe_cases.png` | casi gravi riconosciuti su 16 fra i diabetici alla soglia globale fissa, per modello e braccio, con IC di Wilson | Fase C — protocollo |
 
 ## Punti da verificare
 - [x] **formula dell'eGFR** — verificato: la colonna `GFR` **non coincide** con nessuna formula standard
@@ -1411,6 +1566,15 @@ Verificate su Crossref il 19/09/2026 (titolo, primo autore, rivista, volume, pag
 - **Niculescu-Mizil & Caruana 2005** — Niculescu-Mizil A., Caruana R. *Predicting good probabilities with supervised learning.* ICML 2005, 625–632. doi:10.1145/1102351.1102430
 - **Van Calster et al. 2016** — Van Calster B., Nieboer D., Vergouwe Y., De Cock B., Pencina M.J., Steyerberg E.W. *A calibration hierarchy for risk models was defined: from utopia to empirical data.* J Clin Epidemiol 74:167–176 (2016). doi:10.1016/j.jclinepi.2015.12.005
 - **Newcombe 1998** — Newcombe R.G. *Improved confidence intervals for the difference between binomial proportions based on paired data.* Stat Med 17(22):2635–2650 (1998). doi:10.1002/(SICI)1097-0258(19981130)17:22<2635::AID-SIM954>3.0.CO;2-C
+
+### Fase C: sottogruppi, equità e misure di performance
+Verificate su Crossref il 20/09/2026 (DOI, titolo, autori, rivista, anno). Testo completo letto: Matos et al. 2026 e Van Calster et al. 2025 (dal preprint arXiv; le versioni pubblicate su Lancet Digital Health non sono ad accesso libero), Riley et al. 2024, TRIPOD+AI (checklist estesa ufficiale). Letto dall'abstract: McDermott et al. 2024, la cui tesi centrale è però confermata dal testo di Matos et al. 2026 e Van Calster et al. 2025, che lo citano. Solo metadati: Vickers & Holland 2021.
+- **Matos et al. 2026** — Matos J., Van Calster B., Celi L.A., Dhiman P., Gichoya J.W., Riley R.D., Russell C., Khalid S., Collins G.S. *Critical appraisal of fairness metrics for artificial intelligence-based clinical prediction models: a scoping review.* Lancet Digit Health 8(7):101001 (2026). doi:10.1016/j.landig.2026.101001 — preprint arXiv:2506.17035. **Fonte della scelta di confrontare i sottogruppi solo con l'AUROC**: raccomanda AUROC Parity e sconsiglia AUPRC Parity perché favorisce i sottogruppi ad alta prevalenza
+- **Van Calster et al. 2025** — Van Calster B., Collins G.S., Vickers A.J., Wynants L., Kerr K.F., Barrenada L., Varoquaux G., Singh K., Moons K.G.M., Hernandez-Boussard T., Timmerman D., McLernon D.J., van Smeden M., Steyerberg E.W. *Evaluation of performance measures in predictive artificial intelligence models to support medical decisions: overview and guidance.* Lancet Digit Health (2025). doi:10.1016/j.landig.2025.100916 — preprint arXiv:2412.10288. **Fonte della scelta di non ristimare la soglia sul sottogruppo** (Box 1: la soglia è un argomento medico) e della dipendenza della PR-AUC dalla prevalenza
+- **McDermott et al. 2024** — McDermott M.B.A., Hansen L.H., Zhang H., Angelotti G., Gallifant J. *A Closer Look at AUROC and AUPRC under Class Imbalance.* NeurIPS 37 (2024). doi:10.52202/079017-1400 — arXiv:2401.06091. Dimostrazione formale che la PR-AUC favorisce le sottopopolazioni con più positivi
+- **Collins et al. 2024 (TRIPOD+AI)** — Collins G.S., Moons K.G.M., Dhiman P., Riley R.D., Beam A.L., Van Calster B., et al. *TRIPOD+AI statement: updated guidance for reporting clinical prediction models that use regression or machine learning methods.* BMJ 385:e078378 (2024). doi:10.1136/bmj-2023-078378. Item 23a: performance nei sottogruppi **con intervalli di confidenza**
+- **Riley et al. 2024 (parte 3)** — Riley R.D., Snell K.I.E., Archer L., Ensor J., Debray T.P.A., Van Calster B., van Smeden M., Collins G.S. *Evaluation of clinical prediction models (part 3): calculating the sample size required for an external validation study.* BMJ 384:e074821 (2024). doi:10.1136/bmj-2023-074821. **Fonte della scelta di non fare test formali**: servono almeno 100 eventi e 100 non-eventi per stimare la c-statistic con precisione accettabile; il sottogruppo ne ha 68
+- **Vickers & Holland 2021** — Vickers A.J., Holland F. *Decision curve analysis to evaluate the clinical benefit of prediction models.* Spine J 21(10):1643–1648 (2021). doi:10.1016/j.spinee.2021.02.024. A supporto: la soglia riflette il compromesso clinico fra danni e benefici, non una quantità stimata dai dati
 
 ### Interpretazione dei modelli
 Verificate su Crossref il 19/09/2026; Lundberg et al. 2020 anche nell'abstract (algoritmo esatto in tempo polinomiale per gli alberi, con un'applicazione alla malattia renale cronica).
