@@ -303,6 +303,14 @@ python -m src.models.interpretation           # odds ratio delle logistiche e SH
 python -m src.analytics.phase_a_report        # figure della valutazione e dell'interpretazione Fase A in analytics/phase_a/
 python -m src.models.phase_a --sensitivity depth_1_12       # analisi di sensibilità: XGBoost con max_depth 1-12 (~45 min)
 python -m src.models.evaluation --sensitivity depth_1_12    # sua valutazione, confrontata con i modelli primari
+python -m src.data.augmented                  # Fase B: training bilanciati per fold (cache in data/augmented/)
+python -m src.models.phase_b --techniques class_weight level_weight undersampling oversampling smote_nc smote_nc_level
+python -m src.data.augmented --techniques ctgan ctgan_level                 # esplorative
+python -m src.models.phase_b --techniques ctgan ctgan_level
+python -m src.models.phase_b --calibrate none class_weight level_weight undersampling oversampling smote_nc smote_nc_level
+python -m src.models.phase_b --collect        # previsioni out-of-fold in analytics/phase_b/
+python -m src.models.evaluation_b             # valutazione Fase B (esito primario, confronti, calibrazione)
+python -m src.analytics.phase_b_report        # figure della Fase B in analytics/phase_b/
 python -m pytest                              # test automatici
 ```
 
@@ -324,7 +332,8 @@ K-Risk/
 │   ├── dataset/               esplorazione del dataset e del target
 │   ├── split/                 verifica dello split train/test
 │   ├── preprocessing/         selezione feature e confronto imputazione
-│   └── phase_a/               Fase A: previsioni out-of-fold, tabelle di valutazione (evaluation/), figure
+│   ├── phase_a/               Fase A: previsioni out-of-fold, tabelle di valutazione (evaluation/), figure
+│   └── phase_b/               Fase B: risultati per tecnica, valutazione (evaluation/), figure
 ├── configs/
 │   └── config.yaml            unica fonte di configurazione
 ├── data/
@@ -342,12 +351,15 @@ K-Risk/
 │   │   ├── preprocess.py      selezione feature, codifiche, preprocessor
 │   │   ├── imputation.py      confronto dei metodi di imputazione
 │   │   ├── folds.py           fold della cross-validation annidata (esterni e interni)
-│   │   └── imputed.py         fold imputati salvati una volta sola
+│   │   ├── imputed.py         fold imputati salvati una volta sola
+│   │   └── augmented.py       Fase B: tecniche di bilanciamento, training bilanciati per fold
 │   ├── models/
 │   │   ├── zoo.py             i cinque modelli e gli spazi di ricerca
 │   │   ├── phase_a.py         addestramento della Fase A (CV annidata, Optuna)
 │   │   ├── evaluation.py      valutazione sulle previsioni out-of-fold (domande 1-4, confronti)
-│   │   └── interpretation.py  odds ratio delle logistiche, SHAP degli alberi
+│   │   ├── interpretation.py  odds ratio delle logistiche, SHAP degli alberi
+│   │   ├── phase_b.py         addestramento della Fase B (tecniche, avvio caldo, ricalibrazione di Platt)
+│   │   └── evaluation_b.py    valutazione della Fase B (casi gravi, McNemar, calibrazione)
 │   └── analytics/             generazione delle figure
 ├── tests/                     test automatici (pytest)
 ├── Scope.md                   perimetro e domande della tesi
