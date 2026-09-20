@@ -1,0 +1,10 @@
+{
+ "model": "dummy",
+ "feature_set": "main",
+ "fold": "full",
+ "imputer": "MissForest",
+ "tuned": false,
+ "technique": "oversampling",
+ "params": {},
+ "seconds": 0.1
+}

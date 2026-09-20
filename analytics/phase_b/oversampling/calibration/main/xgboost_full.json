@@ -1,0 +1,7 @@
+{
+ "model": "xgboost",
+ "technique": "oversampling",
+ "fold": "full",
+ "a": -2.063966475374843,
+ "b": 0.8899123834018404
+}

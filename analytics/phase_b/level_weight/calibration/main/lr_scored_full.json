@@ -1,0 +1,7 @@
+{
+ "model": "lr_scored",
+ "technique": "level_weight",
+ "fold": "full",
+ "a": -2.1915769051118867,
+ "b": 0.9559610135744618
+}

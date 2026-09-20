@@ -1,0 +1,7 @@
+{
+ "model": "random_forest",
+ "technique": "class_weight",
+ "fold": "full",
+ "a": -1.6267040919268387,
+ "b": 1.250166670019957
+}

@@ -1,0 +1,7 @@
+{
+ "model": "random_forest",
+ "technique": "oversampling",
+ "fold": "full",
+ "a": -1.162063915713999,
+ "b": 1.1978878993660644
+}

@@ -1,0 +1,7 @@
+{
+ "model": "lr_penalized",
+ "technique": "smote_nc_level",
+ "fold": "full",
+ "a": -2.2076990116072928,
+ "b": 2.270219675138042
+}

@@ -1,0 +1,7 @@
+{
+ "model": "dummy",
+ "technique": "smote_nc",
+ "fold": "full",
+ "a": -2.223032461292092,
+ "b": 0.0
+}

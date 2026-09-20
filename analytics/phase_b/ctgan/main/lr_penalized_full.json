@@ -1,0 +1,14 @@
+{
+ "model": "lr_penalized",
+ "feature_set": "main",
+ "fold": "full",
+ "imputer": "MissForest",
+ "tuned": false,
+ "technique": "ctgan",
+ "params": {
+  "C": 0.0006026889128682511,
+  "l1_ratio": 0.15599452033620265
+ },
+ "converged": true,
+ "seconds": 0.1
+}

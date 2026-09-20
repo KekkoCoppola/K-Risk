@@ -1,0 +1,20 @@
+{
+ "model": "random_forest",
+ "feature_set": "main",
+ "fold": "full",
+ "imputer": "MissForest",
+ "tuned": true,
+ "technique": "undersampling",
+ "inner_pr_auc": 0.2387372366148955,
+ "trials": 30,
+ "pruned": 17,
+ "params": {
+  "n_estimators": 998,
+  "max_depth": 16,
+  "min_samples_split": 43,
+  "min_samples_leaf": 12,
+  "max_features": "log2",
+  "criterion": "entropy"
+ },
+ "seconds": 134.6
+}

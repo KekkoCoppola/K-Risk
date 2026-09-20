@@ -1,0 +1,17 @@
+{
+ "model": "random_forest",
+ "feature_set": "main",
+ "fold": "full",
+ "imputer": "MissForest",
+ "tuned": false,
+ "technique": "ctgan",
+ "params": {
+  "n_estimators": 501,
+  "max_depth": 18,
+  "min_samples_split": 6,
+  "min_samples_leaf": 15,
+  "max_features": 0.25,
+  "criterion": "entropy"
+ },
+ "seconds": 9.2
+}
