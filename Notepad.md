@@ -1149,6 +1149,50 @@ Revisione di `src/data/augmented.py`, `src/models/phase_b.py`, `src/models/evalu
 
 ---
 
+## Da fare per concludere il progetto (scritto il 20/09/2026)
+Restano due blocchi: la **Fase C** (sottogruppo diabetico e conclusioni) e la **conferma finale sul test set**. Qui c'è esattamente cosa fare, nell'ordine consigliato.
+
+### Fase C — sottogruppo diabetico (domanda 6) e conclusioni
+Numeri reali nel training: **263 diabetici**, di cui **68 positivi** e **16 casi gravi** (11 "alto", 5 "molto alto"); per livello: basso 195, moderato 52, alto 11, molto alto 5.
+
+1. **Nessun nuovo addestramento.** I modelli restano quelli già addestrati: si filtrano i soggetti diabetici nelle previsioni out-of-fold già salvate (`analytics/phase_a/oof_predictions.csv` e `analytics/phase_b/oof_predictions.csv`). Riaddestrare sul solo sottogruppo non ha senso con 68 positivi.
+2. **Soglia e fasce**: quelle globali, già fissate (`analytics/phase_a/evaluation/cutpoints.csv`); non vanno ricalcolate sul sottogruppo. Come analisi descrittiva si può riportare anche la soglia che darebbe sensibilità 0,90 fra i soli diabetici, dichiarandola come descrittiva.
+3. **Cosa calcolare**: le domande 1–4 ristrette ai diabetici (AUC, PR-AUC, precision, recall, specificità; probabilità per livello e tendenza; sensibilità per livello; fasce contro livelli), con intervalli di confidenza, e il confronto descrittivo fra diabetici e non diabetici (differenze di AUC e PR-AUC).
+4. **Niente test formali**: con 68 positivi e 16 casi gravi la potenza è nulla. Solo stime con intervalli, dichiarando che sono descrittive (già previsto dallo Scope: "sottogruppo diabetico piccolo, solo descrittivo").
+5. **Quali bracci**: "nessuna correzione" come analisi principale; al massimo una tecnica della Fase B come confronto descrittivo (da fissare prima, non dopo aver visto i numeri).
+6. **Attenzione alla prevalenza**: fra i diabetici è il 25,9% contro il 9,8% complessivo. La PR-AUC va sempre confrontata con la prevalenza del sottogruppo, non con quella generale, altrimenti sembra migliore senza esserlo.
+7. **Codice**: un modulo nuovo (per esempio `src/models/phase_c.py`) che filtra le previsioni sui diabetici e richiama `evaluation.evaluate`, più 1–2 figure in `analytics/phase_c/`. Nessuna modifica ai moduli esistenti.
+8. **Conclusioni della tesi** (punto 5 dello Scope): sintesi delle domande 1–6, cioè Fase A, Fase B e sottogruppo, con i limiti già elencati.
+
+Tempo stimato: mezza giornata, nessun calcolo pesante.
+
+### Conferma finale sul test set (una sola volta, alla fine)
+Il test set (1.451 soggetti, circa 142 positivi, 17 "alto" e 6 "molto alto") non è mai stato letto. Prima di toccarlo va preparato tutto, perché **si esegue una volta sola**.
+
+1. **Da fissare prima, per iscritto, in questa sezione**:
+   - quali modelli portare al test: proposta, i 5 modelli finali della Fase A (set `main`) più i modelli finali delle tecniche di Fase B, tutti valutati una volta sola, senza scegliere il "migliore" in base al test;
+   - soglia e fasce: quelle stimate sulle previsioni out-of-fold (`cutpoints.csv` della Fase A e della Fase B), applicate così come sono;
+   - ricalibrazione: per le tecniche della Fase B si usano i parametri di Platt del modello finale, già salvati in `analytics/phase_b/<tecnica>/calibration/main/<modello>_full.json`;
+   - metriche: le stesse domande 1–4 più l'esito primario sui casi gravi del test (23 soggetti), con intervalli; dichiarare che con 23 casi gravi gli intervalli sono amplissimi.
+2. **Problema tecnico da risolvere prima** (verificato il 20/09/2026): **il codice attuale non prepara il test set**. La cache dei fold (`src/data/imputed.py`) salva solo le matrici, non l'oggetto che imputa e standardizza, e `test.csv` viene letto solo da `src/data/split.py`. Serve quindi:
+   - ristimare il preprocessore (standardizzazione più MissForest) **sull'intero training**, esattamente come per il fold "full", e usarlo per trasformare il test (qualche minuto di calcolo);
+   - verificare che la trasformazione sia riproducibile (stesso seed, stesse colonne, stesso ordine) e che il test non entri mai nella stima;
+   - salvare il test trasformato in `data/processed/imputed/<set>/test.npz` (non versionato).
+3. **Codice**: un modulo nuovo (per esempio `src/models/final_test.py`) che trasforma il test, carica i modelli finali (`models/phase_a_*.joblib`, `models/phase_b/<tecnica>/*.joblib`), applica soglia, fasce e ricalibrazione **fissate prima**, calcola le tabelle e scrive in `analytics/test/`. Test automatici su dati sintetici come per le altre fasi.
+4. **Ordine di esecuzione**: preparare il codice, farlo rivedere, lanciare i test automatici, **poi** eseguire una sola volta sul test set.
+5. **Regola d'oro**: se dopo l'esecuzione si scopre un errore, si corregge e si dichiara apertamente che il test è stato usato due volte. Non si ritocca la soglia né si cambiano i modelli dopo aver visto i risultati del test.
+6. **Dopo il test**: risultati nel Notepad, aggiornamento di Scope e README, e release `v1.0.0`.
+
+Tempo stimato: un giorno di lavoro, più qualche minuto di calcolo.
+
+### Ordine consigliato
+1. Fase C (usa solo dati già calcolati).
+2. Preparazione del codice per il test set e sua revisione.
+3. Esecuzione unica sul test set.
+4. Scrittura della tesi: i capitoli di metodi e risultati sono già coperti da questo Notepad, dalle 17 figure e dalle tabelle in `analytics/`.
+
+---
+
 ## Indice delle figure
 
 Rigenerare con `python -m src.analytics.dataset_overview`, `python -m src.analytics.split_report`, (dopo `python -m src.data.imputation`) `python -m src.analytics.preprocessing_report` e (dopo `python -m src.models.evaluation` e `python -m src.models.interpretation`) `python -m src.analytics.phase_a_report`. Le figure della Fase B: `python -m src.analytics.phase_b_report` (dopo `python -m src.models.evaluation_b`).
@@ -1227,8 +1271,8 @@ Rigenerare con `python -m src.analytics.dataset_overview`, `python -m src.analyt
 - [x] analisi di sensibilità XGBoost `max_depth` 1–12: nessuna differenza con il protocollo primario (sezione "Analisi di sensibilità: profondità di XGBoost")
 - [ ] verificare in letteratura le ipotesi su peptide C e albumina glicata (sezione "Interpretazione: risultati")
 - [x] Fase B: protocollo fissato, codice (`src/data/augmented.py`, `src/models/phase_b.py`, `src/models/evaluation_b.py`, `src/analytics/phase_b_report.py`), esecuzione e risultati (sezione "Fase B — risultati")
-- [ ] Fase C: sottogruppo diabetico (domanda 6) e conclusioni
-- [ ] conferma finale sul test set: modelli finali, soglia e fasce; da decidere prima quali tecniche portare al test
+- [ ] Fase C: sottogruppo diabetico (domanda 6) e conclusioni — passi dettagliati nella sezione "Da fare per concludere il progetto"
+- [ ] conferma finale sul test set (una sola volta) — passi dettagliati nella stessa sezione; da risolvere prima: il codice non prepara ancora il test set
 - [x] fissare spazi di ricerca e numero di tentativi di Optuna dopo una stima dei tempi, prima di vedere i risultati (sezione "Protocollo fissato prima dei risultati")
 - [x] pipeline di addestramento della Fase A: `src/models/zoo.py`, `src/models/phase_a.py`, `tests/test_phase_a.py`
 - [x] lanciare la Fase A (19/09/2026, notte): 5 modelli × 6 fold × 2 set, previsioni out-of-fold in `analytics/phase_a/oof_predictions.csv`
