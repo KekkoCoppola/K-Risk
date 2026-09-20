@@ -53,12 +53,19 @@ def tuning_splits(outer):
     return [(outer, j) for j in range(INNER)]
 
 
+def fit(name, params, X, y, weight=None):
+    """Modello addestrato; i pesi per esempio (tecniche di pesatura della Fase B) solo se dati."""
+    model = build(name, params)
+    return model.fit(X, y) if weight is None else model.fit(X, y, sample_weight=weight)
+
+
 def objective(trial, name, data, space):
-    """PR-AUC media sui fold; il pruner interrompe i tentativi sotto la mediana."""
+    """PR-AUC media sui fold; il pruner interrompe i tentativi sotto la mediana.
+    Ogni elemento di data è (X_tr, y_tr, X_va, y_va) oppure (X_tr, y_tr, X_va, y_va, pesi)."""
     params = suggest(trial, space)
     scores = []
-    for step, (X_tr, y_tr, X_va, y_va) in enumerate(data):
-        p = build(name, params).fit(X_tr, y_tr).predict_proba(X_va)[:, 1]
+    for step, (X_tr, y_tr, X_va, y_va, *weight) in enumerate(data):
+        p = fit(name, params, X_tr, y_tr, *weight).predict_proba(X_va)[:, 1]
         scores.append(average_precision_score(y_va, p))
         trial.report(float(np.mean(scores)), step)
         if trial.should_prune():
@@ -66,12 +73,15 @@ def objective(trial, name, data, space):
     return float(np.mean(scores))
 
 
-def tune(name, data, space, n_trials):
+def tune(name, data, space, n_trials, warm_start=None):
+    """warm_start: iperparametri valutati per primi (avvio caldo della Fase B)."""
     study = optuna.create_study(
         direction="maximize",
         sampler=optuna.samplers.TPESampler(seed=SEED),
         pruner=optuna.pruners.MedianPruner(),
     )
+    if warm_start:
+        study.enqueue_trial(warm_start)
     study.optimize(lambda trial: objective(trial, name, data, space), n_trials=n_trials)
     return study
 
@@ -81,19 +91,25 @@ def record_path(output, name, feature_set, outer):
 
 
 def run_fold(name, feature_set, outer, y, n_trials=N_TRIALS, params=None, space=None,
-             directory=IMPUTED, method=METHOD, output=OUTPUT, models_dir=MODELS_DIR):
+             directory=IMPUTED, method=METHOD, output=OUTPUT, models_dir=MODELS_DIR,
+             loader=None, prefix="phase_a", meta=None, warm_start=None):
     """Un modello su un fold esterno (outer = None: modello finale sull'intero training).
 
     params = None e modello con spazio di ricerca: iperparametri scelti con Optuna.
     params dato: iperparametri riusati (set no_consequence), nessuna ottimizzazione.
+    Fase B: loader(outer, inner) restituisce (X_tr, y_tr, X_va, y_va[, pesi]) con il training
+    bilanciato e la validazione reale; meta si aggiunge al risultato; warm_start avvia Optuna.
     """
     start = time.perf_counter()
     space = SPACES.get(name) if space is None else space
+    if loader is None:
+        def loader(o, i):
+            return xy(name, feature_set, y, o, i, directory, method)
     record = {"model": name, "feature_set": feature_set, "fold": fold_name(outer),
-              "imputer": method, "tuned": params is None and space is not None}
+              "imputer": method, "tuned": params is None and space is not None, **(meta or {})}
     if record["tuned"]:
-        data = [xy(name, feature_set, y, o, i, directory, method) for o, i in tuning_splits(outer)]
-        study = tune(name, data, space, n_trials)
+        data = [loader(o, i) for o, i in tuning_splits(outer)]
+        study = tune(name, data, space, n_trials, warm_start)
         params = study.best_params
         states = [t.state for t in study.trials]
         record.update(inner_pr_auc=study.best_value, trials=len(states),
@@ -104,13 +120,13 @@ def run_fold(name, feature_set, outer, y, n_trials=N_TRIALS, params=None, space=
                                         index=False)
     record["params"] = params or {}
 
-    X_tr, y_tr, X_va, y_va = xy(name, feature_set, y, outer, None, directory, method)
-    model = build(name, params).fit(X_tr, y_tr)
+    X_tr, y_tr, X_va, y_va, *weight = loader(outer, None)
+    model = fit(name, params, X_tr, y_tr, *weight)
     if hasattr(model, "n_iter_"):
         record["converged"] = bool(np.all(model.n_iter_ < model.max_iter))
     if outer is None:
         models_dir.mkdir(parents=True, exist_ok=True)
-        joblib.dump(model, models_dir / f"phase_a_{name}_{feature_set}.joblib")
+        joblib.dump(model, models_dir / f"{prefix}_{name}_{feature_set}.joblib")
     else:
         record["rows"] = X_va.index.tolist()
         record["probability"] = model.predict_proba(X_va)[:, 1].tolist()
