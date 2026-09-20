@@ -228,3 +228,17 @@ phase_b:
     confirmatory: [class_weight, level_weight, undersampling, oversampling, smote_nc, smote_nc_level]
     # valutazione "ingenua" (miglioramento apparente): soglia 0,5 sulle probabilita' grezze
     naive_threshold: 0.5
+
+# fase C: sottogruppo diabetico (domanda 6). Protocollo fissato il 20/09/2026 prima di qualsiasi
+# calcolo sul sottogruppo (Notepad, "Fase C - protocollo fissato prima dei risultati").
+# Nessun riaddestramento: filtra le previsioni out-of-fold della fase B. Soglia e fasce restano
+# quelle globali; il confronto fra sottogruppi usa solo l'AUROC (Matos et al. 2026).
+phase_c:
+  # bracci: "nessuna correzione" come analisi principale, pesi per livello come confronto descrittivo.
+  # primary deve essere uno di techniques: e' il braccio disegnato pieno nelle figure
+  techniques: [none, level_weight]
+  primary: none
+  # sottogruppo di riferimento per il confronto e per le figure
+  subgroup: diabetici
+  evaluation:
+    output: analytics/phase_c/evaluation
