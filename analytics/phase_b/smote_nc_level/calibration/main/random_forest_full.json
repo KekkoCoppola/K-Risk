@@ -1,0 +1,7 @@
+{
+ "model": "random_forest",
+ "technique": "smote_nc_level",
+ "fold": "full",
+ "a": -1.4251224074045663,
+ "b": 0.728097186986041
+}

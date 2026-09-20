@@ -1,0 +1,7 @@
+{
+ "model": "xgboost",
+ "technique": "class_weight",
+ "fold": "full",
+ "a": -2.0681669151734887,
+ "b": 0.9211835755290368
+}

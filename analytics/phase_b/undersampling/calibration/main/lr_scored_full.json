@@ -1,0 +1,7 @@
+{
+ "model": "lr_scored",
+ "technique": "undersampling",
+ "fold": "full",
+ "a": -2.222740910925658,
+ "b": 0.9862413610749751
+}

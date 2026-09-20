@@ -1,0 +1,7 @@
+{
+ "model": "lr_penalized",
+ "technique": "none",
+ "fold": "full",
+ "a": -0.4634211200191865,
+ "b": 0.7753478239169691
+}

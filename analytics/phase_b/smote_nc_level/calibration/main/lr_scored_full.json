@@ -1,0 +1,7 @@
+{
+ "model": "lr_scored",
+ "technique": "smote_nc_level",
+ "fold": "full",
+ "a": -2.2243101882323013,
+ "b": 0.9284125389771695
+}

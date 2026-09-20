@@ -1,0 +1,10 @@
+{
+ "model": "dummy",
+ "feature_set": "main",
+ "fold": "full",
+ "imputer": "MissForest",
+ "tuned": false,
+ "technique": "smote_nc",
+ "params": {},
+ "seconds": 0.0
+}

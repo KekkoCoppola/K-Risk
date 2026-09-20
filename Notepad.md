@@ -989,7 +989,7 @@ Revisione di `src/models/evaluation.py`, `src/analytics/phase_a_report.py` e del
 - test più stringenti: formula dell'intervallo della PR-AUC verificata numericamente; controllo "nessuna lettura del test set" esteso allo script delle figure
 
 ### Fase B — decisioni preliminari (19/09/2026)
-Approvate prima di scrivere il protocollo completo della Fase B:
+Approvate prima di scrivere il protocollo completo della Fase B (ora nella sezione "Fase B — protocollo fissato prima dei risultati"):
 - **stessi 5 modelli** della Fase A: il confronto deve misurare solo l'effetto delle tecniche di bilanciamento
 - spazio di XGBoost con `max_depth` 1–12 (vedi analisi di sensibilità sopra)
 - **esito primario della domanda 5**: sensibilità sui casi gravi (alto + molto alto: 71 soggetti nelle previsioni out-of-fold) alla soglia con sensibilità complessiva 0,90, stimata per ogni tecnica. Confronto appaiato con "nessuna correzione" **sugli stessi soggetti** con il test di McNemar esatto (McNemar 1947). Secondario: PR-AUC con il test di Nadeau & Bengio 2003
@@ -1008,9 +1008,194 @@ Approvate prima di scrivere il protocollo completo della Fase B:
 
 ---
 
+## Fase B — protocollo fissato prima dei risultati (19/09/2026)
+Scritto in `configs/config.yaml` (sezione `phase_b`) e qui **prima di qualsiasi addestramento della Fase B**; sostituisce le "decisioni preliminari" (sezione precedente). Domanda: *il bilanciamento migliora il riconoscimento dei casi gravi (alto + molto alto) o solo la metrica media?* (domanda 5 dello Scope).
+
+### Che cosa dice la letteratura (e perché queste tecniche)
+- con modelli forti il bilanciamento **non migliora la discriminazione e peggiora la calibrazione**: van den Goorbergh et al. 2022 (logistica); Carriero et al. 2025 (simulazione con logistica, SVM, Random Forest, XGBoost: XGBoost peggiora, Random Forest migliora poco); Elor & Averbuch-Elor 2022 e Roesler et al. 2026 (preprint). L'effetto sulla classificazione equivale spesso a **spostare la soglia** (Elkan 2001), cosa che la nostra soglia a sensibilità fissata neutralizza già: un guadagno reale può venire solo da un **ordinamento diverso** dei soggetti
+- i **pesi per singolo esempio** sono l'unico modo diretto per dare più importanza ai casi gravi: apprendere con pesi proporzionali al costo di ogni esempio equivale a minimizzare il costo atteso (Zadrozny, Langford & Abe 2003; Correa Bahnsen et al. 2015); Elkan 2001 cita esplicitamente "the severity of an illness" come costo
+- con circa 300 positivi **SMOTE eguaglia o batte i generatori profondi** (Kotelnikov et al. 2023; Camino et al. 2020; Manousakas & Aydöre 2023); CTGAN è stato sviluppato e validato su insiemi da 1.000 a 23.000 righe (Xu et al. 2019; Zhao et al. 2024) e con pochi dati genera campioni poco vari (Seedat et al. 2024) → **solo esplorativo**. Il random oversampling è competitivo con metodi più complessi (Batista et al. 2004; Elor & Averbuch-Elor 2022)
+- generare **dentro ciascun sottogruppo** ha supporto indiretto: squilibrio interno alla classe e piccoli sottogruppi (Jo & Japkowicz 2004; Fernández et al. 2018, §5.1), classi ordinate (Pérez-Ortiz et al. 2015), generazione per sottogruppo (Chakraborty et al. 2021). Evita di interpolare fra un "moderato" e un "molto alto"
+- paper locali: Brima & Atemkeng 2026 (nessuno schema di pesi è il migliore ovunque; pesi a inverso della frequenza instabili con classi rarissime); Hameed & Ali 2025 (SMOTEENN, prova debole: una sola suddivisione, soglia di default)
+- il bilanciamento va applicato **solo al training di ogni fold** (Santos et al. 2018; Demircioğlu 2024)
+
+### Protocollo
+| elemento | scelta |
+|---|---|
+| modelli | gli stessi 5 della Fase A; XGBoost con `max_depth` 1–12 |
+| set | solo `main` (la Fase A ha mostrato che `no_consequence` non cambia le prestazioni) |
+| "nessuna correzione" | risultati della Fase A (per XGBoost l'analisi di sensibilità `depth_1_12`) |
+| tecniche principali (6) | 1. **pesi di classe**: inverso della prevalenza, media dei pesi = 1; 2. **pesi per livello KDIGO 1 : 2 : 3** sui positivi (moderato, alto, molto alto), riscalati in modo che positivi e negativi pesino uguale; 3. **random undersampling** 1:1; 4. **random oversampling** 1:1; 5. **SMOTE-NC** 1:1 (k = 5; le 14 variabili categoriche e ordinali trattate come nominali); 6. **SMOTE-NC per livello**: generazione dentro ciascun livello positivo, proporzioni dei livelli conservate, k = min(5, n − 1) |
+| esplorative (2) | **CTGAN** condizionato su y e **CTGAN condizionato sul livello KDIGO**: generatore addestrato sull'intero fold di training (circa 3.480 righe, meccanismo di condizionamento di Xu et al. 2019), campionamento dei soli positivi fino a 1:1. Protocollo ridotto: nessuna ottimizzazione (iperparametri del braccio SMOTE-NC dello stesso fold), solo fold esterni e training intero, nessuna ricalibrazione, fuori dalla correzione di Holm |
+| dove | solo sulla parte di training di ogni fold interno ed esterno e del training intero; validazione sempre reale; il livello KDIGO non è mai un predittore (serve solo per pesi e generazione); dati sintetici generati **una volta** per tecnica e fold e riusati da tutti i modelli |
+| ottimizzazione | **30 tentativi** per fold, il primo è l'ottimo della Fase A per lo stesso fold (avvio caldo), TPE seed 42, MedianPruner, PR-AUC sulla validazione interna reale. Motivazione: nei log della Fase A, a 30 tentativi la PR-AUC interna dista in mediana 0,0004–0,005 dal valore a 100 (massimo 0,019), meno della variabilità fra fold; budget ridotto **dichiarato** |
+| esito primario | sensibilità sui **71 casi gravi** (alto + molto alto) alla soglia con sensibilità complessiva 0,90, stimata per tecnica e modello sulle probabilità **non ricalibrate**; confronto appaiato con "nessuna correzione" sugli stessi soggetti con il **test di McNemar esatto** (McNemar 1947) e **IC di Newcombe** della differenza appaiata (Newcombe 1998); **Holm** sulle 6 tecniche principali, separatamente per modello |
+| secondari | PR-AUC e AUC contro "nessuna correzione" (Nadeau & Bengio 2003); domande 1–4 per tecnica; calibrazione (intercetta, pendenza, Brier: Van Calster et al. 2016) grezza e ricalibrata; **valutazione "ingenua" alla soglia 0,5** sulle probabilità grezze, per mostrare il miglioramento apparente |
+| ricalibrazione | **Platt annidato**: per ogni fold esterno il modello con i parametri scelti viene riaddestrato sui 5 fold interni bilanciati e predice le righe interne **reali**; la regressione di Platt su logit(p) si applica alle previsioni del fold esterno (Platt 1999; con pochi eventi Platt è preferibile all'isotonica: Niculescu-Mizil & Caruana 2005). Usata per le probabilità medie della domanda 2 e per la calibrazione; l'esito primario e le metriche di ordinamento restano sulle probabilità grezze, come nella Fase A (la ricalibrazione per fold cambierebbe leggermente l'ordinamento aggregato) |
+
+Tecniche considerate e non incluse:
+- **Borderline-SMOTE** (Han et al. 2005) e **ADASYN** (He et al. 2008): concentrano la generazione vicino al confine fra le classi; con livelli gravi di 17–40 casi per fold aumentano il rischio di generare rumore, e la letteratura non ne mostra un vantaggio sui modelli forti
+- **SMOTE-ENN / SMOTE-Tomek** (Batista et al. 2004): la pulizia rimuove anche negativi reali, confondendo l'effetto della generazione
+- **TVAE, TabDDPM, CTAB-GAN+**: stessi limiti di CTGAN con pochi dati; un solo generatore profondo esplorativo basta
+- **EasyEnsemble, RUSBoost, Balanced Random Forest**: cambiano il modello, contro la regola "stessi 5 modelli"
+
+Limiti da dichiarare:
+- con 71 casi gravi si possono dimostrare **solo differenze grandi**
+- budget di ottimizzazione ridotto (30 tentativi contro 100 della Fase A), motivato dai log
+- SMOTE-NC tratta le variabili ordinali come nominali e cerca i vicini su tutte le 74 variabili, anche per la logistica SCORED che ne usa 5
+- la generazione con CTGAN non è esattamente ripetibile: la cache dei dati sintetici (con hash) è la traccia di riproducibilità
+
+### Ambiente della Fase B
+- installati `imbalanced-learn` 0.14.2 e `ctgan` 0.12.1 (con `torch` 2.14.0 e `rdt` 1.22.0). `rdt` richiede **pandas < 3**: pandas è passato da 3.0.5 a **2.3.3**
+- verificato che il cambio non tocca i risultati: con pandas 2.3.3 i 56 test passano e la valutazione della Fase A rilanciata produce tabelle **identiche** a quelle committate (`git diff` vuoto). Un solo ambiente, niente ambiente separato per CTGAN; file di lock rigenerato dall'ambiente reale
+
+## Fase B — risultati (20/09/2026)
+Calcolati con il protocollo fissato prima (sezione precedente). Solo previsioni out-of-fold del training (4.350 soggetti, 425 positivi, 71 casi gravi); il test set non è stato toccato. Tabelle in `analytics/phase_b/evaluation/`, figure `analytics/phase_b/01`–`06`.
+
+Esecuzione: 19/09 16:23 → 20/09 01:50. Le 6 tecniche principali (5 modelli × 6 fold ciascuna, 30 tentativi di Optuna con avvio caldo) in 7 ore e mezza; cache e addestramento dei due bracci CTGAN circa 1 ora; ricalibrazione di Platt 23 minuti.
+
+**Controllo di coerenza superato**: il classificatore di maggioranza ha PR-AUC uguale alla prevalenza e AUC 0,5 in tutti i fold e per tutte le tecniche.
+
+**Modifica dichiarata durante l'esecuzione**: CTGAN condizionato sul livello si è fermato con un errore perché non riusciva a generare abbastanza casi "molto alto" (82 su 173 richiesti). Il condizionamento di CTGAN non è rigido e con 17 casi reali quel livello compare in circa lo **0,5–1,2%** dei campioni generati. Sono stati aumentati i lotti di campionamento e i tentativi (da 50 a 200) e il tasso di accettazione viene ora registrato. È un cambiamento del campionamento, non del protocollo, ed è la conferma pratica del limite previsto per i generatori profondi con pochi casi.
+
+### Esito primario (domanda 5): casi gravi riconosciuti (su 71) a sensibilità complessiva 0,90
+
+| tecnica | logistica SCORED | logistica penalizzata | Random Forest | XGBoost |
+|---|---|---|---|---|
+| nessuna correzione | 66 | 67 | 64 | 66 |
+| pesi di classe | 66 | 67 | 67 | 66 |
+| pesi per livello 1:2:3 | 67 | 66 | 66 | 67 |
+| undersampling | 66 | 68 | 64 | 65 |
+| oversampling | 67 | 68 | 67 | 63 |
+| SMOTE-NC | 66 | 67 | 66 | 65 |
+| SMOTE-NC per livello | 65 | 68 | 67 | 65 |
+| CTGAN (esplorativo) | 64 | 67 | 67 | 64 |
+| CTGAN per livello (esplorativo) | 60 | 67 | 63 | 65 |
+
+- **nessun guadagno dimostrato**: il massimo guadagno netto è di **3 casi** su 71 (Random Forest con SMOTE-NC per livello: 5 casi guadagnati, 2 persi), la massima perdita netta di 6 (logistica SCORED con CTGAN per livello). Tutti i p corretti con Holm valgono **1,00**; il p non corretto più piccolo è 0,25
+- gli intervalli di Newcombe della differenza vanno circa da −0,09 a +0,13: con 71 casi gravi si vedono solo differenze grandi, come dichiarato
+
+### Discriminazione e domande 1–4 (medie sui 4 modelli reali)
+
+| tecnica | AUC | PR-AUC | specificità a sensibilità 0,90 | concordanza (tendenza) | kappa pesato |
+|---|---|---|---|---|---|
+| nessuna correzione | 0,693 | 0,240 | 0,230 | 0,692 | 0,212 |
+| pesi di classe | 0,690 | 0,232 | 0,231 | 0,689 | 0,202 |
+| pesi per livello 1:2:3 | 0,692 | 0,235 | 0,238 | 0,691 | 0,198 |
+| undersampling | 0,689 | 0,220 | 0,235 | 0,687 | 0,180 |
+| oversampling | 0,680 | 0,223 | 0,217 | 0,679 | 0,191 |
+| SMOTE-NC | 0,672 | 0,209 | 0,213 | 0,670 | 0,169 |
+| SMOTE-NC per livello | 0,673 | 0,209 | 0,225 | 0,671 | 0,165 |
+| CTGAN (esplorativo) | 0,616 | 0,160 | 0,178 | 0,615 | 0,104 |
+| CTGAN per livello (esplorativo) | 0,622 | 0,166 | 0,154 | 0,622 | 0,112 |
+
+- **nessuna tecnica migliora**: tutte le differenze di PR-AUC e AUC contro "nessuna correzione" sono negative o nulle, salvo scarti trascurabili dei pesi per livello (+0,001 e +0,004 per XGBoost). Nessuna è significativa (p di Holm minimo 0,35)
+- i **pesi** (di classe e per livello) sono praticamente neutri: cambiano le probabilità, non l'ordinamento
+- **SMOTE-NC** peggiora un po' (PR-AUC da −0,012 a −0,050), soprattutto sugli alberi; la variante per livello si comporta come quella standard
+- **CTGAN peggiora molto** (AUC 0,62 contro 0,69, PR-AUC 0,16 contro 0,24; p non corretto fino a 0,002): con circa 340 positivi per fold i dati sintetici sono di qualità insufficiente, come atteso dalla letteratura
+- la sensibilità per livello resta la stessa (moderato 0,89–0,90, alto 0,93–0,96, molto alto 0,83–0,91 in tutte le tecniche) e nessuna tecnica privilegia i livelli gravi
+
+### Calibrazione (medie sui 4 modelli)
+
+| tecnica | intercetta grezza | pendenza grezza | intercetta dopo Platt | pendenza dopo Platt |
+|---|---|---|---|---|
+| nessuna correzione | 0,00 | 1,02 | −0,00 | 0,99 |
+| pesi di classe | −2,06 | 1,01 | −0,01 | 0,99 |
+| pesi per livello | −2,04 | 1,06 | −0,01 | 0,98 |
+| undersampling | −2,23 | 1,03 | −0,00 | 0,94 |
+| oversampling | −2,00 | 0,96 | −0,01 | 0,96 |
+| SMOTE-NC | −1,41 | 0,79 | 0,01 | 0,97 |
+| SMOTE-NC per livello | −1,41 | 0,79 | 0,01 | 0,97 |
+| CTGAN (esplorativo) | −1,02 | 0,42 | non ricalibrato | — |
+
+- **il bilanciamento distrugge la calibrazione**: senza correzione l'intercetta è 0,00, con le tecniche di bilanciamento scende a −2,0 / −2,2, cioè le probabilità sono sistematicamente gonfiate (van den Goorbergh et al. 2022; Carriero et al. 2025)
+- la **ricalibrazione di Platt annidata rimette a posto l'intercetta** (−0,01) e lascia la pendenza vicino a 1 (0,94–0,99). Con CTGAN la pendenza grezza è 0,42: le probabilità non sono solo gonfiate, sono mal ordinate
+
+### Miglioramento apparente contro miglioramento reale (figura 05)
+Recall alla soglia "di default" 0,5, sulle probabilità grezze, e positivi trovati su 425:
+
+| tecnica | recall medio a 0,5 | positivi trovati (Random Forest) | sensibilità sui casi gravi a 0,5 |
+|---|---|---|---|
+| nessuna correzione | **0,02** | **0 su 425** | 0,00–0,11 |
+| undersampling | **0,61** | 266 | 0,66–0,73 |
+| pesi di classe | 0,52 | 178 | 0,54–0,68 |
+| pesi per livello | 0,52 | 178 | 0,54–0,72 |
+| oversampling | 0,48 | 118 | 0,38–0,66 |
+| SMOTE-NC | 0,36 | 76 | 0,24–0,68 |
+
+- alla soglia 0,5 il bilanciamento sembra **trasformare il modello**: il recall passa dal 2% al 61%, e i casi gravi riconosciuti da 0 su 71 a circa 50 su 71
+- **è un effetto della soglia, non del modello**: a parità di sensibilità complessiva (0,90) le stesse tecniche non guadagnano nulla e la discriminazione peggiora. È esattamente quanto previsto da Elkan 2001 (pesare le classi equivale a spostare la soglia) e da van den Goorbergh et al. 2022
+
+### Sintesi per la tesi
+1. **Nessuna tecnica di bilanciamento migliora il riconoscimento dei casi gravi** a parità di sensibilità complessiva: differenze entro ±3 casi su 71, tutte non significative
+2. **Alcune peggiorano**: SMOTE-NC perde fino a 0,05 di PR-AUC; CTGAN, con circa 340 positivi per fold, perde 0,08 di AUC ed è il peggiore su tutte le domande
+3. **Le due tecniche con i pesi sono neutre** sull'ordinamento e rovinano la calibrazione, che la ricalibrazione di Platt recupera
+4. **Il miglioramento apparente è grande e ingannevole**: alla soglia 0,5 il recall passa dal 2% al 61%. È il risultato didatticamente più forte della tesi
+5. anche **i pesi per livello KDIGO**, la tecnica costruita apposta per i casi gravi, non li fanno riconoscere di più
+6. risposta alla **domanda 5 dello Scope**: con questi dati il bilanciamento migliora solo la metrica media quando la si misura male; il riconoscimento dei casi gravi non cambia
+
+### Revisione indipendente del codice della Fase B (20/09/2026)
+Revisione di `src/data/augmented.py`, `src/models/phase_b.py`, `src/models/evaluation_b.py`, `src/analytics/phase_b_report.py` e delle modifiche a `src/models/phase_a.py`, fatta da un agente revisore separato (sola lettura): **nessun difetto critico**. Verificati: nessuna riga sintetica nella validazione, allineamento fra righe, etichette e pesi, SMOTE per livello che non interpola fra livelli diversi, ricalibrazione mai stimata su righe viste in addestramento, riferimento "nessuna correzione" preso dalla cartella giusta (per XGBoost dall'analisi `depth_1_12`), formule di McNemar e Newcombe ricavate a mano, famiglia di Holm limitata alle 6 tecniche principali.
+- **corretto (problema maggiore)**: `pooled()` non controllava che ogni soggetto avesse la sua previsione. Con l'esecuzione riprendibile, una tecnica incompleta avrebbe prodotto NaN trattati come "non rilevato", cioè risultati sbagliati in silenzio. Ora è un errore esplicito; i NaN restano ammessi solo dove previsti (probabilità ricalibrate dei bracci CTGAN). Rilanciata la valutazione: le 16 tabelle sono identiche, quindi i risultati erano già calcolati su dati completi
+- **corretto (minore)**: guardia sulle quote per livello, che ora non possono essere negative
+- **da dichiarare (minori)**: la generazione con CTGAN non è garantita identica fra ambienti diversi (la cache con l'impronta sha256 è la traccia di riproducibilità); se l'esecuzione viene interrotta fra il salvataggio di un fold e la scrittura del log, quel fold manca nel log ma non nei dati
+
+### Limiti
+- 71 casi gravi: rilevabili solo differenze grandi (gli intervalli coprono circa ±0,1 di sensibilità)
+- budget di ottimizzazione ridotto a 30 tentativi con avvio caldo; alla luce dei risultati (differenze molto minori del rumore fra fold) un budget maggiore non avrebbe cambiato le conclusioni
+- un solo rapporto di bilanciamento (1:1) e un solo schema di pesi per livello (1:2:3)
+- CTGAN valutato con protocollo ridotto e senza ricalibrazione: resta un braccio esplorativo
+- conclusioni sulle previsioni out-of-fold del training; conferma finale sul test set a fine progetto
+
+---
+
+## Da fare per concludere il progetto (scritto il 20/09/2026)
+Restano due blocchi: la **Fase C** (sottogruppo diabetico e conclusioni) e la **conferma finale sul test set**. Qui c'è esattamente cosa fare, nell'ordine consigliato.
+
+### Fase C — sottogruppo diabetico (domanda 6) e conclusioni
+Numeri reali nel training: **263 diabetici**, di cui **68 positivi** e **16 casi gravi** (11 "alto", 5 "molto alto"); per livello: basso 195, moderato 52, alto 11, molto alto 5.
+
+1. **Nessun nuovo addestramento.** I modelli restano quelli già addestrati: si filtrano i soggetti diabetici nelle previsioni out-of-fold già salvate (`analytics/phase_a/oof_predictions.csv` e `analytics/phase_b/oof_predictions.csv`). Riaddestrare sul solo sottogruppo non ha senso con 68 positivi.
+2. **Soglia e fasce**: quelle globali, già fissate (`analytics/phase_a/evaluation/cutpoints.csv`); non vanno ricalcolate sul sottogruppo. Come analisi descrittiva si può riportare anche la soglia che darebbe sensibilità 0,90 fra i soli diabetici, dichiarandola come descrittiva.
+3. **Cosa calcolare**: le domande 1–4 ristrette ai diabetici (AUC, PR-AUC, precision, recall, specificità; probabilità per livello e tendenza; sensibilità per livello; fasce contro livelli), con intervalli di confidenza, e il confronto descrittivo fra diabetici e non diabetici (differenze di AUC e PR-AUC).
+4. **Niente test formali**: con 68 positivi e 16 casi gravi la potenza è nulla. Solo stime con intervalli, dichiarando che sono descrittive (già previsto dallo Scope: "sottogruppo diabetico piccolo, solo descrittivo").
+5. **Quali bracci**: "nessuna correzione" come analisi principale; al massimo una tecnica della Fase B come confronto descrittivo (da fissare prima, non dopo aver visto i numeri).
+6. **Attenzione alla prevalenza**: fra i diabetici è il 25,9% contro il 9,8% complessivo. La PR-AUC va sempre confrontata con la prevalenza del sottogruppo, non con quella generale, altrimenti sembra migliore senza esserlo.
+7. **Codice**: un modulo nuovo (per esempio `src/models/phase_c.py`) che filtra le previsioni sui diabetici e richiama `evaluation.evaluate`, più 1–2 figure in `analytics/phase_c/`. Nessuna modifica ai moduli esistenti.
+8. **Conclusioni della tesi** (punto 5 dello Scope): sintesi delle domande 1–6, cioè Fase A, Fase B e sottogruppo, con i limiti già elencati.
+
+Tempo stimato: mezza giornata, nessun calcolo pesante.
+
+### Conferma finale sul test set (una sola volta, alla fine)
+Il test set (1.451 soggetti, circa 142 positivi, 17 "alto" e 6 "molto alto") non è mai stato letto. Prima di toccarlo va preparato tutto, perché **si esegue una volta sola**.
+
+1. **Da fissare prima, per iscritto, in questa sezione**:
+   - quali modelli portare al test: proposta, i 5 modelli finali della Fase A (set `main`) più i modelli finali delle tecniche di Fase B, tutti valutati una volta sola, senza scegliere il "migliore" in base al test;
+   - soglia e fasce: quelle stimate sulle previsioni out-of-fold (`cutpoints.csv` della Fase A e della Fase B), applicate così come sono;
+   - ricalibrazione: per le tecniche della Fase B si usano i parametri di Platt del modello finale, già salvati in `analytics/phase_b/<tecnica>/calibration/main/<modello>_full.json`;
+   - metriche: le stesse domande 1–4 più l'esito primario sui casi gravi del test (23 soggetti), con intervalli; dichiarare che con 23 casi gravi gli intervalli sono amplissimi.
+2. **Problema tecnico da risolvere prima** (verificato il 20/09/2026): **il codice attuale non prepara il test set**. La cache dei fold (`src/data/imputed.py`) salva solo le matrici, non l'oggetto che imputa e standardizza, e `test.csv` viene letto solo da `src/data/split.py`. Serve quindi:
+   - ristimare il preprocessore (standardizzazione più MissForest) **sull'intero training**, esattamente come per il fold "full", e usarlo per trasformare il test (qualche minuto di calcolo);
+   - verificare che la trasformazione sia riproducibile (stesso seed, stesse colonne, stesso ordine) e che il test non entri mai nella stima;
+   - salvare il test trasformato in `data/processed/imputed/<set>/test.npz` (non versionato).
+3. **Codice**: un modulo nuovo (per esempio `src/models/final_test.py`) che trasforma il test, carica i modelli finali (`models/phase_a_*.joblib`, `models/phase_b/<tecnica>/*.joblib`), applica soglia, fasce e ricalibrazione **fissate prima**, calcola le tabelle e scrive in `analytics/test/`. Test automatici su dati sintetici come per le altre fasi.
+4. **Ordine di esecuzione**: preparare il codice, farlo rivedere, lanciare i test automatici, **poi** eseguire una sola volta sul test set.
+5. **Regola d'oro**: se dopo l'esecuzione si scopre un errore, si corregge e si dichiara apertamente che il test è stato usato due volte. Non si ritocca la soglia né si cambiano i modelli dopo aver visto i risultati del test.
+6. **Dopo il test**: risultati nel Notepad, aggiornamento di Scope e README, e release `v1.0.0`.
+
+Tempo stimato: un giorno di lavoro, più qualche minuto di calcolo.
+
+### Ordine consigliato
+1. Fase C (usa solo dati già calcolati).
+2. Preparazione del codice per il test set e sua revisione.
+3. Esecuzione unica sul test set.
+4. Scrittura della tesi: i capitoli di metodi e risultati sono già coperti da questo Notepad, dalle 17 figure e dalle tabelle in `analytics/`.
+
+---
+
 ## Indice delle figure
 
-Rigenerare con `python -m src.analytics.dataset_overview`, `python -m src.analytics.split_report`, (dopo `python -m src.data.imputation`) `python -m src.analytics.preprocessing_report` e (dopo `python -m src.models.evaluation` e `python -m src.models.interpretation`) `python -m src.analytics.phase_a_report`.
+Rigenerare con `python -m src.analytics.dataset_overview`, `python -m src.analytics.split_report`, (dopo `python -m src.data.imputation`) `python -m src.analytics.preprocessing_report` e (dopo `python -m src.models.evaluation` e `python -m src.models.interpretation`) `python -m src.analytics.phase_a_report`. Le figure della Fase B: `python -m src.analytics.phase_b_report` (dopo `python -m src.models.evaluation_b`).
 
 | file | cosa mostra | sezione |
 |------|-------------|---------|
@@ -1040,6 +1225,12 @@ Rigenerare con `python -m src.analytics.dataset_overview`, `python -m src.analyt
 | `analytics/phase_a/09_odds_ratios.png` | odds ratio della logistica SCORED (IC di Wald, main e no_consequence) e prime 15 della logistica penalizzata | Interpretazione: risultati |
 | `analytics/phase_a/10_shap_importance.png` | importanza SHAP media, prime 15 variabili, Random Forest e XGBoost | Interpretazione: risultati |
 | `analytics/phase_a/11_shap_beeswarm.png` | valori SHAP per soggetto (posizione) e valore della variabile (colore), prime 15 | Interpretazione: risultati |
+| `analytics/phase_b/01_primary_endpoint.png` | esito primario: differenza di casi gravi riconosciuti contro nessuna correzione (IC di Newcombe) | Fase B — risultati |
+| `analytics/phase_b/02_discrimination_vs_none.png` | differenze di PR-AUC e AUC contro nessuna correzione (IC di Nadeau-Bengio) | Fase B — risultati |
+| `analytics/phase_b/03_sensitivity_by_level.png` | sensibilità per livello KDIGO, per tecnica e modello | Fase B — risultati |
+| `analytics/phase_b/04_calibration.png` | calibrazione (intercetta e pendenza) grezza e dopo Platt | Fase B — risultati |
+| `analytics/phase_b/05_naive_vs_real.png` | miglioramento apparente alla soglia 0,5 contro guadagno reale a parità di sensibilità | Fase B — risultati |
+| `analytics/phase_b/06_kappa.png` | kappa pesato fasce/livelli per tecnica e modello | Fase B — risultati |
 
 ## Punti da verificare
 - [x] **formula dell'eGFR** — verificato: la colonna `GFR` **non coincide** con nessuna formula standard
@@ -1079,6 +1270,9 @@ Rigenerare con `python -m src.analytics.dataset_overview`, `python -m src.analyt
 - [x] interpretazione della Fase A (odds ratio, SHAP) e revisione indipendente del codice
 - [x] analisi di sensibilità XGBoost `max_depth` 1–12: nessuna differenza con il protocollo primario (sezione "Analisi di sensibilità: profondità di XGBoost")
 - [ ] verificare in letteratura le ipotesi su peptide C e albumina glicata (sezione "Interpretazione: risultati")
+- [x] Fase B: protocollo fissato, codice (`src/data/augmented.py`, `src/models/phase_b.py`, `src/models/evaluation_b.py`, `src/analytics/phase_b_report.py`), esecuzione e risultati (sezione "Fase B — risultati")
+- [ ] Fase C: sottogruppo diabetico (domanda 6) e conclusioni — passi dettagliati nella sezione "Da fare per concludere il progetto"
+- [ ] conferma finale sul test set (una sola volta) — passi dettagliati nella stessa sezione; da risolvere prima: il codice non prepara ancora il test set
 - [x] fissare spazi di ricerca e numero di tentativi di Optuna dopo una stima dei tempi, prima di vedere i risultati (sezione "Protocollo fissato prima dei risultati")
 - [x] pipeline di addestramento della Fase A: `src/models/zoo.py`, `src/models/phase_a.py`, `tests/test_phase_a.py`
 - [x] lanciare la Fase A (19/09/2026, notte): 5 modelli × 6 fold × 2 set, previsioni out-of-fold in `analytics/phase_a/oof_predictions.csv`
@@ -1187,6 +1381,36 @@ Verificate su Crossref il 19/09/2026. Contenuto letto dal testo completo: Boyd e
 - **Bates, Hastie & Tibshirani 2024** — Bates S., Hastie T., Tibshirani R. *Cross-validation: what does it estimate and how well does it do it?* J Am Stat Assoc 119(546):1434–1445 (2024). doi:10.1080/01621459.2023.2197686
 - **Holm 1979** — Holm S. *A simple sequentially rejective multiple test procedure.* Scand J Stat 6(2):65–70 (1979)
 - **McNemar 1947** — McNemar Q. *Note on the sampling error of the difference between correlated proportions or percentages.* Psychometrika 12(2):153–157 (1947). doi:10.1007/BF02295996
+
+### Fase B: bilanciamento, generazione sintetica, calibrazione
+Verificate su Crossref il 19/09/2026 (titolo, primo autore, rivista, volume, pagine, anno); contenuto letto dall'abstract o dal testo. Senza DOI: Lemaître et al. 2017, Kotelnikov et al. 2023, Camino et al. 2020, Seedat et al. 2024 (atti PMLR/JMLR), Elor & Averbuch-Elor 2022 e Manousakas & Aydöre 2023 (arXiv).
+- **Carriero et al. 2025** — Carriero A., Luijken K., de Hond A., Moons K.G.M., Van Calster B., van Smeden M. *The harms of class imbalance corrections for machine learning based prediction models: a simulation study.* Stat Med 44(3-4):e10320 (2025). doi:10.1002/sim.10320
+- **Elor & Averbuch-Elor 2022** — Elor Y., Averbuch-Elor H. *To SMOTE, or not to SMOTE?* arXiv:2201.08528 (2022) — preprint
+- **Roesler et al. 2026** — Roesler M. et al. *Class imbalance correction in artificial intelligence models leads to miscalibrated clinical predictions: a real-world evaluation.* medRxiv/openRxiv (2026). doi:10.64898/2026.03.04.26347634 — preprint
+- **Zadrozny, Langford & Abe 2003** — Zadrozny B., Langford J., Abe N. *Cost-sensitive learning by cost-proportionate example weighting.* Proc. 3rd IEEE ICDM, 435–442 (2003). doi:10.1109/ICDM.2003.1250950
+- **Correa Bahnsen et al. 2015** — Correa Bahnsen A., Aouada D., Ottersten B. *Example-dependent cost-sensitive decision trees.* Expert Syst Appl 42(19):6609–6619 (2015). doi:10.1016/j.eswa.2015.04.042
+- **King & Zeng 2001** — King G., Zeng L. *Logistic regression in rare events data.* Political Analysis 9(2):137–163 (2001). doi:10.1093/oxfordjournals.pan.a004868
+- **Batista et al. 2004** — Batista G.E.A.P.A., Prati R.C., Monard M.C. *A study of the behavior of several methods for balancing machine learning training data.* SIGKDD Explor 6(1):20–29 (2004). doi:10.1145/1007730.1007735
+- **Japkowicz & Stephen 2002** — Japkowicz N., Stephen S. *The class imbalance problem: a systematic study.* Intell Data Anal 6(5):429–449 (2002). doi:10.3233/IDA-2002-6504
+- **Fernández et al. 2018** — Fernández A., García S., Herrera F., Chawla N.V. *SMOTE for learning from imbalanced data: progress and challenges, marking the 15-year anniversary.* J Artif Intell Res 61:863–905 (2018). doi:10.1613/jair.1.11192
+- **Han et al. 2005** — Han H., Wang W.-Y., Mao B.-H. *Borderline-SMOTE: a new over-sampling method in imbalanced data sets learning.* ICIC 2005, LNCS 3644:878–887 (2005). doi:10.1007/11538059_91
+- **He et al. 2008** — He H., Bai Y., Garcia E.A., Li S. *ADASYN: adaptive synthetic sampling approach for imbalanced learning.* IJCNN 2008, 1322–1328. doi:10.1109/IJCNN.2008.4633969
+- **Jo & Japkowicz 2004** — Jo T., Japkowicz N. *Class imbalances versus small disjuncts.* SIGKDD Explor 6(1):40–49 (2004). doi:10.1145/1007730.1007737
+- **Pérez-Ortiz et al. 2015** — Pérez-Ortiz M., Gutiérrez P.A., Hervás-Martínez C., Yao X. *Graph-based approaches for over-sampling in the context of ordinal regression.* IEEE Trans Knowl Data Eng 27(5):1233–1245 (2015). doi:10.1109/TKDE.2014.2365780
+- **Chakraborty et al. 2021** — Chakraborty J., Majumder S., Menzies T. *Bias in machine learning software: why? how? what to do?* ESEC/FSE 2021, 429–440. doi:10.1145/3468264.3468537
+- **Demircioğlu 2024** — Demircioğlu A. *Applying oversampling before cross-validation will lead to high bias in radiomics.* Sci Rep 14:11563 (2024). doi:10.1038/s41598-024-62585-z
+- **Lemaître et al. 2017** — Lemaître G., Nogueira F., Aridas C.K. *Imbalanced-learn: a Python toolbox to tackle the curse of imbalanced datasets in machine learning.* J Mach Learn Res 18(17):1–5 (2017)
+- **Zhao et al. 2024** — Zhao Z. et al. *CTAB-GAN+: enhancing tabular data synthesis.* Front Big Data 6:1296508 (2024). doi:10.3389/fdata.2023.1296508
+- **Kotelnikov et al. 2023** — Kotelnikov A., Baranchuk D., Rubachev I., Babenko A. *TabDDPM: modelling tabular data with diffusion models.* ICML 2023, PMLR 202:17564–17579. arXiv:2209.15421
+- **Camino et al. 2020** — Camino R.D., State R., Hammerschmidt C.A. *Oversampling tabular data with deep generative models: is it worth the effort?* ICBINB@NeurIPS 2020, PMLR 137:148–157 — workshop
+- **Manousakas & Aydöre 2023** — Manousakas D., Aydöre S. *On the usefulness of synthetic tabular data generation.* arXiv:2306.15636 (2023) — workshop
+- **Seedat et al. 2024** — Seedat N., Huynh N., van Breugel B., van der Schaar M. *Curated LLM: synergy of LLMs and data curation for tabular augmentation in low-data regimes.* ICML 2024. arXiv:2312.12112
+- **Hameed & Alamgir 2022** — Hameed M.A.B., Alamgir Z. *Improving mortality prediction in acute pancreatitis by machine learning and data augmentation.* Comput Biol Med 150:106077 (2022). doi:10.1016/j.compbiomed.2022.106077
+- **Saerens et al. 2002** — Saerens M., Latinne P., Decaestecker C. *Adjusting the outputs of a classifier to new a priori probabilities: a simple procedure.* Neural Comput 14(1):21–41 (2002). doi:10.1162/089976602753284446
+- **Dal Pozzolo et al. 2015** — Dal Pozzolo A., Caelen O., Johnson R.A., Bontempi G. *Calibrating probability with undersampling for unbalanced classification.* IEEE SSCI 2015, 159–166. doi:10.1109/SSCI.2015.33
+- **Niculescu-Mizil & Caruana 2005** — Niculescu-Mizil A., Caruana R. *Predicting good probabilities with supervised learning.* ICML 2005, 625–632. doi:10.1145/1102351.1102430
+- **Van Calster et al. 2016** — Van Calster B., Nieboer D., Vergouwe Y., De Cock B., Pencina M.J., Steyerberg E.W. *A calibration hierarchy for risk models was defined: from utopia to empirical data.* J Clin Epidemiol 74:167–176 (2016). doi:10.1016/j.jclinepi.2015.12.005
+- **Newcombe 1998** — Newcombe R.G. *Improved confidence intervals for the difference between binomial proportions based on paired data.* Stat Med 17(22):2635–2650 (1998). doi:10.1002/(SICI)1097-0258(19981130)17:22<2635::AID-SIM954>3.0.CO;2-C
 
 ### Interpretazione dei modelli
 Verificate su Crossref il 19/09/2026; Lundberg et al. 2020 anche nell'abstract (algoritmo esatto in tempo polinomiale per gli alberi, con un'applicazione alla malattia renale cronica).

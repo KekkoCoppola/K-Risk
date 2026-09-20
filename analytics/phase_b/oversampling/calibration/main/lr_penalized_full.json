@@ -1,0 +1,7 @@
+{
+ "model": "lr_penalized",
+ "technique": "oversampling",
+ "fold": "full",
+ "a": -2.164373895566085,
+ "b": 0.7001977750164201
+}

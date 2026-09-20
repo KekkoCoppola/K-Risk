@@ -1,0 +1,7 @@
+{
+ "model": "xgboost",
+ "technique": "smote_nc_level",
+ "fold": "full",
+ "a": -1.085184994205271,
+ "b": 0.7247479557818707
+}

@@ -1,0 +1,7 @@
+{
+ "model": "random_forest",
+ "technique": "none",
+ "fold": "full",
+ "a": 0.34773822118317477,
+ "b": 1.1836541702281431
+}

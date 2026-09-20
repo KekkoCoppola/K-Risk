@@ -1,0 +1,10 @@
+{
+ "model": "dummy",
+ "feature_set": "main",
+ "fold": "full",
+ "imputer": "MissForest",
+ "tuned": false,
+ "technique": "level_weight",
+ "params": {},
+ "seconds": 0.0
+}

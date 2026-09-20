@@ -1,0 +1,11 @@
+{
+ "model": "lr_scored",
+ "feature_set": "main",
+ "fold": "full",
+ "imputer": "MissForest",
+ "tuned": false,
+ "technique": "ctgan_level",
+ "params": {},
+ "converged": true,
+ "seconds": 0.0
+}

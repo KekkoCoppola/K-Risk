@@ -1,0 +1,20 @@
+{
+ "model": "random_forest",
+ "feature_set": "main",
+ "fold": "full",
+ "imputer": "MissForest",
+ "tuned": true,
+ "technique": "smote_nc_level",
+ "inner_pr_auc": 0.21577766702606888,
+ "trials": 30,
+ "pruned": 16,
+ "params": {
+  "n_estimators": 327,
+  "max_depth": 18,
+  "min_samples_split": 47,
+  "min_samples_leaf": 13,
+  "max_features": 0.5,
+  "criterion": "gini"
+ },
+ "seconds": 906.2
+}

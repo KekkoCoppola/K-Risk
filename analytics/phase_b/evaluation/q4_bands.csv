@@ -1,0 +1,577 @@
+technique,model,level,band,n
+none,lr_scored,basso,1,3618
+none,lr_scored,basso,2,265
+none,lr_scored,basso,3,31
+none,lr_scored,basso,4,11
+none,lr_scored,moderato,1,265
+none,lr_scored,moderato,2,75
+none,lr_scored,moderato,3,10
+none,lr_scored,moderato,4,4
+none,lr_scored,alto,1,32
+none,lr_scored,alto,2,9
+none,lr_scored,alto,3,6
+none,lr_scored,alto,4,3
+none,lr_scored,molto alto,1,10
+none,lr_scored,molto alto,2,5
+none,lr_scored,molto alto,3,3
+none,lr_scored,molto alto,4,3
+none,lr_penalized,basso,1,3632
+none,lr_penalized,basso,2,249
+none,lr_penalized,basso,3,34
+none,lr_penalized,basso,4,10
+none,lr_penalized,moderato,1,254
+none,lr_penalized,moderato,2,82
+none,lr_penalized,moderato,3,10
+none,lr_penalized,moderato,4,8
+none,lr_penalized,alto,1,31
+none,lr_penalized,alto,2,14
+none,lr_penalized,alto,3,2
+none,lr_penalized,alto,4,3
+none,lr_penalized,molto alto,1,8
+none,lr_penalized,molto alto,2,9
+none,lr_penalized,molto alto,3,4
+none,lr_penalized,molto alto,4,0
+none,random_forest,basso,1,3625
+none,random_forest,basso,2,262
+none,random_forest,basso,3,30
+none,random_forest,basso,4,8
+none,random_forest,moderato,1,256
+none,random_forest,moderato,2,79
+none,random_forest,moderato,3,12
+none,random_forest,moderato,4,7
+none,random_forest,alto,1,35
+none,random_forest,alto,2,6
+none,random_forest,alto,3,6
+none,random_forest,alto,4,3
+none,random_forest,molto alto,1,9
+none,random_forest,molto alto,2,7
+none,random_forest,molto alto,3,2
+none,random_forest,molto alto,4,3
+none,xgboost,basso,1,3631
+none,xgboost,basso,2,258
+none,xgboost,basso,3,28
+none,xgboost,basso,4,8
+none,xgboost,moderato,1,255
+none,xgboost,moderato,2,82
+none,xgboost,moderato,3,12
+none,xgboost,moderato,4,5
+none,xgboost,alto,1,32
+none,xgboost,alto,2,9
+none,xgboost,alto,3,6
+none,xgboost,alto,4,3
+none,xgboost,molto alto,1,7
+none,xgboost,molto alto,2,5
+none,xgboost,molto alto,3,4
+none,xgboost,molto alto,4,5
+class_weight,lr_scored,basso,1,3618
+class_weight,lr_scored,basso,2,267
+class_weight,lr_scored,basso,3,31
+class_weight,lr_scored,basso,4,9
+class_weight,lr_scored,moderato,1,264
+class_weight,lr_scored,moderato,2,75
+class_weight,lr_scored,moderato,3,10
+class_weight,lr_scored,moderato,4,5
+class_weight,lr_scored,alto,1,32
+class_weight,lr_scored,alto,2,9
+class_weight,lr_scored,alto,3,6
+class_weight,lr_scored,alto,4,3
+class_weight,lr_scored,molto alto,1,11
+class_weight,lr_scored,molto alto,2,3
+class_weight,lr_scored,molto alto,3,3
+class_weight,lr_scored,molto alto,4,4
+class_weight,lr_penalized,basso,1,3626
+class_weight,lr_penalized,basso,2,259
+class_weight,lr_penalized,basso,3,27
+class_weight,lr_penalized,basso,4,13
+class_weight,lr_penalized,moderato,1,261
+class_weight,lr_penalized,moderato,2,72
+class_weight,lr_penalized,moderato,3,14
+class_weight,lr_penalized,moderato,4,7
+class_weight,lr_penalized,alto,1,30
+class_weight,lr_penalized,alto,2,14
+class_weight,lr_penalized,alto,3,5
+class_weight,lr_penalized,alto,4,1
+class_weight,lr_penalized,molto alto,1,8
+class_weight,lr_penalized,molto alto,2,9
+class_weight,lr_penalized,molto alto,3,4
+class_weight,lr_penalized,molto alto,4,0
+class_weight,random_forest,basso,1,3627
+class_weight,random_forest,basso,2,255
+class_weight,random_forest,basso,3,32
+class_weight,random_forest,basso,4,11
+class_weight,random_forest,moderato,1,255
+class_weight,random_forest,moderato,2,82
+class_weight,random_forest,moderato,3,11
+class_weight,random_forest,moderato,4,6
+class_weight,random_forest,alto,1,34
+class_weight,random_forest,alto,2,8
+class_weight,random_forest,alto,3,5
+class_weight,random_forest,alto,4,3
+class_weight,random_forest,molto alto,1,9
+class_weight,random_forest,molto alto,2,9
+class_weight,random_forest,molto alto,3,2
+class_weight,random_forest,molto alto,4,1
+class_weight,xgboost,basso,1,3620
+class_weight,xgboost,basso,2,265
+class_weight,xgboost,basso,3,31
+class_weight,xgboost,basso,4,9
+class_weight,xgboost,moderato,1,267
+class_weight,xgboost,moderato,2,71
+class_weight,xgboost,moderato,3,13
+class_weight,xgboost,moderato,4,3
+class_weight,xgboost,alto,1,30
+class_weight,xgboost,alto,2,12
+class_weight,xgboost,alto,3,5
+class_weight,xgboost,alto,4,3
+class_weight,xgboost,molto alto,1,8
+class_weight,xgboost,molto alto,2,6
+class_weight,xgboost,molto alto,3,1
+class_weight,xgboost,molto alto,4,6
+level_weight,lr_scored,basso,1,3619
+level_weight,lr_scored,basso,2,263
+level_weight,lr_scored,basso,3,34
+level_weight,lr_scored,basso,4,9
+level_weight,lr_scored,moderato,1,264
+level_weight,lr_scored,moderato,2,76
+level_weight,lr_scored,moderato,3,8
+level_weight,lr_scored,moderato,4,6
+level_weight,lr_scored,alto,1,32
+level_weight,lr_scored,alto,2,10
+level_weight,lr_scored,alto,3,6
+level_weight,lr_scored,alto,4,2
+level_weight,lr_scored,molto alto,1,10
+level_weight,lr_scored,molto alto,2,5
+level_weight,lr_scored,molto alto,3,2
+level_weight,lr_scored,molto alto,4,4
+level_weight,lr_penalized,basso,1,3625
+level_weight,lr_penalized,basso,2,261
+level_weight,lr_penalized,basso,3,29
+level_weight,lr_penalized,basso,4,10
+level_weight,lr_penalized,moderato,1,258
+level_weight,lr_penalized,moderato,2,73
+level_weight,lr_penalized,moderato,3,16
+level_weight,lr_penalized,moderato,4,7
+level_weight,lr_penalized,alto,1,34
+level_weight,lr_penalized,alto,2,10
+level_weight,lr_penalized,alto,3,3
+level_weight,lr_penalized,alto,4,3
+level_weight,lr_penalized,molto alto,1,8
+level_weight,lr_penalized,molto alto,2,10
+level_weight,lr_penalized,molto alto,3,2
+level_weight,lr_penalized,molto alto,4,1
+level_weight,random_forest,basso,1,3623
+level_weight,random_forest,basso,2,259
+level_weight,random_forest,basso,3,32
+level_weight,random_forest,basso,4,11
+level_weight,random_forest,moderato,1,264
+level_weight,random_forest,moderato,2,73
+level_weight,random_forest,moderato,3,12
+level_weight,random_forest,moderato,4,5
+level_weight,random_forest,alto,1,31
+level_weight,random_forest,alto,2,13
+level_weight,random_forest,alto,3,2
+level_weight,random_forest,alto,4,4
+level_weight,random_forest,molto alto,1,7
+level_weight,random_forest,molto alto,2,9
+level_weight,random_forest,molto alto,3,4
+level_weight,random_forest,molto alto,4,1
+level_weight,xgboost,basso,1,3617
+level_weight,xgboost,basso,2,269
+level_weight,xgboost,basso,3,30
+level_weight,xgboost,basso,4,9
+level_weight,xgboost,moderato,1,270
+level_weight,xgboost,moderato,2,69
+level_weight,xgboost,moderato,3,11
+level_weight,xgboost,moderato,4,4
+level_weight,xgboost,alto,1,32
+level_weight,xgboost,alto,2,10
+level_weight,xgboost,alto,3,5
+level_weight,xgboost,alto,4,3
+level_weight,xgboost,molto alto,1,6
+level_weight,xgboost,molto alto,2,6
+level_weight,xgboost,molto alto,3,4
+level_weight,xgboost,molto alto,4,5
+undersampling,lr_scored,basso,1,3620
+undersampling,lr_scored,basso,2,261
+undersampling,lr_scored,basso,3,35
+undersampling,lr_scored,basso,4,9
+undersampling,lr_scored,moderato,1,263
+undersampling,lr_scored,moderato,2,77
+undersampling,lr_scored,moderato,3,9
+undersampling,lr_scored,moderato,4,5
+undersampling,lr_scored,alto,1,32
+undersampling,lr_scored,alto,2,11
+undersampling,lr_scored,alto,3,5
+undersampling,lr_scored,alto,4,2
+undersampling,lr_scored,molto alto,1,10
+undersampling,lr_scored,molto alto,2,5
+undersampling,lr_scored,molto alto,3,1
+undersampling,lr_scored,molto alto,4,5
+undersampling,lr_penalized,basso,1,3622
+undersampling,lr_penalized,basso,2,260
+undersampling,lr_penalized,basso,3,31
+undersampling,lr_penalized,basso,4,12
+undersampling,lr_penalized,moderato,1,258
+undersampling,lr_penalized,moderato,2,76
+undersampling,lr_penalized,moderato,3,14
+undersampling,lr_penalized,moderato,4,6
+undersampling,lr_penalized,alto,1,33
+undersampling,lr_penalized,alto,2,10
+undersampling,lr_penalized,alto,3,4
+undersampling,lr_penalized,alto,4,3
+undersampling,lr_penalized,molto alto,1,12
+undersampling,lr_penalized,molto alto,2,8
+undersampling,lr_penalized,molto alto,3,1
+undersampling,lr_penalized,molto alto,4,0
+undersampling,random_forest,basso,1,3618
+undersampling,random_forest,basso,2,261
+undersampling,random_forest,basso,3,33
+undersampling,random_forest,basso,4,13
+undersampling,random_forest,moderato,1,263
+undersampling,random_forest,moderato,2,75
+undersampling,random_forest,moderato,3,12
+undersampling,random_forest,moderato,4,4
+undersampling,random_forest,alto,1,34
+undersampling,random_forest,alto,2,10
+undersampling,random_forest,alto,3,3
+undersampling,random_forest,alto,4,3
+undersampling,random_forest,molto alto,1,10
+undersampling,random_forest,molto alto,2,8
+undersampling,random_forest,molto alto,3,2
+undersampling,random_forest,molto alto,4,1
+undersampling,xgboost,basso,1,3609
+undersampling,xgboost,basso,2,267
+undersampling,xgboost,basso,3,36
+undersampling,xgboost,basso,4,13
+undersampling,xgboost,moderato,1,274
+undersampling,xgboost,moderato,2,65
+undersampling,xgboost,moderato,3,7
+undersampling,xgboost,moderato,4,8
+undersampling,xgboost,alto,1,32
+undersampling,xgboost,alto,2,14
+undersampling,xgboost,alto,3,4
+undersampling,xgboost,alto,4,0
+undersampling,xgboost,molto alto,1,10
+undersampling,xgboost,molto alto,2,8
+undersampling,xgboost,molto alto,3,3
+undersampling,xgboost,molto alto,4,0
+oversampling,lr_scored,basso,1,3616
+oversampling,lr_scored,basso,2,268
+oversampling,lr_scored,basso,3,30
+oversampling,lr_scored,basso,4,11
+oversampling,lr_scored,moderato,1,265
+oversampling,lr_scored,moderato,2,73
+oversampling,lr_scored,moderato,3,12
+oversampling,lr_scored,moderato,4,4
+oversampling,lr_scored,alto,1,33
+oversampling,lr_scored,alto,2,10
+oversampling,lr_scored,alto,3,5
+oversampling,lr_scored,alto,4,2
+oversampling,lr_scored,molto alto,1,11
+oversampling,lr_scored,molto alto,2,3
+oversampling,lr_scored,molto alto,3,3
+oversampling,lr_scored,molto alto,4,4
+oversampling,lr_penalized,basso,1,3616
+oversampling,lr_penalized,basso,2,271
+oversampling,lr_penalized,basso,3,26
+oversampling,lr_penalized,basso,4,12
+oversampling,lr_penalized,moderato,1,265
+oversampling,lr_penalized,moderato,2,67
+oversampling,lr_penalized,moderato,3,17
+oversampling,lr_penalized,moderato,4,5
+oversampling,lr_penalized,alto,1,34
+oversampling,lr_penalized,alto,2,8
+oversampling,lr_penalized,alto,3,5
+oversampling,lr_penalized,alto,4,3
+oversampling,lr_penalized,molto alto,1,10
+oversampling,lr_penalized,molto alto,2,8
+oversampling,lr_penalized,molto alto,3,2
+oversampling,lr_penalized,molto alto,4,1
+oversampling,random_forest,basso,1,3614
+oversampling,random_forest,basso,2,267
+oversampling,random_forest,basso,3,32
+oversampling,random_forest,basso,4,12
+oversampling,random_forest,moderato,1,266
+oversampling,random_forest,moderato,2,75
+oversampling,random_forest,moderato,3,8
+oversampling,random_forest,moderato,4,5
+oversampling,random_forest,alto,1,35
+oversampling,random_forest,alto,2,5
+oversampling,random_forest,alto,3,8
+oversampling,random_forest,alto,4,2
+oversampling,random_forest,molto alto,1,10
+oversampling,random_forest,molto alto,2,7
+oversampling,random_forest,molto alto,3,2
+oversampling,random_forest,molto alto,4,2
+oversampling,xgboost,basso,1,3624
+oversampling,xgboost,basso,2,260
+oversampling,xgboost,basso,3,32
+oversampling,xgboost,basso,4,9
+oversampling,xgboost,moderato,1,262
+oversampling,xgboost,moderato,2,76
+oversampling,xgboost,moderato,3,9
+oversampling,xgboost,moderato,4,7
+oversampling,xgboost,alto,1,31
+oversampling,xgboost,alto,2,12
+oversampling,xgboost,alto,3,5
+oversampling,xgboost,alto,4,2
+oversampling,xgboost,molto alto,1,8
+oversampling,xgboost,molto alto,2,6
+oversampling,xgboost,molto alto,3,4
+oversampling,xgboost,molto alto,4,3
+smote_nc,lr_scored,basso,1,3606
+smote_nc,lr_scored,basso,2,275
+smote_nc,lr_scored,basso,3,33
+smote_nc,lr_scored,basso,4,11
+smote_nc,lr_scored,moderato,1,276
+smote_nc,lr_scored,moderato,2,61
+smote_nc,lr_scored,moderato,3,12
+smote_nc,lr_scored,moderato,4,5
+smote_nc,lr_scored,alto,1,33
+smote_nc,lr_scored,alto,2,12
+smote_nc,lr_scored,alto,3,3
+smote_nc,lr_scored,alto,4,2
+smote_nc,lr_scored,molto alto,1,10
+smote_nc,lr_scored,molto alto,2,6
+smote_nc,lr_scored,molto alto,3,2
+smote_nc,lr_scored,molto alto,4,3
+smote_nc,lr_penalized,basso,1,3617
+smote_nc,lr_penalized,basso,2,263
+smote_nc,lr_penalized,basso,3,33
+smote_nc,lr_penalized,basso,4,12
+smote_nc,lr_penalized,moderato,1,267
+smote_nc,lr_penalized,moderato,2,68
+smote_nc,lr_penalized,moderato,3,12
+smote_nc,lr_penalized,moderato,4,7
+smote_nc,lr_penalized,alto,1,32
+smote_nc,lr_penalized,alto,2,12
+smote_nc,lr_penalized,alto,3,4
+smote_nc,lr_penalized,alto,4,2
+smote_nc,lr_penalized,molto alto,1,9
+smote_nc,lr_penalized,molto alto,2,11
+smote_nc,lr_penalized,molto alto,3,1
+smote_nc,lr_penalized,molto alto,4,0
+smote_nc,random_forest,basso,1,3608
+smote_nc,random_forest,basso,2,271
+smote_nc,random_forest,basso,3,33
+smote_nc,random_forest,basso,4,13
+smote_nc,random_forest,moderato,1,271
+smote_nc,random_forest,moderato,2,66
+smote_nc,random_forest,moderato,3,13
+smote_nc,random_forest,moderato,4,4
+smote_nc,random_forest,alto,1,35
+smote_nc,random_forest,alto,2,9
+smote_nc,random_forest,alto,3,4
+smote_nc,random_forest,alto,4,2
+smote_nc,random_forest,molto alto,1,11
+smote_nc,random_forest,molto alto,2,8
+smote_nc,random_forest,molto alto,3,0
+smote_nc,random_forest,molto alto,4,2
+smote_nc,xgboost,basso,1,3619
+smote_nc,xgboost,basso,2,260
+smote_nc,xgboost,basso,3,36
+smote_nc,xgboost,basso,4,10
+smote_nc,xgboost,moderato,1,270
+smote_nc,xgboost,moderato,2,68
+smote_nc,xgboost,moderato,3,11
+smote_nc,xgboost,moderato,4,5
+smote_nc,xgboost,alto,1,30
+smote_nc,xgboost,alto,2,14
+smote_nc,xgboost,alto,3,3
+smote_nc,xgboost,alto,4,3
+smote_nc,xgboost,molto alto,1,6
+smote_nc,xgboost,molto alto,2,12
+smote_nc,xgboost,molto alto,3,0
+smote_nc,xgboost,molto alto,4,3
+smote_nc_level,lr_scored,basso,1,3603
+smote_nc_level,lr_scored,basso,2,277
+smote_nc_level,lr_scored,basso,3,33
+smote_nc_level,lr_scored,basso,4,12
+smote_nc_level,lr_scored,moderato,1,277
+smote_nc_level,lr_scored,moderato,2,59
+smote_nc_level,lr_scored,moderato,3,14
+smote_nc_level,lr_scored,moderato,4,4
+smote_nc_level,lr_scored,alto,1,34
+smote_nc_level,lr_scored,alto,2,12
+smote_nc_level,lr_scored,alto,3,1
+smote_nc_level,lr_scored,alto,4,3
+smote_nc_level,lr_scored,molto alto,1,11
+smote_nc_level,lr_scored,molto alto,2,6
+smote_nc_level,lr_scored,molto alto,3,2
+smote_nc_level,lr_scored,molto alto,4,2
+smote_nc_level,lr_penalized,basso,1,3624
+smote_nc_level,lr_penalized,basso,2,261
+smote_nc_level,lr_penalized,basso,3,26
+smote_nc_level,lr_penalized,basso,4,14
+smote_nc_level,lr_penalized,moderato,1,257
+smote_nc_level,lr_penalized,moderato,2,75
+smote_nc_level,lr_penalized,moderato,3,15
+smote_nc_level,lr_penalized,moderato,4,7
+smote_nc_level,lr_penalized,alto,1,33
+smote_nc_level,lr_penalized,alto,2,12
+smote_nc_level,lr_penalized,alto,3,5
+smote_nc_level,lr_penalized,alto,4,0
+smote_nc_level,lr_penalized,molto alto,1,11
+smote_nc_level,lr_penalized,molto alto,2,6
+smote_nc_level,lr_penalized,molto alto,3,4
+smote_nc_level,lr_penalized,molto alto,4,0
+smote_nc_level,random_forest,basso,1,3607
+smote_nc_level,random_forest,basso,2,268
+smote_nc_level,random_forest,basso,3,37
+smote_nc_level,random_forest,basso,4,13
+smote_nc_level,random_forest,moderato,1,273
+smote_nc_level,random_forest,moderato,2,66
+smote_nc_level,random_forest,moderato,3,9
+smote_nc_level,random_forest,moderato,4,6
+smote_nc_level,random_forest,alto,1,34
+smote_nc_level,random_forest,alto,2,13
+smote_nc_level,random_forest,alto,3,2
+smote_nc_level,random_forest,alto,4,1
+smote_nc_level,random_forest,molto alto,1,11
+smote_nc_level,random_forest,molto alto,2,7
+smote_nc_level,random_forest,molto alto,3,2
+smote_nc_level,random_forest,molto alto,4,1
+smote_nc_level,xgboost,basso,1,3609
+smote_nc_level,xgboost,basso,2,273
+smote_nc_level,xgboost,basso,3,32
+smote_nc_level,xgboost,basso,4,11
+smote_nc_level,xgboost,moderato,1,275
+smote_nc_level,xgboost,moderato,2,64
+smote_nc_level,xgboost,moderato,3,10
+smote_nc_level,xgboost,moderato,4,5
+smote_nc_level,xgboost,alto,1,33
+smote_nc_level,xgboost,alto,2,9
+smote_nc_level,xgboost,alto,3,6
+smote_nc_level,xgboost,alto,4,2
+smote_nc_level,xgboost,molto alto,1,8
+smote_nc_level,xgboost,molto alto,2,8
+smote_nc_level,xgboost,molto alto,3,2
+smote_nc_level,xgboost,molto alto,4,3
+ctgan,lr_scored,basso,1,3579
+ctgan,lr_scored,basso,2,290
+ctgan,lr_scored,basso,3,41
+ctgan,lr_scored,basso,4,15
+ctgan,lr_scored,moderato,1,293
+ctgan,lr_scored,moderato,2,48
+ctgan,lr_scored,moderato,3,9
+ctgan,lr_scored,moderato,4,4
+ctgan,lr_scored,alto,1,39
+ctgan,lr_scored,alto,2,10
+ctgan,lr_scored,alto,3,0
+ctgan,lr_scored,alto,4,1
+ctgan,lr_scored,molto alto,1,14
+ctgan,lr_scored,molto alto,2,6
+ctgan,lr_scored,molto alto,3,0
+ctgan,lr_scored,molto alto,4,1
+ctgan,lr_penalized,basso,1,3579
+ctgan,lr_penalized,basso,2,295
+ctgan,lr_penalized,basso,3,37
+ctgan,lr_penalized,basso,4,14
+ctgan,lr_penalized,moderato,1,293
+ctgan,lr_penalized,moderato,2,45
+ctgan,lr_penalized,moderato,3,11
+ctgan,lr_penalized,moderato,4,5
+ctgan,lr_penalized,alto,1,39
+ctgan,lr_penalized,alto,2,8
+ctgan,lr_penalized,alto,3,1
+ctgan,lr_penalized,alto,4,2
+ctgan,lr_penalized,molto alto,1,14
+ctgan,lr_penalized,molto alto,2,6
+ctgan,lr_penalized,molto alto,3,1
+ctgan,lr_penalized,molto alto,4,0
+ctgan,random_forest,basso,1,3573
+ctgan,random_forest,basso,2,295
+ctgan,random_forest,basso,3,40
+ctgan,random_forest,basso,4,17
+ctgan,random_forest,moderato,1,299
+ctgan,random_forest,moderato,2,47
+ctgan,random_forest,moderato,3,5
+ctgan,random_forest,moderato,4,3
+ctgan,random_forest,alto,1,39
+ctgan,random_forest,alto,2,6
+ctgan,random_forest,alto,3,4
+ctgan,random_forest,alto,4,1
+ctgan,random_forest,molto alto,1,14
+ctgan,random_forest,molto alto,2,6
+ctgan,random_forest,molto alto,3,1
+ctgan,random_forest,molto alto,4,0
+ctgan,xgboost,basso,1,3613
+ctgan,xgboost,basso,2,265
+ctgan,xgboost,basso,3,32
+ctgan,xgboost,basso,4,15
+ctgan,xgboost,moderato,1,276
+ctgan,xgboost,moderato,2,64
+ctgan,xgboost,moderato,3,12
+ctgan,xgboost,moderato,4,2
+ctgan,xgboost,alto,1,29
+ctgan,xgboost,alto,2,17
+ctgan,xgboost,alto,3,2
+ctgan,xgboost,alto,4,2
+ctgan,xgboost,molto alto,1,7
+ctgan,xgboost,molto alto,2,8
+ctgan,xgboost,molto alto,3,4
+ctgan,xgboost,molto alto,4,2
+ctgan_level,lr_scored,basso,1,3569
+ctgan_level,lr_scored,basso,2,297
+ctgan_level,lr_scored,basso,3,42
+ctgan_level,lr_scored,basso,4,17
+ctgan_level,lr_scored,moderato,1,299
+ctgan_level,lr_scored,moderato,2,45
+ctgan_level,lr_scored,moderato,3,8
+ctgan_level,lr_scored,moderato,4,2
+ctgan_level,lr_scored,alto,1,39
+ctgan_level,lr_scored,alto,2,9
+ctgan_level,lr_scored,alto,3,0
+ctgan_level,lr_scored,alto,4,2
+ctgan_level,lr_scored,molto alto,1,18
+ctgan_level,lr_scored,molto alto,2,3
+ctgan_level,lr_scored,molto alto,3,0
+ctgan_level,lr_scored,molto alto,4,0
+ctgan_level,lr_penalized,basso,1,3596
+ctgan_level,lr_penalized,basso,2,277
+ctgan_level,lr_penalized,basso,3,37
+ctgan_level,lr_penalized,basso,4,15
+ctgan_level,lr_penalized,moderato,1,278
+ctgan_level,lr_penalized,moderato,2,60
+ctgan_level,lr_penalized,moderato,3,13
+ctgan_level,lr_penalized,moderato,4,3
+ctgan_level,lr_penalized,alto,1,36
+ctgan_level,lr_penalized,alto,2,12
+ctgan_level,lr_penalized,alto,3,0
+ctgan_level,lr_penalized,alto,4,2
+ctgan_level,lr_penalized,molto alto,1,15
+ctgan_level,lr_penalized,molto alto,2,5
+ctgan_level,lr_penalized,molto alto,3,0
+ctgan_level,lr_penalized,molto alto,4,1
+ctgan_level,random_forest,basso,1,3582
+ctgan_level,random_forest,basso,2,283
+ctgan_level,random_forest,basso,3,41
+ctgan_level,random_forest,basso,4,19
+ctgan_level,random_forest,moderato,1,291
+ctgan_level,random_forest,moderato,2,55
+ctgan_level,random_forest,moderato,3,7
+ctgan_level,random_forest,moderato,4,1
+ctgan_level,random_forest,alto,1,41
+ctgan_level,random_forest,alto,2,9
+ctgan_level,random_forest,alto,3,0
+ctgan_level,random_forest,alto,4,0
+ctgan_level,random_forest,molto alto,1,11
+ctgan_level,random_forest,molto alto,2,7
+ctgan_level,random_forest,molto alto,3,2
+ctgan_level,random_forest,molto alto,4,1
+ctgan_level,xgboost,basso,1,3616
+ctgan_level,xgboost,basso,2,263
+ctgan_level,xgboost,basso,3,33
+ctgan_level,xgboost,basso,4,13
+ctgan_level,xgboost,moderato,1,271
+ctgan_level,xgboost,moderato,2,66
+ctgan_level,xgboost,moderato,3,12
+ctgan_level,xgboost,moderato,4,5
+ctgan_level,xgboost,alto,1,32
+ctgan_level,xgboost,alto,2,15
+ctgan_level,xgboost,alto,3,2
+ctgan_level,xgboost,alto,4,1
+ctgan_level,xgboost,molto alto,1,6
+ctgan_level,xgboost,molto alto,2,10
+ctgan_level,xgboost,molto alto,3,3
+ctgan_level,xgboost,molto alto,4,2

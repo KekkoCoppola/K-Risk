@@ -1,0 +1,21 @@
+{
+ "model": "xgboost",
+ "feature_set": "main",
+ "fold": "full",
+ "imputer": "MissForest",
+ "tuned": true,
+ "technique": "smote_nc_level",
+ "inner_pr_auc": 0.22669897313468743,
+ "trials": 30,
+ "pruned": 18,
+ "params": {
+  "n_estimators": 466,
+  "learning_rate": 0.011930826705241095,
+  "max_depth": 8,
+  "subsample": 0.6682861469221958,
+  "colsample_bytree": 0.540620677329206,
+  "reg_alpha": 4.502007564591461,
+  "reg_lambda": 4.68143780186038
+ },
+ "seconds": 261.0
+}
