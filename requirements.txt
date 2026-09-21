@@ -12,3 +12,8 @@ optuna>=5.0.0
 shap>=0.52.0
 imbalanced-learn>=0.14.0
 ctgan>=0.12.0
+# fase D: famiglie di modelli non provate nelle fasi A-C
+lightgbm>=4.7.0
+catboost>=1.2.10
+interpret-core>=0.7.8
+tabpfn>=9.0.0
