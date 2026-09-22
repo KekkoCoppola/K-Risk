@@ -103,6 +103,7 @@ KDIGO reale (da GFR e UMAUCR, nascosto al modello) → G2 / A2 → rischio moder
 - sottogruppo diabetico piccolo (91 positivi) → solo descrittivo
 - eGFR ricalcolato da un'unica creatinina, senza cistatina C → possibili errori di classificazione vicino alla soglia 60 (l'equazione combinata creatinina-cistatina C è più accurata: Inker et al. 2021)
 - nessuna validazione esterna: le linee guida raccomandano modelli di rischio validati esternamente sulla popolazione di destinazione (KDIGO 2026a; Steyerberg & Harrell 2016; Collins et al. 2024)
+- **provenienza del dataset (verifica del 22/09/2026 sul testo completo di Li J et al. 2026, *Sci Data* 13:652)**: i dati vengono dal reparto di Diabetologia ed Endocrinologia dello Shanghai Sixth People's Hospital, febbraio-aprile 2012; gli autori non li descrivono come screening di popolazione e non documentano né il tipo di campione urinario per l'ACR né le unità di `UCRE` e `UmALB`. Nelle sezioni scritte prima di questa data, "screening di popolazione" e "popolazione generale di screening" vanno letti come "coorte ospedaliera, in maggioranza senza diabete noto": l'utilità del modello va dimostrata in popolazioni di screening. Dettaglio in `docs/verifica_stato_arte.md`
 
 ### Cosa dicono le linee guida KDIGO (letture in `papers/`)
 Documenti letti:
@@ -1283,6 +1284,212 @@ Dopo le correzioni: 25 test della Fase C superati; tabelle e figure rigenerate; 
 
 ---
 
+## Qualità e utilità clinica — protocollo post-hoc (22/09/2026)
+**Dichiarazione**: questo blocco è stato deciso **dopo** aver visto i risultati delle Fasi A, B, C e D. Non era previsto dallo Scope. Nasce da una domanda legittima: le misure usate finora (AUC, PR-AUC, sensibilità per livello) dicono quanto il modello ordina bene i soggetti, non se **serva a qualcosa**. Essendo post-hoc, va letto come analisi esplorativa, non come verifica di un'ipotesi pre-registrata. Numeri e regole sono comunque scritti qui **prima di qualsiasi calcolo del blocco**.
+
+Tutto sulle previsioni out-of-fold della Fase B, braccio "nessuna correzione" (`analytics/phase_b/oof_predictions.csv`; per XGBoost è l'analisi `depth_1_12`, come in Fase C, così previsioni e soglie vengono da un'unica fonte). Quattro modelli reali (logistica SCORED, logistica penalizzata, Random Forest, XGBoost) più il classificatore di maggioranza come controllo di coerenza. I candidati della Fase D non entrano: nessuno ha superato la regola fissata. **Il test set non viene letto.**
+
+### Perché queste misure (letteratura)
+Fonti in Bibliografia → "Utilità clinica e misure di qualità (post-hoc)" e → "Fase C". DOI verificati su Crossref, citazioni verificate sul testo completo il 22/09/2026.
+
+1. **Il set minimo raccomandato comprende utilità clinica e calibrazione, non solo l'AUROC.** Van Calster et al. 2025: *"We recommend the following measures and plots as essential to report: AUROC, calibration plot, a clinical utility measure such as net benefit with decision curve analysis, and a plot with probability distributions per outcome category."* Finora la tesi riporta la prima voce e i numeri della calibrazione: questo blocco completa l'elenco.
+2. **MCC, F1 e accuratezza bilanciata sono improprie alla soglia clinica.** Van Calster et al. 2025: *"For a given decision threshold t, all classification measures are improper [...] This is because a decision threshold implies specific misclassification costs, but these are not used in classification measures."* Matos et al. 2026: *"MCC Parity is also highly questionable due to its highly complex formulation that hampers interpretability."* Si riportano perché i revisori le chiedono, ma solo in una tabella descrittiva, come ammette la stessa fonte: *"Although improper, the combination of PPV and NPV and/or the combination of sensitivity and specificity may be reported descriptively if desired, but always as an addition to the core set."*
+3. **Il net benefit risponde alla domanda "serve?"** (Vickers & Elkin 2006): `NB(t) = VP/n − FP/n × t/(1−t) = sensibilità × prevalenza − (1 − specificità) × (1 − prevalenza) × t/(1−t)`, confrontato con "testare tutti" (`prevalenza − (1 − prevalenza) × t/(1−t)`) e "non testare nessuno" (0). La soglia `t` fissa il cambio: un caso trovato vale `(1−t)/t` esami inutili. Unità: casi trovati netti per persona (×100 = ogni 100 persone).
+4. **L'intervallo di soglie si fissa prima, e la curva non serve a sceglierne una.** Vickers, van Calster & Steyerberg 2019: *"Investigators should first work out a clinically reasonable range of threshold probabilities [...] They should then determine whether the net benefit of their model or test is better than alternatives across this range"*; usare la curva per scegliere la soglia è *"a frequent and fundamental misunderstanding"*.
+5. **Quando il riferimento è "testare tutti", il net benefit si esprime anche come esami evitati.** Stessa fonte: *"Expressing net benefit in terms of avoided unnecessary diagnostic procedures or avoided unnecessary treatments is recommended if the reference strategy is 'intervention for all.'"* Formula: `esami inutili evitati ogni 100 = 100 × (NB_modello − NB_tutti) / (t/(1−t))`. Cambia l'unità, non le conclusioni.
+6. **Niente test né intervalli sul net benefit.** Vickers et al. 2023: *"Null hypothesis testing or simple consideration of confidence intervals are of questionable value for decision curve analysis"*; Van Calster et al. 2025 chiedono intervalli *"where possible, with the exception of clinical utility measures"*. Gli intervalli restano per calibrazione e proporzioni.
+7. **Net benefit nei sottogruppi.** Matos et al. 2026 indicano come unica misura di utilità clinica per i sottogruppi il *subgroup net benefit* di Benitez-Aurioles et al. 2024 (loro riferimento 88), che *"allows each subgroup to have its own prevalence term"*. **Definizione verificata sul testo di Benitez-Aurioles et al. 2024 (equazione 5)**: `sNB_g(t) = 1 − π_g + λ × NB_g(t)`, dove `NB_g` è il net benefit ordinario calcolato dentro il gruppo (sua numerosità, sua prevalenza `π_g`) e `λ` è la riduzione relativa del rischio del trattamento che segue la decisione. Dentro un gruppo `1 − π_g` e `λ` sono gli stessi per tutte le strategie, quindi **la classifica fra modello, "testare tutti" e "non testare nessuno" dipende solo da `NB_g`, per qualunque λ > 0**. Si riporta quindi `NB_g`; λ non viene scelto, perché richiederebbe l'effetto del trattamento dopo la diagnosi, fuori dal perimetro della tesi. Il net benefit **non si confronta fra gruppi**: dipende dalla prevalenza, e con prevalenza più bassa ci si può aspettare solo un net benefit più basso (Matos et al. 2026). *Correzione rispetto agli appunti del 20/09/2026*: lì "subgroup net benefit" era usato come sinonimo di "net benefit con la prevalenza del gruppo", prima di aver letto la definizione formale, che aggiunge il termine `1 − π_g` e il peso λ.
+8. **Calibrazione.** Van Calster et al. 2019: la calibrazione moderata *"is assessed with a flexible calibration curve [...] for example, using loess or spline functions"*; per una curva precisa *"a minimum of 200 patients with and 200 patients without the event has been suggested"*; la calibrazione forte, cioè per ogni combinazione dei predittori, *"is a utopic goal"*; il test di Hosmer-Lemeshow è sconsigliato. Quindi la calibrazione dentro i sottogruppi è una **condizione necessaria** della calibrazione forte, non la sua verifica. TRIPOD+AI (item 23a) chiede le stime nei sottogruppi con intervalli di confidenza. Misure: intercetta e pendenza (Van Calster et al. 2016, già implementate in `evaluation_b.calibration`), rapporto O:E (Van Calster et al. 2025: *"An O:E ratio > 1 indicates underestimation"*), Brier.
+
+### Intervallo di soglie: 0,02–0,20, fissato prima di calcolare
+- **5% e 7%** sono le due soglie che Bragg-Gresham et al. 2024 usano come esempi di punto operativo per questa stessa decisione (mandare un adulto senza diabete a fare l'esame dell'albuminuria): *"employing a cut-point of 0.05 for screening would require just under half of the non-diabetic population to be screened, but would detect 85% of individuals with albuminuria"*; al 7% *"we could detect 73.2% of individuals with albuminuria by screening 37.7% of the non-diabetic population"*. La soglia già in uso nel progetto (0,042–0,058, sensibilità 0,90) cade in quel range
+- **0,02** = 49 esami inutili accettati per caso trovato, circa $2.400 a caso ai $49 per test ACR di Cusick et al. 2023. Difendibile perché lo stesso lavoro trova lo screening di popolazione già costo-efficace ($86.300 per QALY, una tantum a 55 anni)
+- **0,20** = 4 esami inutili per caso. Oltre, si starebbe assumendo che un esame da $49 pesi quanto un intervento
+- griglia: da 0,020 a 0,200 con passo 0,005 (37 soglie), in `configs/config.yaml`, blocco `quality`
+
+### Che cosa si calcola
+1. **Decision curve** dei 4 modelli contro "testare tutti" e "non testare nessuno", su tutto il training. Positivo = `p ≥ t`, come nel resto del progetto. Per ogni modello: le soglie in cui `NB_modello > max(NB_tutti, 0)` ed esami inutili evitati ogni 100
+2. **Net benefit dentro i sottogruppi** diabetici (263, prevalenza 25,9%) e non diabetici (4.087, 8,7%), ciascuno contro "testare tutti" e "non testare nessuno" **dello stesso gruppo**. Domanda: fra i diabetici il modello batte "testare tutti", cioè quello che le linee guida già prescrivono?
+3. **Curva di calibrazione**, tutto il training: curva flessibile = regressione logistica di y su una spline cubica ristretta del logit di p, 4 nodi ai quantili 5, 35, 65 e 95% di logit(p) (i valori di Harrell 2015), con banda puntuale al 95% dall'errore standard del modello (metodo delta); punti ai decili di p con intervallo di Wilson; sotto, la distribuzione delle probabilità per esito (il *"plot with probability distributions per outcome category"* del punto 1). Intercetta, pendenza, O:E e Brier con IC da bootstrap stratificato sul livello KDIGO (2.000 campioni, seed 42, come nelle altre fasi)
+4. **MCC, F1, accuratezza bilanciata** (più sensibilità, specificità, VPP e VPN) alla soglia del progetto (`analytics/phase_b/evaluation/cutpoints.csv`, sensibilità 0,90) e alle soglie 0,05 e 0,07. Tabella descrittiva, dichiarata impropria nel titolo; mai in una figura, mai come risultato
+5. **Confronto con Bragg-Gresham et al. 2024**:
+   - (a) quota di soggetti da esaminare per trovare l'85% dei positivi (soglia a sensibilità 0,85), bersaglio della tesi, tutto il training;
+   - (b) versione più vicina al loro disegno: **solo non diabetici, bersaglio sola albuminuria (ACR ≥ 30 mg/g)**, stesse previsioni: quota esaminata e quota di casi trovati a 0,05 e 0,07, e quota da esaminare a sensibilità 0,85. I modelli non sono addestrati per quel bersaglio, quindi la stima è prudente;
+   - caveat da scrivere sempre accanto ai numeri: popolazione (adulti USA, NHANES 1999–2020, contro screening cinese); definizione di diabete (loro anche HbA1c ≥ 6,5%, qui la colonna `DM`); **predittori: il loro modello usa eGFR < 60, cioè la creatinina, che la tesi esclude per costruzione** perché è metà del bersaglio; c-statistic 0,752 in validazione. È un ordine di grandezza, non un testa a testa
+6. **Punti operativi a 0,05 e 0,07 esatti**, per gruppo: esami ogni 100 persone, casi trovati e mancati ogni 100, casi gravi (alto + molto alto) riconosciuti con IC di Wilson, net benefit, esami evitati
+7. **Costo per caso trovato** a ogni soglia della griglia: esami per caso trovato (`esami / veri positivi`) × $49, con l'intervallo $36–$64 di Cusick et al. 2023; "testare tutti" come riferimento (`1 / prevalenza` esami per caso). In più il **costo incrementale per caso aggiuntivo** passando dal modello a "testare tutti": `$49 × (n − esami_modello) / (VP_tutti − VP_modello)`, cioè quanto costa ciascun caso che il modello lascia indietro e che "testare tutti" recupera. **Non è un'analisi costo-efficacia**: niente QALY, niente costi a valle, niente effetto del trattamento. Si conta solo il test ACR (la creatinina per l'eGFR non è conteggiata, quindi il costo è sottostimato); gli esami di routine che alimentano il modello si assumono già disponibili
+8. **Calibrazione nei sottogruppi** (diabetici, non diabetici): stesse misure e stessa curva del punto 3 dentro ciascun gruppo, bootstrap stratificato sul livello dentro il gruppo. Fra i diabetici gli eventi sono 68, sotto i 200 suggeriti da Van Calster et al. 2019: la curva sarà imprecisa, dichiarato ora
+
+### Controlli di coerenza, fissati prima
+- "non testare nessuno" vale 0 a ogni soglia; il classificatore di maggioranza (prevede 0,0977 per tutti) deve coincidere con "testare tutti" per `t ≤ 0,0977` e con "non testare nessuno" sopra
+- le due formule del net benefit (dai conteggi; da sensibilità, specificità e prevalenza) devono coincidere
+- il net benefit è collassabile: `n_diabetici × NB_diabetici + n_non_diabetici × NB_non_diabetici = n × NB_tutti` a ogni soglia e per ogni strategia
+- intercetta, pendenza e Brier su tutto il training devono coincidere con `analytics/phase_b/evaluation/calibration.csv` (tecnica `none`, probabilità grezze)
+
+### Impegni presi prima di calcolare
+- il risultato viene riportato **qualunque sia**, anche se il modello non batte "testare tutti" in nessuna parte dell'intervallo
+- intervallo e griglia di soglie non vengono ritoccati dopo aver visto la curva
+- nessun test formale, nessun intervallo sul net benefit
+- nessuna soglia "raccomandata" ricavata dalla curva (Vickers et al. 2019)
+- nessuna conclusione di costo-efficacia dai numeri del punto 7
+
+### Codice
+Modulo nuovo `src/models/clinical_utility.py` più `tests/test_clinical_utility.py`; tabelle in `analytics/quality/evaluation/`, figure in `analytics/quality/` generate da `src/analytics/quality_report.py`; blocco `quality` in `configs/config.yaml`. Nessuna modifica ai moduli esistenti: si riusano `evaluation` (`operating_point`, `wilson`, `threshold_at_sensitivity`, `stratified_indices`, `percentile_interval`), `evaluation_b` (`pooled`, `calibration`) e `phase_c` (`groups`, `denoise_constant`).
+
+### Limiti, dichiarati in anticipo
+- post-hoc ed esplorativo;
+- previsioni out-of-fold di un solo training, nessuna validazione esterna: la decision curve vale per una popolazione con prevalenza 9,8%;
+- 68 positivi fra i diabetici: net benefit e calibrazione del sottogruppo sono instabili;
+- un solo costo, in dollari USA, da un'analisi statunitense: la traduzione economica è illustrativa;
+- il confronto con Bragg-Gresham è fra studi con popolazione, bersaglio e predittori diversi.
+
+---
+
+## Qualità e utilità clinica — risultati (22/09/2026)
+Calcolati con il protocollo della sezione precedente, sulle previsioni out-of-fold della Fase B. Nessun riaddestramento, test set non letto. Tabelle in `analytics/quality/evaluation/` (11 CSV), figure `analytics/quality/01`–`06`. Esecuzione: 2 minuti e 30 secondi; due esecuzioni successive danno tabelle identiche byte per byte.
+
+**Controlli di coerenza tutti superati**: le due formule del net benefit coincidono (tolleranza 10⁻¹²); il classificatore di maggioranza coincide con "testare tutti" fino a 0,095 e con "non testare nessuno" da 0,100, in tutti e tre i gruppi; il net benefit è collassabile (diabetici + non diabetici = totale, a ogni soglia e per ogni modello); intercetta, pendenza e Brier su tutto il training coincidono con `analytics/phase_b/evaluation/calibration.csv`.
+
+### Deviazione dal protocollo, dichiarata: intervalli della calibrazione
+Il protocollo fissava intervalli da bootstrap stratificato sul livello KDIGO, come nelle altre fasi. **Per la calibrazione quella scelta è sbagliata**, e lo si è visto dai numeri: ogni livello sopra "basso" è positivo per definizione, quindi stratificando sul livello **ogni campione ha esattamente lo stesso numero di eventi** (425 su tutto il training, 68 fra i diabetici). L'intercetta e il rapporto O:E misurano proprio lo scarto fra eventi osservati e attesi, e con il numero di eventi fisso la loro variabilità principale sparisce: fra i diabetici l'O:E della logistica SCORED risultava 0,957–1,045, mentre la sola variabilità binomiale di 68 eventi vale circa ±20%. Sulle misure di discriminazione delle fasi precedenti (AUC, sensibilità) stratificare sull'esito è corretto; qui no.
+
+Correzione: accanto agli intervalli pre-registrati (colonne `*_low`, `*_high` di `calibration.csv`, conservate) sono calcolati intervalli da **bootstrap semplice** (colonne `*_low_simple`, `*_high_simple`, stessi 2.000 campioni e seme 42). **Nel testo e nelle figure si usano quelli semplici.** Le pendenze cambiano poco; intercetta e O:E si allargano di 4–5 volte. Test che documenta il meccanismo: `test_level_stratified_bootstrap_fixes_the_number_of_events`. Nessun'altra tabella è toccata.
+
+### 1. Decision curve su tutto il training (figura 01)
+Net benefit ogni 100 persone ed esami inutili evitati ogni 100 rispetto a "testare tutti":
+
+| soglia | "testare tutti" | modelli (NB ogni 100) | esami inutili evitati ogni 100 |
+|---|---|---|---|
+| 2% | 7,93 | 7,93–7,94 | 0,0 a +0,7 |
+| 5% | 5,02 | 5,03–5,14 | +0,1 a +2,3 |
+| 7% | 2,98 | 3,67–3,97 | **+9,2 a +13,1** |
+| 10% | −0,26 | 2,51–2,83 | +24,9 a +27,8 |
+| 15% | −6,15 | 1,46–1,94 | +43,1 a +45,8 |
+| 20% | −12,79 | 0,94–1,41 | +54,9 a +56,8 |
+
+- **Sotto il 5% il modello è indistinguibile da "testare tutti"**: le differenze oscillano fra −4 e +2 esami ogni 100, di segno alterno fra soglie vicine. È atteso: a soglie così basse il modello segnala quasi tutti
+- **dal 5–6% in su il modello batte entrambe le strategie in modo continuo**, per tutti e quattro i modelli (logistica penalizzata e Random Forest da 0,050, XGBoost da 0,045, logistica SCORED da 0,060). Il vantaggio cresce con la soglia: 9–13 esami inutili evitati ogni 100 persone al 7%, 25–28 al 10%
+- sopra il 9,8% (la prevalenza) "testare tutti" ha net benefit negativo, cioè fa più danno che utile; il modello resta positivo fino al 20%
+- **nessun modello domina**: le quattro curve si intrecciano entro 0,5 casi ogni 100 (mediana 0,3 dal 5% in su). Coerente con la Fase A (nessuna differenza significativa di AUC) e con Christodoulou et al. 2019
+
+### 2. Net benefit dentro i sottogruppi (figura 02)
+- **diabetici** (prevalenza 25,9%): "testare tutti" ha net benefit positivo su tutta la griglia (da 24,3 a 7,3 ogni 100). **Fino al 10% nessun modello fa meglio di "testare tutti"**: esami evitati fra −15,8 e +3,4 ogni 100, cioè zero entro il rumore; XGBoost è sotto "testare tutti" quasi ovunque fino al 15%. Solo sopra il 12% Random Forest e logistica penalizzata guadagnano qualcosa (+5,7 e +4,6 esami evitati al 12%, +16 e +13 al 20%), soglie che nessuno userebbe per un esame da $49 in un gruppo a rischio così alto
+- **non diabetici** (prevalenza 8,7%): stesso quadro del training completo, con "testare tutti" che diventa negativo già all'8,7%; al 7% il modello evita 10–14 esami inutili ogni 100
+- è la **terza conferma**, con una terza misura, del risultato della Fase C: sui diabetici il modello non aggiunge nulla a quello che le linee guida già prescrivono. In Fase C lo diceva la specificità (0,000–0,036), qui lo dice il net benefit, che tiene conto anche della prevalenza del gruppo
+
+### 3 e 8. Calibrazione, complessiva e nei sottogruppi (figure 04 e 05)
+Intervalli da bootstrap semplice (vedi la deviazione sopra):
+
+| gruppo | modello | intercetta | pendenza | O:E |
+|---|---|---|---|---|
+| tutti | logistica SCORED | 0,00 (−0,11; 0,10) | 0,97 (0,82; 1,11) | 1,00 (0,91; 1,09) |
+| tutti | logistica penalizzata | −0,01 (−0,12; 0,10) | 0,94 (0,80; 1,07) | 0,99 (0,91; 1,08) |
+| tutti | Random Forest | 0,00 (−0,11; 0,09) | **1,31 (1,13; 1,48)** | 1,00 (0,91; 1,09) |
+| tutti | XGBoost | 0,01 (−0,10; 0,11) | **0,86 (0,75; 0,97)** | 1,01 (0,92; 1,10) |
+| diabetici | logistica SCORED | 0,00 (−0,30; 0,28) | 0,82 (0,30; 1,39) | 1,00 (0,80; 1,21) |
+| diabetici | logistica penalizzata | 0,18 (−0,15; 0,48) | 0,69 (0,38; 1,09) | 1,12 (0,90; 1,37) |
+| diabetici | Random Forest | **0,31 (0,02; 0,58)** | **1,79 (1,10; 2,64)** | **1,26 (1,01; 1,52)** |
+| diabetici | XGBoost | 0,18 (−0,14; 0,49) | 0,68 (0,37; 1,07) | 1,13 (0,91; 1,37) |
+| non diabetici | tutti e quattro | −0,05 a 0,00 | 0,83–1,23 | 0,96–1,00 |
+
+- **in media la calibrazione è buona** (intercetta 0, O:E 1 per tutti i modelli), **ma la "pendenza 1,02" riportata in Fase B è una media che nasconde due errori opposti**: Random Forest ha pendenza 1,31 (probabilità troppo schiacciate verso la media: sottostima i soggetti ad alto rischio, visibile nella curva sopra il 15%) e XGBoost 0,86 (probabilità troppo estreme). Le due logistiche sono calibrate. Il numero della Fase B era corretto come media; da solo era fuorviante
+- la curva flessibile resta vicina alla diagonale dove sta la grande maggioranza dei soggetti (probabilità sotto il 15%, istogrammi della figura 04), cioè proprio nell'intervallo delle soglie della decision curve
+- **nei sottogruppi (controllo di equità, TRIPOD+AI item 23a)**: fra i non diabetici nessun problema. **Fra i diabetici Random Forest sottostima il rischio di circa un quinto** (probabilità media 20,6% contro 25,9% osservato; O:E 1,26, intervallo che esclude 1). Logistica penalizzata e XGBoost vanno nella stessa direzione (O:E 1,12–1,13) con intervalli che includono 1; la logistica SCORED, che ha il diabete fra i suoi 5 predittori, è calibrata anche lì. Meccanismo plausibile, coerente con la pendenza: un modello che schiaccia le probabilità verso la media penalizza il gruppo più a rischio
+- conseguenza pratica limitata: sui diabetici le linee guida prescrivono comunque l'esame (punto 2), quindi la sottostima non cambia nessuna decisione. Va dichiarata come limite di equità, non nascosta
+- 68 eventi fra i diabetici, sotto i 200 suggeriti da Van Calster et al. 2019: le curve di quel gruppo sono larghe, come dichiarato nel protocollo
+
+### 4. MCC, F1, accuratezza bilanciata — misure improprie, solo descrittive
+Tutto il training, `classification_descriptive.csv`:
+
+| soglia | MCC | F1 | accuratezza bilanciata | sensibilità | specificità | VPP | VPN |
+|---|---|---|---|---|---|---|---|
+| del progetto (sensibilità 0,90) | 0,08–0,11 | 0,20–0,21 | 0,56–0,58 | 0,90 | 0,21–0,26 | 0,11–0,12 | 0,95–0,96 |
+| 5% | 0,07–0,12 | 0,19–0,22 | 0,54–0,60 | 0,84–0,94 | 0,14–0,36 | 0,11–0,12 | 0,95–0,96 |
+| 7% | 0,13–0,16 | 0,22–0,24 | 0,61–0,63 | 0,71–0,83 | 0,39–0,55 | 0,13–0,15 | 0,94–0,96 |
+
+Con MCC 0,08 e F1 0,20 il modello sembrerebbe inutile; la decision curve dice che al 7% evita 9–13 esami inutili ogni 100 persone. Le due letture divergono perché MCC e F1 pesano allo stesso modo un caso mancato e un esame inutile, mentre alla soglia del 7% un caso mancato vale 13 esami inutili: è esattamente l'argomento di Van Calster et al. 2025. Queste misure restano in tabella perché i revisori le chiedono, mai come risultato.
+
+### 5. Confronto con Bragg-Gresham et al. 2024 (figura 06)
+
+| disegno | quota esaminata a sensibilità 0,85 | alla soglia 5%: esaminati / trovati | alla soglia 7%: esaminati / trovati |
+|---|---|---|---|
+| tesi, tutto il training, bersaglio composito | 67,8–73,8% | 65,7–86,7% / 83,5–94,4% | 47,7–63,5% / 71,3–83,3% |
+| non diabetici, sola albuminuria (più vicino a loro) | 68,7–76,9% | 63,8–85,8% / 80,4–93,5% | 45,1–61,3% / 65,8–79,2% |
+| **Bragg-Gresham et al. 2024** | — | "poco meno di metà" / 85% | 37,7% / 73,2% |
+
+- **a parità di casi trovati i nostri modelli devono esaminare più persone**, anche nel disegno più vicino al loro (non diabetici, sola albuminuria): per trovare il 73% dei casi 49,5–60,1% contro 37,7%, cioè **12–22 persone in più ogni 100**; per trovarne l'85% 68,7–76,9% contro "poco meno di metà", cioè **almeno 19–27 in più**. Avvicinare il disegno al loro non cambia l'ordine di grandezza del divario
+- spiegazione principale, già nel protocollo: il loro modello usa **eGFR < 60 fra i predittori**, cioè la creatinina, che la tesi esclude per costruzione; più una coorte NHANES di 44.322 adulti contro 4.350 soggetti. La c-statistic 0,752 in validazione contro 0,67–0,69 dei nostri modelli sulla sola albuminuria (Fase D) è coerente col divario
+- la quota di XGBoost a sensibilità 0,85 (67,8%) differisce da quella annotata il 20/09 (66,2%) perché qui XGBoost viene dall'analisi `depth_1_12`, come in tutte le analisi dalla Fase B in poi
+
+### 6. Punti operativi a 0,05 e 0,07 (`operating_points.csv`)
+
+| gruppo | soglia | esami ogni 100 | casi trovati ogni 100 | casi mancati ogni 100 | casi gravi riconosciuti |
+|---|---|---|---|---|---|
+| tutti | 5% | 65,7–86,7 | 8,2–9,2 (su 9,8) | 0,6–1,6 | 62–67 su 71 |
+| tutti | 7% | 47,7–63,5 | 7,0–8,1 | 1,6–2,8 | 54–63 su 71 |
+| diabetici | 5% | 94,7–100 | 25,5–25,9 (su 25,9) | 0,0–0,4 | 16 su 16 |
+| diabetici | 7% | 88,6–100 | 24,0–25,9 | 0,0–1,9 | 15–16 su 16 |
+
+Al 7% il modello manda in laboratorio circa metà della popolazione e riconosce 54–63 dei 71 casi gravi: fra i casi mancati ci sono 8–17 casi alto o molto alto. Il costo clinico del risparmio va scritto accanto al risparmio.
+
+### 7. Costo per caso trovato (figura 03, `costs.csv`)
+"Testare tutti" costa **$502 per caso trovato** (10,2 esami per caso, $49 ciascuno).
+
+| soglia | costo per caso trovato | risparmio ogni 100 persone | casi mancati ogni 100 | costo di ogni caso in più trovato testando tutti |
+|---|---|---|---|---|
+| 5% | $394–461 | $653–1.683 | 0,6–1,6 | $987–1.184 |
+| 7% | $336–383 | $1.787–2.562 | 1,6–2,8 | $880–1.095 |
+| 10% | $272–285 | $3.163–3.382 | 3,7–4,4 | $766–860 |
+
+Con l'intervallo di Cusick et al. 2023 ($36–$64) tutti i valori scalano del −27% / +31%.
+
+- il modello **abbassa il costo per caso trovato** (dell'8–21% al 5%, del 24–33% al 7%) **ma lo fa trovando meno casi**. Il numero che conta è l'ultima colonna: ogni caso che il modello lascia indietro si recupererebbe testando tutti a circa **$900–1.200**
+- lettura coerente con la decision curve, senza nessuna analisi in più: la soglia `t` dichiara quanto vale un caso trovato, `(1−t)/t` esami. Al 5% un caso vale 19 esami, cioè $931, e recuperarlo testando tutti costa $987–1.184: quasi pari, infatti al 5% il net benefit del modello e quello di "testare tutti" quasi coincidono. Al 7% un caso vale 13,3 esami ($651) e recuperarlo costa $880–1.095: il modello conviene, e la decision curve lo mostra
+- **non è una conclusione di costo-efficacia** (impegno del protocollo): Cusick et al. 2023 trovano costo-efficace lo screening di tutta la popolazione a $86.300 per QALY, un'analisi con esiti, trattamenti e costi a valle che qui non c'è. Da questi numeri non si può dire che il modello "fa risparmiare" il sistema sanitario: si può dire quanto costa, in esami, ogni caso che si sceglie di non cercare
+
+### Sintesi per la tesi
+1. **Il modello ha utilità clinica nella popolazione del dataset (prevalenza 9,8%, in maggioranza senza diabete noto), ma solo da soglie del 5–6% in su.** Al 7% evita 9–13 esami inutili ogni 100 persone rispetto a "testare tutti", a parità di beneficio; al 10% 25–28. Sotto il 5% equivale a testare tutti
+2. **alle due soglie di Bragg-Gresham il quadro è diviso**: al 5% il guadagno è quasi nullo (0–2 esami ogni 100), al 7% è moderato. Quale delle due sia giusta è una scelta clinica, non statistica, e la curva non la decide (Vickers et al. 2019)
+3. **sui diabetici nessun modello batte "testare tutti" fino al 10%**: terza conferma, con una terza misura, che lì hanno ragione le linee guida
+4. **la calibrazione è buona in media ma non per tutti i modelli**: Random Forest schiaccia le probabilità (pendenza 1,31) e sottostima di un quinto il rischio dei diabetici; XGBoost le estremizza (0,86). La "pendenza media 1,02" della Fase B nascondeva due errori opposti: è il **terzo "risultato apparente"** della tesi, dopo la soglia 0,5 (Fase B) e la PR-AUC dei diabetici (Fase C), e riguarda di nuovo un numero riassuntivo letto da solo
+5. **il risparmio è reale ma ha un prezzo**: al 7%, $1.800–2.600 in meno ogni 100 persone, 1,6–2,8 casi mancati ogni 100 (8–17 casi gravi su 71 nel training). Ogni caso mancato costerebbe $900–1.100 da recuperare. Nessuna conclusione di costo-efficacia
+6. **rispetto a Bragg-Gresham servono 12–27 persone esaminate in più ogni 100** per trovare gli stessi casi: il prezzo di non usare la creatinina, coerente con il tetto trovato in Fase D
+7. **MCC 0,08–0,16 e F1 0,20–0,24 farebbero giudicare il modello inutile**: la decision curve mostra perché queste misure, improprie alla soglia clinica, non rispondono alla domanda
+
+### Limiti
+Quelli dichiarati nel protocollo, più due emersi dai risultati:
+- la deviazione sugli intervalli della calibrazione, dichiarata sopra;
+- **provenienza del dataset (verifica del 22/09/2026 sul testo completo di Li J et al. 2026)**: i dati vengono dal reparto di Diabetologia ed Endocrinologia dello Shanghai Sixth People's Hospital, febbraio-aprile 2012; gli autori non li descrivono come screening di popolazione, e non documentano né il tipo di campione urinario per l'ACR né le unità di `UCRE` e `UmALB`. La decision curve vale per una coorte ospedaliera con prevalenza 9,8%; la formula "popolazione generale di screening" usata nello Scope e nelle fasi precedenti va rivista;
+- il net benefit ha una precisione limitata dagli stessi 425 positivi del training: le differenze fra modelli (≤ 0,5 casi ogni 100) non sono interpretabili, quelle contro "testare tutti" oltre il 6% sì, perché crescono fino a decine di esami ogni 100. Nessun intervallo per scelta (Vickers et al. 2023).
+
+---
+
+## Fase D — candidato aggiunto: tri-ensemble su 21 variabili (22/09/2026)
+**Perché.** `valorizzazione_tesi.md` citava un "tri-ensemble sulle 21 variabili più importanti" con AUROC 0,717 e PR-AUC 0,273, stimato in un'analisi preliminare di cui nel repository non c'erano né codice né tabelle. Su richiesta dell'utente è stato registrato come candidato della Fase D, **in `configs/config.yaml` prima di scrivere il codice e di calcolarlo**, con la stessa regola di decisione degli altri candidati.
+
+**Definizione (fissata prima).** `tri_ensemble_top21`: media delle probabilità dei tre riferimenti (logistica penalizzata, Random Forest, XGBoost con profondità 1–12) addestrati sulle prime 21 variabili, con gli iperparametri della Fase A di ogni fold (nessuna nuova ottimizzazione, quindi nessuna informazione dal fold esterno). Le 21 variabili si scelgono **dentro ogni fold esterno, sul solo training**, per rango medio fra i tre modelli, col criterio di `interpretation.top_features`: |coefficiente| per la logistica, SHAP medio assoluto per gli alberi (per la Random Forest su 500 righe estratte per classe: TreeSHAP su 954 alberi profondi 25 sarebbe durato ore). Diagnostica `tri_ensemble_leaky`: stessa pipeline con le variabili scelte **sull'intero training** (classifiche dei modelli finali della Fase A), per misurare la distorsione da selezione (Ambroise & McLachlan 2002); non è un candidato.
+
+**Codice.** `src/models/phase_d.py`: `consensus_top`, `ranking`, `fold_rankings`, `full_training_rankings`, `run_tri_ensemble`. Test in `tests/test_phase_d.py`, fra cui `test_nested_tri_ensemble_selects_on_training_rows_only`, che fallirebbe se la classifica vedesse le righe del fold esterno. Esecuzione: 1 minuto e mezzo.
+
+**Risultati** (`analytics/phase_d/discrimination.csv`, `comparison.csv`):
+
+| versione | AUROC (IC 95%) | PR-AUC | specificità a sensibilità 0,90 | contro RF |
+|---|---|---|---|---|
+| selezione nel fold (candidato) | 0,703 (0,676–0,731) | 0,252 | 0,267 | −0,002 (−0,025; +0,020), p di Holm 1,00 |
+| selezione su tutto il training (diagnostica) | 0,716 (0,689–0,742) | 0,264 | 0,272 | — |
+
+- **non supera la regola** (serviva ΔAUROC ≥ +0,01 con IC sopra zero e Holm < 0,05)
+- **lo 0,717 dell'analisi preliminare è distorsione da selezione**: lo riproduce solo la versione con le variabili scelte su tutti i dati (+0,013 di AUROC, +0,012 di PR-AUC). Non va citato come risultato
+- contro SCORED (confronto post-hoc, sui 5 fold, non corretto): selezione nel fold +0,027 (−0,004; +0,057), p = 0,07; selezione su tutto il training +0,039 (+0,007; +0,071), p = 0,03. **La distorsione basta a rendere "significativo" un vantaggio che non lo è**: quarto "risultato apparente" della tesi
+- **valore reale: parsimonia.** Con 21 variabili invece di 74 discrimina come la Random Forest ed è il modello con la specificità più alta a sensibilità 0,90 (0,267). Contro SCORED: 7,8 esami in meno ogni 100 persone per trovare l'85% dei casi (66,0 contro 73,8), 5,2 in meno per il 90% (75,0 contro 80,2), net benefit superiore a 31 soglie su 31 fra 5% e 20%, 5,6 esami inutili evitati in più ogni 100 al 7%
+- **stabilità della selezione**: 34 variabili diverse nei 5 fold; 9 scelte sempre (età, pressione sistolica, glicemia a digiuno e a 2 ore, peptide C a digiuno, acido urico, ALP, FIB-4, LDL), altre 6 in 4 fold su 5
+
+**Effetto sugli altri candidati.** La famiglia di Holm passa da 10 a 11 candidati: cambiano solo i p corretti (EBM da 0,90 a 0,99; gli altri restano 1,00). Nessuna conclusione della Fase D cambia. La figura `analytics/phase_d/01_candidates.png` è rigenerata con il nuovo candidato.
+
+**Limiti.** Iperparametri scelti in Fase A su 74 variabili, non riottimizzati per 21; il numero 21 viene dall'analisi preliminare e non è stato ottimizzato (ottimizzarlo ora sarebbe un'altra scelta dopo i risultati).
+
+---
+
 ## Conferma finale sul test set — preparazione (20/09/2026)
 Il test set **non è ancora stato letto**. Qui si annota solo quanto verificato per prepararne la trasformazione.
 
@@ -1348,7 +1555,7 @@ Tempo stimato: un giorno di lavoro, più qualche minuto di calcolo.
 
 ## Indice delle figure
 
-Rigenerare con `python -m src.analytics.dataset_overview`, `python -m src.analytics.split_report`, (dopo `python -m src.data.imputation`) `python -m src.analytics.preprocessing_report` e (dopo `python -m src.models.evaluation` e `python -m src.models.interpretation`) `python -m src.analytics.phase_a_report`. Le figure della Fase B: `python -m src.analytics.phase_b_report` (dopo `python -m src.models.evaluation_b`). Le figure della Fase C: `python -m src.analytics.phase_c_report` (dopo `python -m src.models.phase_c`).
+Rigenerare con `python -m src.analytics.dataset_overview`, `python -m src.analytics.split_report`, (dopo `python -m src.data.imputation`) `python -m src.analytics.preprocessing_report` e (dopo `python -m src.models.evaluation` e `python -m src.models.interpretation`) `python -m src.analytics.phase_a_report`. Le figure della Fase B: `python -m src.analytics.phase_b_report` (dopo `python -m src.models.evaluation_b`). Le figure della Fase C: `python -m src.analytics.phase_c_report` (dopo `python -m src.models.phase_c`). Le figure del blocco qualità e utilità clinica: `python -m src.analytics.quality_report` (dopo `python -m src.models.clinical_utility`).
 
 | file | cosa mostra | sezione |
 |------|-------------|---------|
@@ -1386,6 +1593,12 @@ Rigenerare con `python -m src.analytics.dataset_overview`, `python -m src.analyt
 | `analytics/phase_b/06_kappa.png` | kappa pesato fasce/livelli per tecnica e modello | Fase B — risultati |
 | `analytics/phase_c/01_discrimination_diabetici.png` | AUC e PR-AUC con IC: diabetici, non diabetici e training completo; per la PR-AUC la prevalenza di ciascun gruppo è la linea di riferimento | Fase C — protocollo |
 | `analytics/phase_c/02_severe_cases.png` | casi gravi riconosciuti su 16 fra i diabetici alla soglia globale fissa, per modello e braccio, con IC di Wilson | Fase C — protocollo |
+| `analytics/quality/01_decision_curve.png` | decision curve su tutto il training (soglie 2–20%) contro "testare tutti" e "non testare nessuno"; a destra esami inutili evitati ogni 100 | Qualità e utilità clinica — risultati, punto 1 |
+| `analytics/quality/02_decision_curve_subgroups.png` | decision curve dentro diabetici e non diabetici, ciascuno contro il proprio "testare tutti" (scale diverse di proposito) | punto 2 |
+| `analytics/quality/03_costs.png` | costo del test ACR per caso trovato e costo di ogni caso in più trovato testando tutti ($49 a test) | punto 7 |
+| `analytics/quality/04_calibration.png` | curva di calibrazione flessibile con banda, decili con IC di Wilson e distribuzione delle probabilità per esito, 4 modelli | punto 3 |
+| `analytics/quality/05_calibration_subgroups.png` | curve di calibrazione dentro diabetici e non diabetici, con O:E e IC | punto 8 |
+| `analytics/quality/06_bragg_gresham.png` | quota esaminata contro quota di casi trovati, bersaglio della tesi e disegno vicino a Bragg-Gresham et al. 2024, con i loro punti operativi | punto 5 |
 
 ## Punti da verificare
 - [x] **formula dell'eGFR** — verificato: la colonna `GFR` **non coincide** con nessuna formula standard
@@ -1575,6 +1788,15 @@ Verificate su Crossref il 20/09/2026 (DOI, titolo, autori, rivista, anno). Testo
 - **Collins et al. 2024 (TRIPOD+AI)** — Collins G.S., Moons K.G.M., Dhiman P., Riley R.D., Beam A.L., Van Calster B., et al. *TRIPOD+AI statement: updated guidance for reporting clinical prediction models that use regression or machine learning methods.* BMJ 385:e078378 (2024). doi:10.1136/bmj-2023-078378. Item 23a: performance nei sottogruppi **con intervalli di confidenza**
 - **Riley et al. 2024 (parte 3)** — Riley R.D., Snell K.I.E., Archer L., Ensor J., Debray T.P.A., Van Calster B., van Smeden M., Collins G.S. *Evaluation of clinical prediction models (part 3): calculating the sample size required for an external validation study.* BMJ 384:e074821 (2024). doi:10.1136/bmj-2023-074821. **Fonte della scelta di non fare test formali**: servono almeno 100 eventi e 100 non-eventi per stimare la c-statistic con precisione accettabile; il sottogruppo ne ha 68
 - **Vickers & Holland 2021** — Vickers A.J., Holland F. *Decision curve analysis to evaluate the clinical benefit of prediction models.* Spine J 21(10):1643–1648 (2021). doi:10.1016/j.spinee.2021.02.024. A supporto: la soglia riflette il compromesso clinico fra danni e benefici, non una quantità stimata dai dati
+
+### Utilità clinica e misure di qualità (post-hoc)
+Verificate su Crossref il 22/09/2026 (DOI, titolo, autori, rivista, anno). Testo completo letto: Bragg-Gresham et al. 2024 (PMC), Benitez-Aurioles et al. 2024 (arXiv), Vickers, van Calster & Steyerberg 2019 e Vickers et al. 2023 (PMC, accesso aperto); Cusick et al. 2023 letto nel testo completo il 20/09/2026. Solo metadati: Harrell 2015 (libro). Servono anche Vickers & Elkin 2006, Van Calster et al. 2016 e 2019 (sezioni Fase A e Fase B), Van Calster et al. 2025, Matos et al. 2026 e TRIPOD+AI (sezione Fase C); di Van Calster et al. 2019 il testo completo è stato letto il 22/09/2026 (PMC).
+- **Bragg-Gresham et al. 2024** — Bragg-Gresham J.L., Annadanam S., Gillespie B., Li Y., Powe N.R., Saran R. *Using Risk Assessment to Improve Screening for Albuminuria among US Adults without Diabetes.* J Gen Intern Med 40(13):3159–3169 (online 2024, fascicolo 2025). doi:10.1007/s11606-024-09185-9 — **fonte delle soglie 5% e 7%** (esempi di punto operativo per mandare all'esame dell'albuminuria un adulto senza diabete) e riferimento esterno del confronto. Il loro modello include eGFR < 60 fra i predittori; c-statistic 0,752 in validazione; concludono che serve una valutazione di costo-efficacia
+- **Cusick et al. 2023** — Cusick M.M., Tisdale R.L., Chertow G.M., Owens D.K., Goldhaber-Fiebert J.D. *Population-Wide Screening for Chronic Kidney Disease: A Cost-Effectiveness Analysis.* Ann Intern Med 176(6):788–797 (2023). doi:10.7326/M22-3228 — **fonte del costo del test ($49, intervallo $36–$64) e del limite inferiore dell'intervallo di soglie**: lo screening di popolazione è costo-efficace ($86.300 per QALY, una tantum a 55 anni)
+- **Benitez-Aurioles et al. 2024** — Benitez-Aurioles J., Joules A., Brusini I., Peek N., Sperrin M. *Understanding algorithmic fairness for clinical prediction in terms of subgroup net benefit and health equity.* arXiv:2412.07879 (2024) — preprint, riferimento 88 di Matos et al. 2026. **Definizione formale del subgroup net benefit** (equazione 5): `1 − π_g + λ × NB_g(t)`
+- **Vickers, van Calster & Steyerberg 2019** — Vickers A.J., van Calster B., Steyerberg E.W. *A simple, step-by-step guide to interpreting decision curve analysis.* Diagn Progn Res 3:18 (2019). doi:10.1186/s41512-019-0064-7 — **intervallo di soglie fissato prima** e net benefit espresso come esami evitati quando il riferimento è "testare tutti"
+- **Vickers et al. 2023** — Vickers A.J., Van Calster B., Wynants L., Steyerberg E.W. *Decision curve analysis: confidence intervals and hypothesis testing for net benefit.* Diagn Progn Res 7:11 (2023). doi:10.1186/s41512-023-00148-y — **fonte della scelta di non fare test né intervalli sul net benefit** (su Crossref il secondo autore compare come "Van Claster", refuso dei metadati)
+- **Harrell 2015** — Harrell F.E. Jr. *Regression Modeling Strategies*, 2ª ed. Springer (2015). doi:10.1007/978-3-319-19425-7 — quantili dei nodi della spline cubica ristretta usata per la curva di calibrazione flessibile
 
 ### Interpretazione dei modelli
 Verificate su Crossref il 19/09/2026; Lundberg et al. 2020 anche nell'abstract (algoritmo esatto in tempo polinomiale per gli alberi, con un'applicazione alla malattia renale cronica).

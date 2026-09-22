@@ -1,0 +1,2401 @@
+group,model,outcome,bin_from,bin_to,n
+diabetici,lr_scored,0,0.0,0.01,0
+diabetici,lr_scored,0,0.01,0.02,0
+diabetici,lr_scored,0,0.02,0.03,0
+diabetici,lr_scored,0,0.03,0.04,0
+diabetici,lr_scored,0,0.04,0.05,0
+diabetici,lr_scored,0,0.05,0.06,0
+diabetici,lr_scored,0,0.06,0.07,0
+diabetici,lr_scored,0,0.07,0.08,0
+diabetici,lr_scored,0,0.08,0.09,0
+diabetici,lr_scored,0,0.09,0.1,1
+diabetici,lr_scored,0,0.1,0.11,5
+diabetici,lr_scored,0,0.11,0.12,3
+diabetici,lr_scored,0,0.12,0.13,5
+diabetici,lr_scored,0,0.13,0.14,5
+diabetici,lr_scored,0,0.14,0.15,5
+diabetici,lr_scored,0,0.15,0.16,15
+diabetici,lr_scored,0,0.16,0.17,3
+diabetici,lr_scored,0,0.17,0.18,6
+diabetici,lr_scored,0,0.18,0.19,11
+diabetici,lr_scored,0,0.19,0.2,7
+diabetici,lr_scored,0,0.2,0.21,9
+diabetici,lr_scored,0,0.21,0.22,8
+diabetici,lr_scored,0,0.22,0.23,9
+diabetici,lr_scored,0,0.23,0.24,8
+diabetici,lr_scored,0,0.24,0.25,11
+diabetici,lr_scored,0,0.25,0.26,8
+diabetici,lr_scored,0,0.26,0.27,9
+diabetici,lr_scored,0,0.27,0.28,5
+diabetici,lr_scored,0,0.28,0.29,6
+diabetici,lr_scored,0,0.29,0.3,7
+diabetici,lr_scored,0,0.3,0.31,4
+diabetici,lr_scored,0,0.31,0.32,5
+diabetici,lr_scored,0,0.32,0.33,7
+diabetici,lr_scored,0,0.33,0.34,1
+diabetici,lr_scored,0,0.34,0.35000000000000003,7
+diabetici,lr_scored,0,0.35000000000000003,0.36,1
+diabetici,lr_scored,0,0.36,0.37,4
+diabetici,lr_scored,0,0.37,0.38,6
+diabetici,lr_scored,0,0.38,0.39,1
+diabetici,lr_scored,0,0.39,0.4,3
+diabetici,lr_scored,0,0.4,0.41000000000000003,1
+diabetici,lr_scored,0,0.41000000000000003,0.42,1
+diabetici,lr_scored,0,0.42,0.43,0
+diabetici,lr_scored,0,0.43,0.44,1
+diabetici,lr_scored,0,0.44,0.45,1
+diabetici,lr_scored,0,0.45,0.46,2
+diabetici,lr_scored,0,0.46,0.47000000000000003,1
+diabetici,lr_scored,0,0.47000000000000003,0.48,0
+diabetici,lr_scored,0,0.48,0.49,1
+diabetici,lr_scored,0,0.49,0.5,0
+diabetici,lr_scored,0,0.5,0.51,0
+diabetici,lr_scored,0,0.51,0.52,0
+diabetici,lr_scored,0,0.52,0.53,0
+diabetici,lr_scored,0,0.53,0.54,0
+diabetici,lr_scored,0,0.54,0.55,0
+diabetici,lr_scored,0,0.55,0.56,0
+diabetici,lr_scored,0,0.56,0.5700000000000001,1
+diabetici,lr_scored,0,0.5700000000000001,0.58,0
+diabetici,lr_scored,0,0.58,0.59,0
+diabetici,lr_scored,0,0.59,0.6,0
+diabetici,lr_scored,0,0.6,0.61,0
+diabetici,lr_scored,0,0.61,0.62,0
+diabetici,lr_scored,0,0.62,0.63,0
+diabetici,lr_scored,0,0.63,0.64,0
+diabetici,lr_scored,0,0.64,0.65,1
+diabetici,lr_scored,0,0.65,0.66,0
+diabetici,lr_scored,0,0.66,0.67,0
+diabetici,lr_scored,0,0.67,0.68,0
+diabetici,lr_scored,0,0.68,0.6900000000000001,0
+diabetici,lr_scored,0,0.6900000000000001,0.7000000000000001,0
+diabetici,lr_scored,0,0.7000000000000001,0.71,0
+diabetici,lr_scored,0,0.71,0.72,0
+diabetici,lr_scored,0,0.72,0.73,0
+diabetici,lr_scored,0,0.73,0.74,0
+diabetici,lr_scored,0,0.74,0.75,0
+diabetici,lr_scored,0,0.75,0.76,0
+diabetici,lr_scored,0,0.76,0.77,0
+diabetici,lr_scored,0,0.77,0.78,0
+diabetici,lr_scored,0,0.78,0.79,0
+diabetici,lr_scored,0,0.79,0.8,0
+diabetici,lr_scored,0,0.8,0.81,0
+diabetici,lr_scored,0,0.81,0.8200000000000001,0
+diabetici,lr_scored,0,0.8200000000000001,0.8300000000000001,0
+diabetici,lr_scored,0,0.8300000000000001,0.84,0
+diabetici,lr_scored,0,0.84,0.85,0
+diabetici,lr_scored,0,0.85,0.86,0
+diabetici,lr_scored,0,0.86,0.87,0
+diabetici,lr_scored,0,0.87,0.88,0
+diabetici,lr_scored,0,0.88,0.89,0
+diabetici,lr_scored,0,0.89,0.9,0
+diabetici,lr_scored,0,0.9,0.91,0
+diabetici,lr_scored,0,0.91,0.92,0
+diabetici,lr_scored,0,0.92,0.93,0
+diabetici,lr_scored,0,0.93,0.9400000000000001,0
+diabetici,lr_scored,0,0.9400000000000001,0.9500000000000001,0
+diabetici,lr_scored,0,0.9500000000000001,0.96,0
+diabetici,lr_scored,0,0.96,0.97,0
+diabetici,lr_scored,0,0.97,0.98,0
+diabetici,lr_scored,0,0.98,0.99,0
+diabetici,lr_scored,0,0.99,1.0,0
+diabetici,lr_scored,1,0.0,0.01,0
+diabetici,lr_scored,1,0.01,0.02,0
+diabetici,lr_scored,1,0.02,0.03,0
+diabetici,lr_scored,1,0.03,0.04,0
+diabetici,lr_scored,1,0.04,0.05,0
+diabetici,lr_scored,1,0.05,0.06,0
+diabetici,lr_scored,1,0.06,0.07,0
+diabetici,lr_scored,1,0.07,0.08,0
+diabetici,lr_scored,1,0.08,0.09,0
+diabetici,lr_scored,1,0.09,0.1,0
+diabetici,lr_scored,1,0.1,0.11,0
+diabetici,lr_scored,1,0.11,0.12,0
+diabetici,lr_scored,1,0.12,0.13,0
+diabetici,lr_scored,1,0.13,0.14,3
+diabetici,lr_scored,1,0.14,0.15,1
+diabetici,lr_scored,1,0.15,0.16,1
+diabetici,lr_scored,1,0.16,0.17,2
+diabetici,lr_scored,1,0.17,0.18,4
+diabetici,lr_scored,1,0.18,0.19,3
+diabetici,lr_scored,1,0.19,0.2,3
+diabetici,lr_scored,1,0.2,0.21,3
+diabetici,lr_scored,1,0.21,0.22,5
+diabetici,lr_scored,1,0.22,0.23,1
+diabetici,lr_scored,1,0.23,0.24,2
+diabetici,lr_scored,1,0.24,0.25,1
+diabetici,lr_scored,1,0.25,0.26,2
+diabetici,lr_scored,1,0.26,0.27,1
+diabetici,lr_scored,1,0.27,0.28,2
+diabetici,lr_scored,1,0.28,0.29,2
+diabetici,lr_scored,1,0.29,0.3,6
+diabetici,lr_scored,1,0.3,0.31,0
+diabetici,lr_scored,1,0.31,0.32,2
+diabetici,lr_scored,1,0.32,0.33,4
+diabetici,lr_scored,1,0.33,0.34,1
+diabetici,lr_scored,1,0.34,0.35000000000000003,2
+diabetici,lr_scored,1,0.35000000000000003,0.36,1
+diabetici,lr_scored,1,0.36,0.37,0
+diabetici,lr_scored,1,0.37,0.38,3
+diabetici,lr_scored,1,0.38,0.39,0
+diabetici,lr_scored,1,0.39,0.4,0
+diabetici,lr_scored,1,0.4,0.41000000000000003,2
+diabetici,lr_scored,1,0.41000000000000003,0.42,1
+diabetici,lr_scored,1,0.42,0.43,2
+diabetici,lr_scored,1,0.43,0.44,0
+diabetici,lr_scored,1,0.44,0.45,1
+diabetici,lr_scored,1,0.45,0.46,0
+diabetici,lr_scored,1,0.46,0.47000000000000003,1
+diabetici,lr_scored,1,0.47000000000000003,0.48,1
+diabetici,lr_scored,1,0.48,0.49,2
+diabetici,lr_scored,1,0.49,0.5,0
+diabetici,lr_scored,1,0.5,0.51,1
+diabetici,lr_scored,1,0.51,0.52,0
+diabetici,lr_scored,1,0.52,0.53,0
+diabetici,lr_scored,1,0.53,0.54,0
+diabetici,lr_scored,1,0.54,0.55,1
+diabetici,lr_scored,1,0.55,0.56,0
+diabetici,lr_scored,1,0.56,0.5700000000000001,0
+diabetici,lr_scored,1,0.5700000000000001,0.58,1
+diabetici,lr_scored,1,0.58,0.59,0
+diabetici,lr_scored,1,0.59,0.6,0
+diabetici,lr_scored,1,0.6,0.61,0
+diabetici,lr_scored,1,0.61,0.62,0
+diabetici,lr_scored,1,0.62,0.63,0
+diabetici,lr_scored,1,0.63,0.64,0
+diabetici,lr_scored,1,0.64,0.65,0
+diabetici,lr_scored,1,0.65,0.66,0
+diabetici,lr_scored,1,0.66,0.67,0
+diabetici,lr_scored,1,0.67,0.68,0
+diabetici,lr_scored,1,0.68,0.6900000000000001,0
+diabetici,lr_scored,1,0.6900000000000001,0.7000000000000001,0
+diabetici,lr_scored,1,0.7000000000000001,0.71,0
+diabetici,lr_scored,1,0.71,0.72,0
+diabetici,lr_scored,1,0.72,0.73,0
+diabetici,lr_scored,1,0.73,0.74,0
+diabetici,lr_scored,1,0.74,0.75,0
+diabetici,lr_scored,1,0.75,0.76,0
+diabetici,lr_scored,1,0.76,0.77,0
+diabetici,lr_scored,1,0.77,0.78,0
+diabetici,lr_scored,1,0.78,0.79,0
+diabetici,lr_scored,1,0.79,0.8,0
+diabetici,lr_scored,1,0.8,0.81,0
+diabetici,lr_scored,1,0.81,0.8200000000000001,0
+diabetici,lr_scored,1,0.8200000000000001,0.8300000000000001,0
+diabetici,lr_scored,1,0.8300000000000001,0.84,0
+diabetici,lr_scored,1,0.84,0.85,0
+diabetici,lr_scored,1,0.85,0.86,0
+diabetici,lr_scored,1,0.86,0.87,0
+diabetici,lr_scored,1,0.87,0.88,0
+diabetici,lr_scored,1,0.88,0.89,0
+diabetici,lr_scored,1,0.89,0.9,0
+diabetici,lr_scored,1,0.9,0.91,0
+diabetici,lr_scored,1,0.91,0.92,0
+diabetici,lr_scored,1,0.92,0.93,0
+diabetici,lr_scored,1,0.93,0.9400000000000001,0
+diabetici,lr_scored,1,0.9400000000000001,0.9500000000000001,0
+diabetici,lr_scored,1,0.9500000000000001,0.96,0
+diabetici,lr_scored,1,0.96,0.97,0
+diabetici,lr_scored,1,0.97,0.98,0
+diabetici,lr_scored,1,0.98,0.99,0
+diabetici,lr_scored,1,0.99,1.0,0
+non diabetici,lr_scored,0,0.0,0.01,0
+non diabetici,lr_scored,0,0.01,0.02,0
+non diabetici,lr_scored,0,0.02,0.03,26
+non diabetici,lr_scored,0,0.03,0.04,262
+non diabetici,lr_scored,0,0.04,0.05,516
+non diabetici,lr_scored,0,0.05,0.06,543
+non diabetici,lr_scored,0,0.06,0.07,501
+non diabetici,lr_scored,0,0.07,0.08,391
+non diabetici,lr_scored,0,0.08,0.09,317
+non diabetici,lr_scored,0,0.09,0.1,253
+non diabetici,lr_scored,0,0.1,0.11,188
+non diabetici,lr_scored,0,0.11,0.12,151
+non diabetici,lr_scored,0,0.12,0.13,118
+non diabetici,lr_scored,0,0.13,0.14,85
+non diabetici,lr_scored,0,0.14,0.15,65
+non diabetici,lr_scored,0,0.15,0.16,53
+non diabetici,lr_scored,0,0.16,0.17,44
+non diabetici,lr_scored,0,0.17,0.18,43
+non diabetici,lr_scored,0,0.18,0.19,20
+non diabetici,lr_scored,0,0.19,0.2,22
+non diabetici,lr_scored,0,0.2,0.21,18
+non diabetici,lr_scored,0,0.21,0.22,15
+non diabetici,lr_scored,0,0.22,0.23,21
+non diabetici,lr_scored,0,0.23,0.24,13
+non diabetici,lr_scored,0,0.24,0.25,7
+non diabetici,lr_scored,0,0.25,0.26,8
+non diabetici,lr_scored,0,0.26,0.27,10
+non diabetici,lr_scored,0,0.27,0.28,7
+non diabetici,lr_scored,0,0.28,0.29,2
+non diabetici,lr_scored,0,0.29,0.3,4
+non diabetici,lr_scored,0,0.3,0.31,5
+non diabetici,lr_scored,0,0.31,0.32,2
+non diabetici,lr_scored,0,0.32,0.33,8
+non diabetici,lr_scored,0,0.33,0.34,1
+non diabetici,lr_scored,0,0.34,0.35000000000000003,2
+non diabetici,lr_scored,0,0.35000000000000003,0.36,1
+non diabetici,lr_scored,0,0.36,0.37,2
+non diabetici,lr_scored,0,0.37,0.38,1
+non diabetici,lr_scored,0,0.38,0.39,0
+non diabetici,lr_scored,0,0.39,0.4,0
+non diabetici,lr_scored,0,0.4,0.41000000000000003,1
+non diabetici,lr_scored,0,0.41000000000000003,0.42,1
+non diabetici,lr_scored,0,0.42,0.43,0
+non diabetici,lr_scored,0,0.43,0.44,0
+non diabetici,lr_scored,0,0.44,0.45,1
+non diabetici,lr_scored,0,0.45,0.46,0
+non diabetici,lr_scored,0,0.46,0.47000000000000003,0
+non diabetici,lr_scored,0,0.47000000000000003,0.48,1
+non diabetici,lr_scored,0,0.48,0.49,0
+non diabetici,lr_scored,0,0.49,0.5,1
+non diabetici,lr_scored,0,0.5,0.51,0
+non diabetici,lr_scored,0,0.51,0.52,0
+non diabetici,lr_scored,0,0.52,0.53,0
+non diabetici,lr_scored,0,0.53,0.54,0
+non diabetici,lr_scored,0,0.54,0.55,0
+non diabetici,lr_scored,0,0.55,0.56,0
+non diabetici,lr_scored,0,0.56,0.5700000000000001,0
+non diabetici,lr_scored,0,0.5700000000000001,0.58,0
+non diabetici,lr_scored,0,0.58,0.59,0
+non diabetici,lr_scored,0,0.59,0.6,0
+non diabetici,lr_scored,0,0.6,0.61,0
+non diabetici,lr_scored,0,0.61,0.62,0
+non diabetici,lr_scored,0,0.62,0.63,0
+non diabetici,lr_scored,0,0.63,0.64,0
+non diabetici,lr_scored,0,0.64,0.65,0
+non diabetici,lr_scored,0,0.65,0.66,0
+non diabetici,lr_scored,0,0.66,0.67,0
+non diabetici,lr_scored,0,0.67,0.68,0
+non diabetici,lr_scored,0,0.68,0.6900000000000001,0
+non diabetici,lr_scored,0,0.6900000000000001,0.7000000000000001,0
+non diabetici,lr_scored,0,0.7000000000000001,0.71,0
+non diabetici,lr_scored,0,0.71,0.72,0
+non diabetici,lr_scored,0,0.72,0.73,0
+non diabetici,lr_scored,0,0.73,0.74,0
+non diabetici,lr_scored,0,0.74,0.75,0
+non diabetici,lr_scored,0,0.75,0.76,0
+non diabetici,lr_scored,0,0.76,0.77,0
+non diabetici,lr_scored,0,0.77,0.78,0
+non diabetici,lr_scored,0,0.78,0.79,0
+non diabetici,lr_scored,0,0.79,0.8,0
+non diabetici,lr_scored,0,0.8,0.81,0
+non diabetici,lr_scored,0,0.81,0.8200000000000001,0
+non diabetici,lr_scored,0,0.8200000000000001,0.8300000000000001,0
+non diabetici,lr_scored,0,0.8300000000000001,0.84,0
+non diabetici,lr_scored,0,0.84,0.85,0
+non diabetici,lr_scored,0,0.85,0.86,0
+non diabetici,lr_scored,0,0.86,0.87,0
+non diabetici,lr_scored,0,0.87,0.88,0
+non diabetici,lr_scored,0,0.88,0.89,0
+non diabetici,lr_scored,0,0.89,0.9,0
+non diabetici,lr_scored,0,0.9,0.91,0
+non diabetici,lr_scored,0,0.91,0.92,0
+non diabetici,lr_scored,0,0.92,0.93,0
+non diabetici,lr_scored,0,0.93,0.9400000000000001,0
+non diabetici,lr_scored,0,0.9400000000000001,0.9500000000000001,0
+non diabetici,lr_scored,0,0.9500000000000001,0.96,0
+non diabetici,lr_scored,0,0.96,0.97,0
+non diabetici,lr_scored,0,0.97,0.98,0
+non diabetici,lr_scored,0,0.98,0.99,0
+non diabetici,lr_scored,0,0.99,1.0,0
+non diabetici,lr_scored,1,0.0,0.01,0
+non diabetici,lr_scored,1,0.01,0.02,0
+non diabetici,lr_scored,1,0.02,0.03,2
+non diabetici,lr_scored,1,0.03,0.04,12
+non diabetici,lr_scored,1,0.04,0.05,28
+non diabetici,lr_scored,1,0.05,0.06,36
+non diabetici,lr_scored,1,0.06,0.07,31
+non diabetici,lr_scored,1,0.07,0.08,31
+non diabetici,lr_scored,1,0.08,0.09,23
+non diabetici,lr_scored,1,0.09,0.1,29
+non diabetici,lr_scored,1,0.1,0.11,16
+non diabetici,lr_scored,1,0.11,0.12,25
+non diabetici,lr_scored,1,0.12,0.13,11
+non diabetici,lr_scored,1,0.13,0.14,12
+non diabetici,lr_scored,1,0.14,0.15,16
+non diabetici,lr_scored,1,0.15,0.16,6
+non diabetici,lr_scored,1,0.16,0.17,10
+non diabetici,lr_scored,1,0.17,0.18,6
+non diabetici,lr_scored,1,0.18,0.19,4
+non diabetici,lr_scored,1,0.19,0.2,4
+non diabetici,lr_scored,1,0.2,0.21,5
+non diabetici,lr_scored,1,0.21,0.22,4
+non diabetici,lr_scored,1,0.22,0.23,8
+non diabetici,lr_scored,1,0.23,0.24,7
+non diabetici,lr_scored,1,0.24,0.25,3
+non diabetici,lr_scored,1,0.25,0.26,1
+non diabetici,lr_scored,1,0.26,0.27,5
+non diabetici,lr_scored,1,0.27,0.28,2
+non diabetici,lr_scored,1,0.28,0.29,4
+non diabetici,lr_scored,1,0.29,0.3,0
+non diabetici,lr_scored,1,0.3,0.31,0
+non diabetici,lr_scored,1,0.31,0.32,2
+non diabetici,lr_scored,1,0.32,0.33,2
+non diabetici,lr_scored,1,0.33,0.34,2
+non diabetici,lr_scored,1,0.34,0.35000000000000003,2
+non diabetici,lr_scored,1,0.35000000000000003,0.36,2
+non diabetici,lr_scored,1,0.36,0.37,1
+non diabetici,lr_scored,1,0.37,0.38,0
+non diabetici,lr_scored,1,0.38,0.39,1
+non diabetici,lr_scored,1,0.39,0.4,2
+non diabetici,lr_scored,1,0.4,0.41000000000000003,0
+non diabetici,lr_scored,1,0.41000000000000003,0.42,0
+non diabetici,lr_scored,1,0.42,0.43,0
+non diabetici,lr_scored,1,0.43,0.44,0
+non diabetici,lr_scored,1,0.44,0.45,0
+non diabetici,lr_scored,1,0.45,0.46,0
+non diabetici,lr_scored,1,0.46,0.47000000000000003,0
+non diabetici,lr_scored,1,0.47000000000000003,0.48,0
+non diabetici,lr_scored,1,0.48,0.49,0
+non diabetici,lr_scored,1,0.49,0.5,0
+non diabetici,lr_scored,1,0.5,0.51,0
+non diabetici,lr_scored,1,0.51,0.52,1
+non diabetici,lr_scored,1,0.52,0.53,0
+non diabetici,lr_scored,1,0.53,0.54,0
+non diabetici,lr_scored,1,0.54,0.55,0
+non diabetici,lr_scored,1,0.55,0.56,0
+non diabetici,lr_scored,1,0.56,0.5700000000000001,0
+non diabetici,lr_scored,1,0.5700000000000001,0.58,0
+non diabetici,lr_scored,1,0.58,0.59,0
+non diabetici,lr_scored,1,0.59,0.6,0
+non diabetici,lr_scored,1,0.6,0.61,0
+non diabetici,lr_scored,1,0.61,0.62,0
+non diabetici,lr_scored,1,0.62,0.63,0
+non diabetici,lr_scored,1,0.63,0.64,0
+non diabetici,lr_scored,1,0.64,0.65,1
+non diabetici,lr_scored,1,0.65,0.66,0
+non diabetici,lr_scored,1,0.66,0.67,0
+non diabetici,lr_scored,1,0.67,0.68,0
+non diabetici,lr_scored,1,0.68,0.6900000000000001,0
+non diabetici,lr_scored,1,0.6900000000000001,0.7000000000000001,0
+non diabetici,lr_scored,1,0.7000000000000001,0.71,0
+non diabetici,lr_scored,1,0.71,0.72,0
+non diabetici,lr_scored,1,0.72,0.73,0
+non diabetici,lr_scored,1,0.73,0.74,0
+non diabetici,lr_scored,1,0.74,0.75,0
+non diabetici,lr_scored,1,0.75,0.76,0
+non diabetici,lr_scored,1,0.76,0.77,0
+non diabetici,lr_scored,1,0.77,0.78,0
+non diabetici,lr_scored,1,0.78,0.79,0
+non diabetici,lr_scored,1,0.79,0.8,0
+non diabetici,lr_scored,1,0.8,0.81,0
+non diabetici,lr_scored,1,0.81,0.8200000000000001,0
+non diabetici,lr_scored,1,0.8200000000000001,0.8300000000000001,0
+non diabetici,lr_scored,1,0.8300000000000001,0.84,0
+non diabetici,lr_scored,1,0.84,0.85,0
+non diabetici,lr_scored,1,0.85,0.86,0
+non diabetici,lr_scored,1,0.86,0.87,0
+non diabetici,lr_scored,1,0.87,0.88,0
+non diabetici,lr_scored,1,0.88,0.89,0
+non diabetici,lr_scored,1,0.89,0.9,0
+non diabetici,lr_scored,1,0.9,0.91,0
+non diabetici,lr_scored,1,0.91,0.92,0
+non diabetici,lr_scored,1,0.92,0.93,0
+non diabetici,lr_scored,1,0.93,0.9400000000000001,0
+non diabetici,lr_scored,1,0.9400000000000001,0.9500000000000001,0
+non diabetici,lr_scored,1,0.9500000000000001,0.96,0
+non diabetici,lr_scored,1,0.96,0.97,0
+non diabetici,lr_scored,1,0.97,0.98,0
+non diabetici,lr_scored,1,0.98,0.99,0
+non diabetici,lr_scored,1,0.99,1.0,0
+tutti,lr_scored,0,0.0,0.01,0
+tutti,lr_scored,0,0.01,0.02,0
+tutti,lr_scored,0,0.02,0.03,26
+tutti,lr_scored,0,0.03,0.04,262
+tutti,lr_scored,0,0.04,0.05,516
+tutti,lr_scored,0,0.05,0.06,543
+tutti,lr_scored,0,0.06,0.07,501
+tutti,lr_scored,0,0.07,0.08,391
+tutti,lr_scored,0,0.08,0.09,317
+tutti,lr_scored,0,0.09,0.1,254
+tutti,lr_scored,0,0.1,0.11,193
+tutti,lr_scored,0,0.11,0.12,154
+tutti,lr_scored,0,0.12,0.13,123
+tutti,lr_scored,0,0.13,0.14,90
+tutti,lr_scored,0,0.14,0.15,70
+tutti,lr_scored,0,0.15,0.16,68
+tutti,lr_scored,0,0.16,0.17,47
+tutti,lr_scored,0,0.17,0.18,49
+tutti,lr_scored,0,0.18,0.19,31
+tutti,lr_scored,0,0.19,0.2,29
+tutti,lr_scored,0,0.2,0.21,27
+tutti,lr_scored,0,0.21,0.22,23
+tutti,lr_scored,0,0.22,0.23,30
+tutti,lr_scored,0,0.23,0.24,21
+tutti,lr_scored,0,0.24,0.25,18
+tutti,lr_scored,0,0.25,0.26,16
+tutti,lr_scored,0,0.26,0.27,19
+tutti,lr_scored,0,0.27,0.28,12
+tutti,lr_scored,0,0.28,0.29,8
+tutti,lr_scored,0,0.29,0.3,11
+tutti,lr_scored,0,0.3,0.31,9
+tutti,lr_scored,0,0.31,0.32,7
+tutti,lr_scored,0,0.32,0.33,15
+tutti,lr_scored,0,0.33,0.34,2
+tutti,lr_scored,0,0.34,0.35000000000000003,9
+tutti,lr_scored,0,0.35000000000000003,0.36,2
+tutti,lr_scored,0,0.36,0.37,6
+tutti,lr_scored,0,0.37,0.38,7
+tutti,lr_scored,0,0.38,0.39,1
+tutti,lr_scored,0,0.39,0.4,3
+tutti,lr_scored,0,0.4,0.41000000000000003,2
+tutti,lr_scored,0,0.41000000000000003,0.42,2
+tutti,lr_scored,0,0.42,0.43,0
+tutti,lr_scored,0,0.43,0.44,1
+tutti,lr_scored,0,0.44,0.45,2
+tutti,lr_scored,0,0.45,0.46,2
+tutti,lr_scored,0,0.46,0.47000000000000003,1
+tutti,lr_scored,0,0.47000000000000003,0.48,1
+tutti,lr_scored,0,0.48,0.49,1
+tutti,lr_scored,0,0.49,0.5,1
+tutti,lr_scored,0,0.5,0.51,0
+tutti,lr_scored,0,0.51,0.52,0
+tutti,lr_scored,0,0.52,0.53,0
+tutti,lr_scored,0,0.53,0.54,0
+tutti,lr_scored,0,0.54,0.55,0
+tutti,lr_scored,0,0.55,0.56,0
+tutti,lr_scored,0,0.56,0.5700000000000001,1
+tutti,lr_scored,0,0.5700000000000001,0.58,0
+tutti,lr_scored,0,0.58,0.59,0
+tutti,lr_scored,0,0.59,0.6,0
+tutti,lr_scored,0,0.6,0.61,0
+tutti,lr_scored,0,0.61,0.62,0
+tutti,lr_scored,0,0.62,0.63,0
+tutti,lr_scored,0,0.63,0.64,0
+tutti,lr_scored,0,0.64,0.65,1
+tutti,lr_scored,0,0.65,0.66,0
+tutti,lr_scored,0,0.66,0.67,0
+tutti,lr_scored,0,0.67,0.68,0
+tutti,lr_scored,0,0.68,0.6900000000000001,0
+tutti,lr_scored,0,0.6900000000000001,0.7000000000000001,0
+tutti,lr_scored,0,0.7000000000000001,0.71,0
+tutti,lr_scored,0,0.71,0.72,0
+tutti,lr_scored,0,0.72,0.73,0
+tutti,lr_scored,0,0.73,0.74,0
+tutti,lr_scored,0,0.74,0.75,0
+tutti,lr_scored,0,0.75,0.76,0
+tutti,lr_scored,0,0.76,0.77,0
+tutti,lr_scored,0,0.77,0.78,0
+tutti,lr_scored,0,0.78,0.79,0
+tutti,lr_scored,0,0.79,0.8,0
+tutti,lr_scored,0,0.8,0.81,0
+tutti,lr_scored,0,0.81,0.8200000000000001,0
+tutti,lr_scored,0,0.8200000000000001,0.8300000000000001,0
+tutti,lr_scored,0,0.8300000000000001,0.84,0
+tutti,lr_scored,0,0.84,0.85,0
+tutti,lr_scored,0,0.85,0.86,0
+tutti,lr_scored,0,0.86,0.87,0
+tutti,lr_scored,0,0.87,0.88,0
+tutti,lr_scored,0,0.88,0.89,0
+tutti,lr_scored,0,0.89,0.9,0
+tutti,lr_scored,0,0.9,0.91,0
+tutti,lr_scored,0,0.91,0.92,0
+tutti,lr_scored,0,0.92,0.93,0
+tutti,lr_scored,0,0.93,0.9400000000000001,0
+tutti,lr_scored,0,0.9400000000000001,0.9500000000000001,0
+tutti,lr_scored,0,0.9500000000000001,0.96,0
+tutti,lr_scored,0,0.96,0.97,0
+tutti,lr_scored,0,0.97,0.98,0
+tutti,lr_scored,0,0.98,0.99,0
+tutti,lr_scored,0,0.99,1.0,0
+tutti,lr_scored,1,0.0,0.01,0
+tutti,lr_scored,1,0.01,0.02,0
+tutti,lr_scored,1,0.02,0.03,2
+tutti,lr_scored,1,0.03,0.04,12
+tutti,lr_scored,1,0.04,0.05,28
+tutti,lr_scored,1,0.05,0.06,36
+tutti,lr_scored,1,0.06,0.07,31
+tutti,lr_scored,1,0.07,0.08,31
+tutti,lr_scored,1,0.08,0.09,23
+tutti,lr_scored,1,0.09,0.1,29
+tutti,lr_scored,1,0.1,0.11,16
+tutti,lr_scored,1,0.11,0.12,25
+tutti,lr_scored,1,0.12,0.13,11
+tutti,lr_scored,1,0.13,0.14,15
+tutti,lr_scored,1,0.14,0.15,17
+tutti,lr_scored,1,0.15,0.16,7
+tutti,lr_scored,1,0.16,0.17,12
+tutti,lr_scored,1,0.17,0.18,10
+tutti,lr_scored,1,0.18,0.19,7
+tutti,lr_scored,1,0.19,0.2,7
+tutti,lr_scored,1,0.2,0.21,8
+tutti,lr_scored,1,0.21,0.22,9
+tutti,lr_scored,1,0.22,0.23,9
+tutti,lr_scored,1,0.23,0.24,9
+tutti,lr_scored,1,0.24,0.25,4
+tutti,lr_scored,1,0.25,0.26,3
+tutti,lr_scored,1,0.26,0.27,6
+tutti,lr_scored,1,0.27,0.28,4
+tutti,lr_scored,1,0.28,0.29,6
+tutti,lr_scored,1,0.29,0.3,6
+tutti,lr_scored,1,0.3,0.31,0
+tutti,lr_scored,1,0.31,0.32,4
+tutti,lr_scored,1,0.32,0.33,6
+tutti,lr_scored,1,0.33,0.34,3
+tutti,lr_scored,1,0.34,0.35000000000000003,4
+tutti,lr_scored,1,0.35000000000000003,0.36,3
+tutti,lr_scored,1,0.36,0.37,1
+tutti,lr_scored,1,0.37,0.38,3
+tutti,lr_scored,1,0.38,0.39,1
+tutti,lr_scored,1,0.39,0.4,2
+tutti,lr_scored,1,0.4,0.41000000000000003,2
+tutti,lr_scored,1,0.41000000000000003,0.42,1
+tutti,lr_scored,1,0.42,0.43,2
+tutti,lr_scored,1,0.43,0.44,0
+tutti,lr_scored,1,0.44,0.45,1
+tutti,lr_scored,1,0.45,0.46,0
+tutti,lr_scored,1,0.46,0.47000000000000003,1
+tutti,lr_scored,1,0.47000000000000003,0.48,1
+tutti,lr_scored,1,0.48,0.49,2
+tutti,lr_scored,1,0.49,0.5,0
+tutti,lr_scored,1,0.5,0.51,1
+tutti,lr_scored,1,0.51,0.52,1
+tutti,lr_scored,1,0.52,0.53,0
+tutti,lr_scored,1,0.53,0.54,0
+tutti,lr_scored,1,0.54,0.55,1
+tutti,lr_scored,1,0.55,0.56,0
+tutti,lr_scored,1,0.56,0.5700000000000001,0
+tutti,lr_scored,1,0.5700000000000001,0.58,1
+tutti,lr_scored,1,0.58,0.59,0
+tutti,lr_scored,1,0.59,0.6,0
+tutti,lr_scored,1,0.6,0.61,0
+tutti,lr_scored,1,0.61,0.62,0
+tutti,lr_scored,1,0.62,0.63,0
+tutti,lr_scored,1,0.63,0.64,0
+tutti,lr_scored,1,0.64,0.65,1
+tutti,lr_scored,1,0.65,0.66,0
+tutti,lr_scored,1,0.66,0.67,0
+tutti,lr_scored,1,0.67,0.68,0
+tutti,lr_scored,1,0.68,0.6900000000000001,0
+tutti,lr_scored,1,0.6900000000000001,0.7000000000000001,0
+tutti,lr_scored,1,0.7000000000000001,0.71,0
+tutti,lr_scored,1,0.71,0.72,0
+tutti,lr_scored,1,0.72,0.73,0
+tutti,lr_scored,1,0.73,0.74,0
+tutti,lr_scored,1,0.74,0.75,0
+tutti,lr_scored,1,0.75,0.76,0
+tutti,lr_scored,1,0.76,0.77,0
+tutti,lr_scored,1,0.77,0.78,0
+tutti,lr_scored,1,0.78,0.79,0
+tutti,lr_scored,1,0.79,0.8,0
+tutti,lr_scored,1,0.8,0.81,0
+tutti,lr_scored,1,0.81,0.8200000000000001,0
+tutti,lr_scored,1,0.8200000000000001,0.8300000000000001,0
+tutti,lr_scored,1,0.8300000000000001,0.84,0
+tutti,lr_scored,1,0.84,0.85,0
+tutti,lr_scored,1,0.85,0.86,0
+tutti,lr_scored,1,0.86,0.87,0
+tutti,lr_scored,1,0.87,0.88,0
+tutti,lr_scored,1,0.88,0.89,0
+tutti,lr_scored,1,0.89,0.9,0
+tutti,lr_scored,1,0.9,0.91,0
+tutti,lr_scored,1,0.91,0.92,0
+tutti,lr_scored,1,0.92,0.93,0
+tutti,lr_scored,1,0.93,0.9400000000000001,0
+tutti,lr_scored,1,0.9400000000000001,0.9500000000000001,0
+tutti,lr_scored,1,0.9500000000000001,0.96,0
+tutti,lr_scored,1,0.96,0.97,0
+tutti,lr_scored,1,0.97,0.98,0
+tutti,lr_scored,1,0.98,0.99,0
+tutti,lr_scored,1,0.99,1.0,0
+diabetici,lr_penalized,0,0.0,0.01,0
+diabetici,lr_penalized,0,0.01,0.02,0
+diabetici,lr_penalized,0,0.02,0.03,0
+diabetici,lr_penalized,0,0.03,0.04,0
+diabetici,lr_penalized,0,0.04,0.05,3
+diabetici,lr_penalized,0,0.05,0.06,4
+diabetici,lr_penalized,0,0.06,0.07,7
+diabetici,lr_penalized,0,0.07,0.08,10
+diabetici,lr_penalized,0,0.08,0.09,7
+diabetici,lr_penalized,0,0.09,0.1,7
+diabetici,lr_penalized,0,0.1,0.11,11
+diabetici,lr_penalized,0,0.11,0.12,7
+diabetici,lr_penalized,0,0.12,0.13,8
+diabetici,lr_penalized,0,0.13,0.14,6
+diabetici,lr_penalized,0,0.14,0.15,14
+diabetici,lr_penalized,0,0.15,0.16,8
+diabetici,lr_penalized,0,0.16,0.17,8
+diabetici,lr_penalized,0,0.17,0.18,5
+diabetici,lr_penalized,0,0.18,0.19,4
+diabetici,lr_penalized,0,0.19,0.2,9
+diabetici,lr_penalized,0,0.2,0.21,4
+diabetici,lr_penalized,0,0.21,0.22,5
+diabetici,lr_penalized,0,0.22,0.23,4
+diabetici,lr_penalized,0,0.23,0.24,2
+diabetici,lr_penalized,0,0.24,0.25,3
+diabetici,lr_penalized,0,0.25,0.26,8
+diabetici,lr_penalized,0,0.26,0.27,7
+diabetici,lr_penalized,0,0.27,0.28,1
+diabetici,lr_penalized,0,0.28,0.29,6
+diabetici,lr_penalized,0,0.29,0.3,2
+diabetici,lr_penalized,0,0.3,0.31,1
+diabetici,lr_penalized,0,0.31,0.32,1
+diabetici,lr_penalized,0,0.32,0.33,3
+diabetici,lr_penalized,0,0.33,0.34,2
+diabetici,lr_penalized,0,0.34,0.35000000000000003,1
+diabetici,lr_penalized,0,0.35000000000000003,0.36,2
+diabetici,lr_penalized,0,0.36,0.37,0
+diabetici,lr_penalized,0,0.37,0.38,1
+diabetici,lr_penalized,0,0.38,0.39,1
+diabetici,lr_penalized,0,0.39,0.4,3
+diabetici,lr_penalized,0,0.4,0.41000000000000003,1
+diabetici,lr_penalized,0,0.41000000000000003,0.42,3
+diabetici,lr_penalized,0,0.42,0.43,2
+diabetici,lr_penalized,0,0.43,0.44,3
+diabetici,lr_penalized,0,0.44,0.45,1
+diabetici,lr_penalized,0,0.45,0.46,1
+diabetici,lr_penalized,0,0.46,0.47000000000000003,1
+diabetici,lr_penalized,0,0.47000000000000003,0.48,1
+diabetici,lr_penalized,0,0.48,0.49,0
+diabetici,lr_penalized,0,0.49,0.5,1
+diabetici,lr_penalized,0,0.5,0.51,0
+diabetici,lr_penalized,0,0.51,0.52,1
+diabetici,lr_penalized,0,0.52,0.53,0
+diabetici,lr_penalized,0,0.53,0.54,0
+diabetici,lr_penalized,0,0.54,0.55,1
+diabetici,lr_penalized,0,0.55,0.56,0
+diabetici,lr_penalized,0,0.56,0.5700000000000001,0
+diabetici,lr_penalized,0,0.5700000000000001,0.58,0
+diabetici,lr_penalized,0,0.58,0.59,0
+diabetici,lr_penalized,0,0.59,0.6,0
+diabetici,lr_penalized,0,0.6,0.61,0
+diabetici,lr_penalized,0,0.61,0.62,1
+diabetici,lr_penalized,0,0.62,0.63,0
+diabetici,lr_penalized,0,0.63,0.64,0
+diabetici,lr_penalized,0,0.64,0.65,1
+diabetici,lr_penalized,0,0.65,0.66,0
+diabetici,lr_penalized,0,0.66,0.67,0
+diabetici,lr_penalized,0,0.67,0.68,0
+diabetici,lr_penalized,0,0.68,0.6900000000000001,0
+diabetici,lr_penalized,0,0.6900000000000001,0.7000000000000001,0
+diabetici,lr_penalized,0,0.7000000000000001,0.71,0
+diabetici,lr_penalized,0,0.71,0.72,0
+diabetici,lr_penalized,0,0.72,0.73,0
+diabetici,lr_penalized,0,0.73,0.74,0
+diabetici,lr_penalized,0,0.74,0.75,0
+diabetici,lr_penalized,0,0.75,0.76,1
+diabetici,lr_penalized,0,0.76,0.77,0
+diabetici,lr_penalized,0,0.77,0.78,0
+diabetici,lr_penalized,0,0.78,0.79,0
+diabetici,lr_penalized,0,0.79,0.8,0
+diabetici,lr_penalized,0,0.8,0.81,0
+diabetici,lr_penalized,0,0.81,0.8200000000000001,0
+diabetici,lr_penalized,0,0.8200000000000001,0.8300000000000001,0
+diabetici,lr_penalized,0,0.8300000000000001,0.84,0
+diabetici,lr_penalized,0,0.84,0.85,0
+diabetici,lr_penalized,0,0.85,0.86,0
+diabetici,lr_penalized,0,0.86,0.87,0
+diabetici,lr_penalized,0,0.87,0.88,0
+diabetici,lr_penalized,0,0.88,0.89,0
+diabetici,lr_penalized,0,0.89,0.9,1
+diabetici,lr_penalized,0,0.9,0.91,0
+diabetici,lr_penalized,0,0.91,0.92,0
+diabetici,lr_penalized,0,0.92,0.93,0
+diabetici,lr_penalized,0,0.93,0.9400000000000001,0
+diabetici,lr_penalized,0,0.9400000000000001,0.9500000000000001,0
+diabetici,lr_penalized,0,0.9500000000000001,0.96,0
+diabetici,lr_penalized,0,0.96,0.97,0
+diabetici,lr_penalized,0,0.97,0.98,0
+diabetici,lr_penalized,0,0.98,0.99,0
+diabetici,lr_penalized,0,0.99,1.0,0
+diabetici,lr_penalized,1,0.0,0.01,0
+diabetici,lr_penalized,1,0.01,0.02,0
+diabetici,lr_penalized,1,0.02,0.03,0
+diabetici,lr_penalized,1,0.03,0.04,0
+diabetici,lr_penalized,1,0.04,0.05,0
+diabetici,lr_penalized,1,0.05,0.06,1
+diabetici,lr_penalized,1,0.06,0.07,1
+diabetici,lr_penalized,1,0.07,0.08,0
+diabetici,lr_penalized,1,0.08,0.09,1
+diabetici,lr_penalized,1,0.09,0.1,1
+diabetici,lr_penalized,1,0.1,0.11,2
+diabetici,lr_penalized,1,0.11,0.12,0
+diabetici,lr_penalized,1,0.12,0.13,1
+diabetici,lr_penalized,1,0.13,0.14,2
+diabetici,lr_penalized,1,0.14,0.15,3
+diabetici,lr_penalized,1,0.15,0.16,1
+diabetici,lr_penalized,1,0.16,0.17,4
+diabetici,lr_penalized,1,0.17,0.18,1
+diabetici,lr_penalized,1,0.18,0.19,2
+diabetici,lr_penalized,1,0.19,0.2,1
+diabetici,lr_penalized,1,0.2,0.21,3
+diabetici,lr_penalized,1,0.21,0.22,2
+diabetici,lr_penalized,1,0.22,0.23,0
+diabetici,lr_penalized,1,0.23,0.24,1
+diabetici,lr_penalized,1,0.24,0.25,3
+diabetici,lr_penalized,1,0.25,0.26,1
+diabetici,lr_penalized,1,0.26,0.27,4
+diabetici,lr_penalized,1,0.27,0.28,1
+diabetici,lr_penalized,1,0.28,0.29,3
+diabetici,lr_penalized,1,0.29,0.3,2
+diabetici,lr_penalized,1,0.3,0.31,4
+diabetici,lr_penalized,1,0.31,0.32,0
+diabetici,lr_penalized,1,0.32,0.33,3
+diabetici,lr_penalized,1,0.33,0.34,3
+diabetici,lr_penalized,1,0.34,0.35000000000000003,1
+diabetici,lr_penalized,1,0.35000000000000003,0.36,3
+diabetici,lr_penalized,1,0.36,0.37,1
+diabetici,lr_penalized,1,0.37,0.38,0
+diabetici,lr_penalized,1,0.38,0.39,2
+diabetici,lr_penalized,1,0.39,0.4,0
+diabetici,lr_penalized,1,0.4,0.41000000000000003,0
+diabetici,lr_penalized,1,0.41000000000000003,0.42,1
+diabetici,lr_penalized,1,0.42,0.43,0
+diabetici,lr_penalized,1,0.43,0.44,0
+diabetici,lr_penalized,1,0.44,0.45,0
+diabetici,lr_penalized,1,0.45,0.46,2
+diabetici,lr_penalized,1,0.46,0.47000000000000003,0
+diabetici,lr_penalized,1,0.47000000000000003,0.48,0
+diabetici,lr_penalized,1,0.48,0.49,0
+diabetici,lr_penalized,1,0.49,0.5,0
+diabetici,lr_penalized,1,0.5,0.51,0
+diabetici,lr_penalized,1,0.51,0.52,0
+diabetici,lr_penalized,1,0.52,0.53,0
+diabetici,lr_penalized,1,0.53,0.54,0
+diabetici,lr_penalized,1,0.54,0.55,1
+diabetici,lr_penalized,1,0.55,0.56,0
+diabetici,lr_penalized,1,0.56,0.5700000000000001,1
+diabetici,lr_penalized,1,0.5700000000000001,0.58,0
+diabetici,lr_penalized,1,0.58,0.59,0
+diabetici,lr_penalized,1,0.59,0.6,0
+diabetici,lr_penalized,1,0.6,0.61,0
+diabetici,lr_penalized,1,0.61,0.62,0
+diabetici,lr_penalized,1,0.62,0.63,0
+diabetici,lr_penalized,1,0.63,0.64,0
+diabetici,lr_penalized,1,0.64,0.65,1
+diabetici,lr_penalized,1,0.65,0.66,0
+diabetici,lr_penalized,1,0.66,0.67,0
+diabetici,lr_penalized,1,0.67,0.68,0
+diabetici,lr_penalized,1,0.68,0.6900000000000001,0
+diabetici,lr_penalized,1,0.6900000000000001,0.7000000000000001,0
+diabetici,lr_penalized,1,0.7000000000000001,0.71,0
+diabetici,lr_penalized,1,0.71,0.72,0
+diabetici,lr_penalized,1,0.72,0.73,0
+diabetici,lr_penalized,1,0.73,0.74,0
+diabetici,lr_penalized,1,0.74,0.75,0
+diabetici,lr_penalized,1,0.75,0.76,1
+diabetici,lr_penalized,1,0.76,0.77,0
+diabetici,lr_penalized,1,0.77,0.78,0
+diabetici,lr_penalized,1,0.78,0.79,0
+diabetici,lr_penalized,1,0.79,0.8,1
+diabetici,lr_penalized,1,0.8,0.81,0
+diabetici,lr_penalized,1,0.81,0.8200000000000001,0
+diabetici,lr_penalized,1,0.8200000000000001,0.8300000000000001,1
+diabetici,lr_penalized,1,0.8300000000000001,0.84,0
+diabetici,lr_penalized,1,0.84,0.85,0
+diabetici,lr_penalized,1,0.85,0.86,0
+diabetici,lr_penalized,1,0.86,0.87,0
+diabetici,lr_penalized,1,0.87,0.88,0
+diabetici,lr_penalized,1,0.88,0.89,0
+diabetici,lr_penalized,1,0.89,0.9,0
+diabetici,lr_penalized,1,0.9,0.91,0
+diabetici,lr_penalized,1,0.91,0.92,0
+diabetici,lr_penalized,1,0.92,0.93,0
+diabetici,lr_penalized,1,0.93,0.9400000000000001,0
+diabetici,lr_penalized,1,0.9400000000000001,0.9500000000000001,0
+diabetici,lr_penalized,1,0.9500000000000001,0.96,0
+diabetici,lr_penalized,1,0.96,0.97,1
+diabetici,lr_penalized,1,0.97,0.98,0
+diabetici,lr_penalized,1,0.98,0.99,0
+diabetici,lr_penalized,1,0.99,1.0,0
+non diabetici,lr_penalized,0,0.0,0.01,4
+non diabetici,lr_penalized,0,0.01,0.02,27
+non diabetici,lr_penalized,0,0.02,0.03,144
+non diabetici,lr_penalized,0,0.03,0.04,345
+non diabetici,lr_penalized,0,0.04,0.05,442
+non diabetici,lr_penalized,0,0.05,0.06,477
+non diabetici,lr_penalized,0,0.06,0.07,462
+non diabetici,lr_penalized,0,0.07,0.08,373
+non diabetici,lr_penalized,0,0.08,0.09,260
+non diabetici,lr_penalized,0,0.09,0.1,240
+non diabetici,lr_penalized,0,0.1,0.11,171
+non diabetici,lr_penalized,0,0.11,0.12,146
+non diabetici,lr_penalized,0,0.12,0.13,113
+non diabetici,lr_penalized,0,0.13,0.14,81
+non diabetici,lr_penalized,0,0.14,0.15,81
+non diabetici,lr_penalized,0,0.15,0.16,53
+non diabetici,lr_penalized,0,0.16,0.17,48
+non diabetici,lr_penalized,0,0.17,0.18,37
+non diabetici,lr_penalized,0,0.18,0.19,36
+non diabetici,lr_penalized,0,0.19,0.2,33
+non diabetici,lr_penalized,0,0.2,0.21,25
+non diabetici,lr_penalized,0,0.21,0.22,19
+non diabetici,lr_penalized,0,0.22,0.23,15
+non diabetici,lr_penalized,0,0.23,0.24,8
+non diabetici,lr_penalized,0,0.24,0.25,12
+non diabetici,lr_penalized,0,0.25,0.26,9
+non diabetici,lr_penalized,0,0.26,0.27,9
+non diabetici,lr_penalized,0,0.27,0.28,5
+non diabetici,lr_penalized,0,0.28,0.29,11
+non diabetici,lr_penalized,0,0.29,0.3,5
+non diabetici,lr_penalized,0,0.3,0.31,4
+non diabetici,lr_penalized,0,0.31,0.32,0
+non diabetici,lr_penalized,0,0.32,0.33,3
+non diabetici,lr_penalized,0,0.33,0.34,3
+non diabetici,lr_penalized,0,0.34,0.35000000000000003,4
+non diabetici,lr_penalized,0,0.35000000000000003,0.36,1
+non diabetici,lr_penalized,0,0.36,0.37,2
+non diabetici,lr_penalized,0,0.37,0.38,3
+non diabetici,lr_penalized,0,0.38,0.39,0
+non diabetici,lr_penalized,0,0.39,0.4,0
+non diabetici,lr_penalized,0,0.4,0.41000000000000003,0
+non diabetici,lr_penalized,0,0.41000000000000003,0.42,0
+non diabetici,lr_penalized,0,0.42,0.43,1
+non diabetici,lr_penalized,0,0.43,0.44,0
+non diabetici,lr_penalized,0,0.44,0.45,1
+non diabetici,lr_penalized,0,0.45,0.46,2
+non diabetici,lr_penalized,0,0.46,0.47000000000000003,1
+non diabetici,lr_penalized,0,0.47000000000000003,0.48,2
+non diabetici,lr_penalized,0,0.48,0.49,0
+non diabetici,lr_penalized,0,0.49,0.5,2
+non diabetici,lr_penalized,0,0.5,0.51,0
+non diabetici,lr_penalized,0,0.51,0.52,2
+non diabetici,lr_penalized,0,0.52,0.53,1
+non diabetici,lr_penalized,0,0.53,0.54,0
+non diabetici,lr_penalized,0,0.54,0.55,0
+non diabetici,lr_penalized,0,0.55,0.56,1
+non diabetici,lr_penalized,0,0.56,0.5700000000000001,1
+non diabetici,lr_penalized,0,0.5700000000000001,0.58,0
+non diabetici,lr_penalized,0,0.58,0.59,0
+non diabetici,lr_penalized,0,0.59,0.6,2
+non diabetici,lr_penalized,0,0.6,0.61,0
+non diabetici,lr_penalized,0,0.61,0.62,0
+non diabetici,lr_penalized,0,0.62,0.63,0
+non diabetici,lr_penalized,0,0.63,0.64,0
+non diabetici,lr_penalized,0,0.64,0.65,0
+non diabetici,lr_penalized,0,0.65,0.66,0
+non diabetici,lr_penalized,0,0.66,0.67,0
+non diabetici,lr_penalized,0,0.67,0.68,0
+non diabetici,lr_penalized,0,0.68,0.6900000000000001,0
+non diabetici,lr_penalized,0,0.6900000000000001,0.7000000000000001,0
+non diabetici,lr_penalized,0,0.7000000000000001,0.71,0
+non diabetici,lr_penalized,0,0.71,0.72,0
+non diabetici,lr_penalized,0,0.72,0.73,0
+non diabetici,lr_penalized,0,0.73,0.74,1
+non diabetici,lr_penalized,0,0.74,0.75,0
+non diabetici,lr_penalized,0,0.75,0.76,0
+non diabetici,lr_penalized,0,0.76,0.77,0
+non diabetici,lr_penalized,0,0.77,0.78,0
+non diabetici,lr_penalized,0,0.78,0.79,0
+non diabetici,lr_penalized,0,0.79,0.8,0
+non diabetici,lr_penalized,0,0.8,0.81,1
+non diabetici,lr_penalized,0,0.81,0.8200000000000001,0
+non diabetici,lr_penalized,0,0.8200000000000001,0.8300000000000001,0
+non diabetici,lr_penalized,0,0.8300000000000001,0.84,0
+non diabetici,lr_penalized,0,0.84,0.85,0
+non diabetici,lr_penalized,0,0.85,0.86,0
+non diabetici,lr_penalized,0,0.86,0.87,0
+non diabetici,lr_penalized,0,0.87,0.88,0
+non diabetici,lr_penalized,0,0.88,0.89,0
+non diabetici,lr_penalized,0,0.89,0.9,0
+non diabetici,lr_penalized,0,0.9,0.91,1
+non diabetici,lr_penalized,0,0.91,0.92,0
+non diabetici,lr_penalized,0,0.92,0.93,0
+non diabetici,lr_penalized,0,0.93,0.9400000000000001,0
+non diabetici,lr_penalized,0,0.9400000000000001,0.9500000000000001,0
+non diabetici,lr_penalized,0,0.9500000000000001,0.96,0
+non diabetici,lr_penalized,0,0.96,0.97,0
+non diabetici,lr_penalized,0,0.97,0.98,0
+non diabetici,lr_penalized,0,0.98,0.99,0
+non diabetici,lr_penalized,0,0.99,1.0,0
+non diabetici,lr_penalized,1,0.0,0.01,0
+non diabetici,lr_penalized,1,0.01,0.02,0
+non diabetici,lr_penalized,1,0.02,0.03,3
+non diabetici,lr_penalized,1,0.03,0.04,21
+non diabetici,lr_penalized,1,0.04,0.05,24
+non diabetici,lr_penalized,1,0.05,0.06,24
+non diabetici,lr_penalized,1,0.06,0.07,34
+non diabetici,lr_penalized,1,0.07,0.08,22
+non diabetici,lr_penalized,1,0.08,0.09,28
+non diabetici,lr_penalized,1,0.09,0.1,20
+non diabetici,lr_penalized,1,0.1,0.11,20
+non diabetici,lr_penalized,1,0.11,0.12,9
+non diabetici,lr_penalized,1,0.12,0.13,18
+non diabetici,lr_penalized,1,0.13,0.14,9
+non diabetici,lr_penalized,1,0.14,0.15,13
+non diabetici,lr_penalized,1,0.15,0.16,12
+non diabetici,lr_penalized,1,0.16,0.17,11
+non diabetici,lr_penalized,1,0.17,0.18,6
+non diabetici,lr_penalized,1,0.18,0.19,1
+non diabetici,lr_penalized,1,0.19,0.2,9
+non diabetici,lr_penalized,1,0.2,0.21,11
+non diabetici,lr_penalized,1,0.21,0.22,5
+non diabetici,lr_penalized,1,0.22,0.23,7
+non diabetici,lr_penalized,1,0.23,0.24,4
+non diabetici,lr_penalized,1,0.24,0.25,4
+non diabetici,lr_penalized,1,0.25,0.26,2
+non diabetici,lr_penalized,1,0.26,0.27,3
+non diabetici,lr_penalized,1,0.27,0.28,2
+non diabetici,lr_penalized,1,0.28,0.29,2
+non diabetici,lr_penalized,1,0.29,0.3,4
+non diabetici,lr_penalized,1,0.3,0.31,4
+non diabetici,lr_penalized,1,0.31,0.32,2
+non diabetici,lr_penalized,1,0.32,0.33,1
+non diabetici,lr_penalized,1,0.33,0.34,2
+non diabetici,lr_penalized,1,0.34,0.35000000000000003,3
+non diabetici,lr_penalized,1,0.35000000000000003,0.36,1
+non diabetici,lr_penalized,1,0.36,0.37,1
+non diabetici,lr_penalized,1,0.37,0.38,1
+non diabetici,lr_penalized,1,0.38,0.39,0
+non diabetici,lr_penalized,1,0.39,0.4,2
+non diabetici,lr_penalized,1,0.4,0.41000000000000003,3
+non diabetici,lr_penalized,1,0.41000000000000003,0.42,1
+non diabetici,lr_penalized,1,0.42,0.43,0
+non diabetici,lr_penalized,1,0.43,0.44,1
+non diabetici,lr_penalized,1,0.44,0.45,0
+non diabetici,lr_penalized,1,0.45,0.46,0
+non diabetici,lr_penalized,1,0.46,0.47000000000000003,0
+non diabetici,lr_penalized,1,0.47000000000000003,0.48,0
+non diabetici,lr_penalized,1,0.48,0.49,0
+non diabetici,lr_penalized,1,0.49,0.5,0
+non diabetici,lr_penalized,1,0.5,0.51,0
+non diabetici,lr_penalized,1,0.51,0.52,0
+non diabetici,lr_penalized,1,0.52,0.53,0
+non diabetici,lr_penalized,1,0.53,0.54,0
+non diabetici,lr_penalized,1,0.54,0.55,2
+non diabetici,lr_penalized,1,0.55,0.56,0
+non diabetici,lr_penalized,1,0.56,0.5700000000000001,0
+non diabetici,lr_penalized,1,0.5700000000000001,0.58,1
+non diabetici,lr_penalized,1,0.58,0.59,0
+non diabetici,lr_penalized,1,0.59,0.6,0
+non diabetici,lr_penalized,1,0.6,0.61,0
+non diabetici,lr_penalized,1,0.61,0.62,1
+non diabetici,lr_penalized,1,0.62,0.63,1
+non diabetici,lr_penalized,1,0.63,0.64,0
+non diabetici,lr_penalized,1,0.64,0.65,0
+non diabetici,lr_penalized,1,0.65,0.66,0
+non diabetici,lr_penalized,1,0.66,0.67,0
+non diabetici,lr_penalized,1,0.67,0.68,0
+non diabetici,lr_penalized,1,0.68,0.6900000000000001,0
+non diabetici,lr_penalized,1,0.6900000000000001,0.7000000000000001,1
+non diabetici,lr_penalized,1,0.7000000000000001,0.71,0
+non diabetici,lr_penalized,1,0.71,0.72,1
+non diabetici,lr_penalized,1,0.72,0.73,0
+non diabetici,lr_penalized,1,0.73,0.74,0
+non diabetici,lr_penalized,1,0.74,0.75,0
+non diabetici,lr_penalized,1,0.75,0.76,0
+non diabetici,lr_penalized,1,0.76,0.77,0
+non diabetici,lr_penalized,1,0.77,0.78,0
+non diabetici,lr_penalized,1,0.78,0.79,0
+non diabetici,lr_penalized,1,0.79,0.8,0
+non diabetici,lr_penalized,1,0.8,0.81,0
+non diabetici,lr_penalized,1,0.81,0.8200000000000001,0
+non diabetici,lr_penalized,1,0.8200000000000001,0.8300000000000001,0
+non diabetici,lr_penalized,1,0.8300000000000001,0.84,0
+non diabetici,lr_penalized,1,0.84,0.85,0
+non diabetici,lr_penalized,1,0.85,0.86,0
+non diabetici,lr_penalized,1,0.86,0.87,0
+non diabetici,lr_penalized,1,0.87,0.88,0
+non diabetici,lr_penalized,1,0.88,0.89,0
+non diabetici,lr_penalized,1,0.89,0.9,0
+non diabetici,lr_penalized,1,0.9,0.91,0
+non diabetici,lr_penalized,1,0.91,0.92,0
+non diabetici,lr_penalized,1,0.92,0.93,0
+non diabetici,lr_penalized,1,0.93,0.9400000000000001,0
+non diabetici,lr_penalized,1,0.9400000000000001,0.9500000000000001,0
+non diabetici,lr_penalized,1,0.9500000000000001,0.96,0
+non diabetici,lr_penalized,1,0.96,0.97,0
+non diabetici,lr_penalized,1,0.97,0.98,0
+non diabetici,lr_penalized,1,0.98,0.99,0
+non diabetici,lr_penalized,1,0.99,1.0,0
+tutti,lr_penalized,0,0.0,0.01,4
+tutti,lr_penalized,0,0.01,0.02,27
+tutti,lr_penalized,0,0.02,0.03,144
+tutti,lr_penalized,0,0.03,0.04,345
+tutti,lr_penalized,0,0.04,0.05,445
+tutti,lr_penalized,0,0.05,0.06,481
+tutti,lr_penalized,0,0.06,0.07,469
+tutti,lr_penalized,0,0.07,0.08,383
+tutti,lr_penalized,0,0.08,0.09,267
+tutti,lr_penalized,0,0.09,0.1,247
+tutti,lr_penalized,0,0.1,0.11,182
+tutti,lr_penalized,0,0.11,0.12,153
+tutti,lr_penalized,0,0.12,0.13,121
+tutti,lr_penalized,0,0.13,0.14,87
+tutti,lr_penalized,0,0.14,0.15,95
+tutti,lr_penalized,0,0.15,0.16,61
+tutti,lr_penalized,0,0.16,0.17,56
+tutti,lr_penalized,0,0.17,0.18,42
+tutti,lr_penalized,0,0.18,0.19,40
+tutti,lr_penalized,0,0.19,0.2,42
+tutti,lr_penalized,0,0.2,0.21,29
+tutti,lr_penalized,0,0.21,0.22,24
+tutti,lr_penalized,0,0.22,0.23,19
+tutti,lr_penalized,0,0.23,0.24,10
+tutti,lr_penalized,0,0.24,0.25,15
+tutti,lr_penalized,0,0.25,0.26,17
+tutti,lr_penalized,0,0.26,0.27,16
+tutti,lr_penalized,0,0.27,0.28,6
+tutti,lr_penalized,0,0.28,0.29,17
+tutti,lr_penalized,0,0.29,0.3,7
+tutti,lr_penalized,0,0.3,0.31,5
+tutti,lr_penalized,0,0.31,0.32,1
+tutti,lr_penalized,0,0.32,0.33,6
+tutti,lr_penalized,0,0.33,0.34,5
+tutti,lr_penalized,0,0.34,0.35000000000000003,5
+tutti,lr_penalized,0,0.35000000000000003,0.36,3
+tutti,lr_penalized,0,0.36,0.37,2
+tutti,lr_penalized,0,0.37,0.38,4
+tutti,lr_penalized,0,0.38,0.39,1
+tutti,lr_penalized,0,0.39,0.4,3
+tutti,lr_penalized,0,0.4,0.41000000000000003,1
+tutti,lr_penalized,0,0.41000000000000003,0.42,3
+tutti,lr_penalized,0,0.42,0.43,3
+tutti,lr_penalized,0,0.43,0.44,3
+tutti,lr_penalized,0,0.44,0.45,2
+tutti,lr_penalized,0,0.45,0.46,3
+tutti,lr_penalized,0,0.46,0.47000000000000003,2
+tutti,lr_penalized,0,0.47000000000000003,0.48,3
+tutti,lr_penalized,0,0.48,0.49,0
+tutti,lr_penalized,0,0.49,0.5,3
+tutti,lr_penalized,0,0.5,0.51,0
+tutti,lr_penalized,0,0.51,0.52,3
+tutti,lr_penalized,0,0.52,0.53,1
+tutti,lr_penalized,0,0.53,0.54,0
+tutti,lr_penalized,0,0.54,0.55,1
+tutti,lr_penalized,0,0.55,0.56,1
+tutti,lr_penalized,0,0.56,0.5700000000000001,1
+tutti,lr_penalized,0,0.5700000000000001,0.58,0
+tutti,lr_penalized,0,0.58,0.59,0
+tutti,lr_penalized,0,0.59,0.6,2
+tutti,lr_penalized,0,0.6,0.61,0
+tutti,lr_penalized,0,0.61,0.62,1
+tutti,lr_penalized,0,0.62,0.63,0
+tutti,lr_penalized,0,0.63,0.64,0
+tutti,lr_penalized,0,0.64,0.65,1
+tutti,lr_penalized,0,0.65,0.66,0
+tutti,lr_penalized,0,0.66,0.67,0
+tutti,lr_penalized,0,0.67,0.68,0
+tutti,lr_penalized,0,0.68,0.6900000000000001,0
+tutti,lr_penalized,0,0.6900000000000001,0.7000000000000001,0
+tutti,lr_penalized,0,0.7000000000000001,0.71,0
+tutti,lr_penalized,0,0.71,0.72,0
+tutti,lr_penalized,0,0.72,0.73,0
+tutti,lr_penalized,0,0.73,0.74,1
+tutti,lr_penalized,0,0.74,0.75,0
+tutti,lr_penalized,0,0.75,0.76,1
+tutti,lr_penalized,0,0.76,0.77,0
+tutti,lr_penalized,0,0.77,0.78,0
+tutti,lr_penalized,0,0.78,0.79,0
+tutti,lr_penalized,0,0.79,0.8,0
+tutti,lr_penalized,0,0.8,0.81,1
+tutti,lr_penalized,0,0.81,0.8200000000000001,0
+tutti,lr_penalized,0,0.8200000000000001,0.8300000000000001,0
+tutti,lr_penalized,0,0.8300000000000001,0.84,0
+tutti,lr_penalized,0,0.84,0.85,0
+tutti,lr_penalized,0,0.85,0.86,0
+tutti,lr_penalized,0,0.86,0.87,0
+tutti,lr_penalized,0,0.87,0.88,0
+tutti,lr_penalized,0,0.88,0.89,0
+tutti,lr_penalized,0,0.89,0.9,1
+tutti,lr_penalized,0,0.9,0.91,1
+tutti,lr_penalized,0,0.91,0.92,0
+tutti,lr_penalized,0,0.92,0.93,0
+tutti,lr_penalized,0,0.93,0.9400000000000001,0
+tutti,lr_penalized,0,0.9400000000000001,0.9500000000000001,0
+tutti,lr_penalized,0,0.9500000000000001,0.96,0
+tutti,lr_penalized,0,0.96,0.97,0
+tutti,lr_penalized,0,0.97,0.98,0
+tutti,lr_penalized,0,0.98,0.99,0
+tutti,lr_penalized,0,0.99,1.0,0
+tutti,lr_penalized,1,0.0,0.01,0
+tutti,lr_penalized,1,0.01,0.02,0
+tutti,lr_penalized,1,0.02,0.03,3
+tutti,lr_penalized,1,0.03,0.04,21
+tutti,lr_penalized,1,0.04,0.05,24
+tutti,lr_penalized,1,0.05,0.06,25
+tutti,lr_penalized,1,0.06,0.07,35
+tutti,lr_penalized,1,0.07,0.08,22
+tutti,lr_penalized,1,0.08,0.09,29
+tutti,lr_penalized,1,0.09,0.1,21
+tutti,lr_penalized,1,0.1,0.11,22
+tutti,lr_penalized,1,0.11,0.12,9
+tutti,lr_penalized,1,0.12,0.13,19
+tutti,lr_penalized,1,0.13,0.14,11
+tutti,lr_penalized,1,0.14,0.15,16
+tutti,lr_penalized,1,0.15,0.16,13
+tutti,lr_penalized,1,0.16,0.17,15
+tutti,lr_penalized,1,0.17,0.18,7
+tutti,lr_penalized,1,0.18,0.19,3
+tutti,lr_penalized,1,0.19,0.2,10
+tutti,lr_penalized,1,0.2,0.21,14
+tutti,lr_penalized,1,0.21,0.22,7
+tutti,lr_penalized,1,0.22,0.23,7
+tutti,lr_penalized,1,0.23,0.24,5
+tutti,lr_penalized,1,0.24,0.25,7
+tutti,lr_penalized,1,0.25,0.26,3
+tutti,lr_penalized,1,0.26,0.27,7
+tutti,lr_penalized,1,0.27,0.28,3
+tutti,lr_penalized,1,0.28,0.29,5
+tutti,lr_penalized,1,0.29,0.3,6
+tutti,lr_penalized,1,0.3,0.31,8
+tutti,lr_penalized,1,0.31,0.32,2
+tutti,lr_penalized,1,0.32,0.33,4
+tutti,lr_penalized,1,0.33,0.34,5
+tutti,lr_penalized,1,0.34,0.35000000000000003,4
+tutti,lr_penalized,1,0.35000000000000003,0.36,4
+tutti,lr_penalized,1,0.36,0.37,2
+tutti,lr_penalized,1,0.37,0.38,1
+tutti,lr_penalized,1,0.38,0.39,2
+tutti,lr_penalized,1,0.39,0.4,2
+tutti,lr_penalized,1,0.4,0.41000000000000003,3
+tutti,lr_penalized,1,0.41000000000000003,0.42,2
+tutti,lr_penalized,1,0.42,0.43,0
+tutti,lr_penalized,1,0.43,0.44,1
+tutti,lr_penalized,1,0.44,0.45,0
+tutti,lr_penalized,1,0.45,0.46,2
+tutti,lr_penalized,1,0.46,0.47000000000000003,0
+tutti,lr_penalized,1,0.47000000000000003,0.48,0
+tutti,lr_penalized,1,0.48,0.49,0
+tutti,lr_penalized,1,0.49,0.5,0
+tutti,lr_penalized,1,0.5,0.51,0
+tutti,lr_penalized,1,0.51,0.52,0
+tutti,lr_penalized,1,0.52,0.53,0
+tutti,lr_penalized,1,0.53,0.54,0
+tutti,lr_penalized,1,0.54,0.55,3
+tutti,lr_penalized,1,0.55,0.56,0
+tutti,lr_penalized,1,0.56,0.5700000000000001,1
+tutti,lr_penalized,1,0.5700000000000001,0.58,1
+tutti,lr_penalized,1,0.58,0.59,0
+tutti,lr_penalized,1,0.59,0.6,0
+tutti,lr_penalized,1,0.6,0.61,0
+tutti,lr_penalized,1,0.61,0.62,1
+tutti,lr_penalized,1,0.62,0.63,1
+tutti,lr_penalized,1,0.63,0.64,0
+tutti,lr_penalized,1,0.64,0.65,1
+tutti,lr_penalized,1,0.65,0.66,0
+tutti,lr_penalized,1,0.66,0.67,0
+tutti,lr_penalized,1,0.67,0.68,0
+tutti,lr_penalized,1,0.68,0.6900000000000001,0
+tutti,lr_penalized,1,0.6900000000000001,0.7000000000000001,1
+tutti,lr_penalized,1,0.7000000000000001,0.71,0
+tutti,lr_penalized,1,0.71,0.72,1
+tutti,lr_penalized,1,0.72,0.73,0
+tutti,lr_penalized,1,0.73,0.74,0
+tutti,lr_penalized,1,0.74,0.75,0
+tutti,lr_penalized,1,0.75,0.76,1
+tutti,lr_penalized,1,0.76,0.77,0
+tutti,lr_penalized,1,0.77,0.78,0
+tutti,lr_penalized,1,0.78,0.79,0
+tutti,lr_penalized,1,0.79,0.8,1
+tutti,lr_penalized,1,0.8,0.81,0
+tutti,lr_penalized,1,0.81,0.8200000000000001,0
+tutti,lr_penalized,1,0.8200000000000001,0.8300000000000001,1
+tutti,lr_penalized,1,0.8300000000000001,0.84,0
+tutti,lr_penalized,1,0.84,0.85,0
+tutti,lr_penalized,1,0.85,0.86,0
+tutti,lr_penalized,1,0.86,0.87,0
+tutti,lr_penalized,1,0.87,0.88,0
+tutti,lr_penalized,1,0.88,0.89,0
+tutti,lr_penalized,1,0.89,0.9,0
+tutti,lr_penalized,1,0.9,0.91,0
+tutti,lr_penalized,1,0.91,0.92,0
+tutti,lr_penalized,1,0.92,0.93,0
+tutti,lr_penalized,1,0.93,0.9400000000000001,0
+tutti,lr_penalized,1,0.9400000000000001,0.9500000000000001,0
+tutti,lr_penalized,1,0.9500000000000001,0.96,0
+tutti,lr_penalized,1,0.96,0.97,1
+tutti,lr_penalized,1,0.97,0.98,0
+tutti,lr_penalized,1,0.98,0.99,0
+tutti,lr_penalized,1,0.99,1.0,0
+diabetici,random_forest,0,0.0,0.01,0
+diabetici,random_forest,0,0.01,0.02,0
+diabetici,random_forest,0,0.02,0.03,0
+diabetici,random_forest,0,0.03,0.04,0
+diabetici,random_forest,0,0.04,0.05,1
+diabetici,random_forest,0,0.05,0.06,0
+diabetici,random_forest,0,0.06,0.07,2
+diabetici,random_forest,0,0.07,0.08,4
+diabetici,random_forest,0,0.08,0.09,7
+diabetici,random_forest,0,0.09,0.1,4
+diabetici,random_forest,0,0.1,0.11,8
+diabetici,random_forest,0,0.11,0.12,11
+diabetici,random_forest,0,0.12,0.13,5
+diabetici,random_forest,0,0.13,0.14,10
+diabetici,random_forest,0,0.14,0.15,5
+diabetici,random_forest,0,0.15,0.16,11
+diabetici,random_forest,0,0.16,0.17,9
+diabetici,random_forest,0,0.17,0.18,9
+diabetici,random_forest,0,0.18,0.19,8
+diabetici,random_forest,0,0.19,0.2,16
+diabetici,random_forest,0,0.2,0.21,9
+diabetici,random_forest,0,0.21,0.22,18
+diabetici,random_forest,0,0.22,0.23,8
+diabetici,random_forest,0,0.23,0.24,5
+diabetici,random_forest,0,0.24,0.25,6
+diabetici,random_forest,0,0.25,0.26,6
+diabetici,random_forest,0,0.26,0.27,5
+diabetici,random_forest,0,0.27,0.28,9
+diabetici,random_forest,0,0.28,0.29,4
+diabetici,random_forest,0,0.29,0.3,2
+diabetici,random_forest,0,0.3,0.31,3
+diabetici,random_forest,0,0.31,0.32,2
+diabetici,random_forest,0,0.32,0.33,2
+diabetici,random_forest,0,0.33,0.34,0
+diabetici,random_forest,0,0.34,0.35000000000000003,0
+diabetici,random_forest,0,0.35000000000000003,0.36,1
+diabetici,random_forest,0,0.36,0.37,0
+diabetici,random_forest,0,0.37,0.38,1
+diabetici,random_forest,0,0.38,0.39,1
+diabetici,random_forest,0,0.39,0.4,0
+diabetici,random_forest,0,0.4,0.41000000000000003,0
+diabetici,random_forest,0,0.41000000000000003,0.42,0
+diabetici,random_forest,0,0.42,0.43,2
+diabetici,random_forest,0,0.43,0.44,1
+diabetici,random_forest,0,0.44,0.45,0
+diabetici,random_forest,0,0.45,0.46,0
+diabetici,random_forest,0,0.46,0.47000000000000003,0
+diabetici,random_forest,0,0.47000000000000003,0.48,0
+diabetici,random_forest,0,0.48,0.49,0
+diabetici,random_forest,0,0.49,0.5,0
+diabetici,random_forest,0,0.5,0.51,0
+diabetici,random_forest,0,0.51,0.52,0
+diabetici,random_forest,0,0.52,0.53,0
+diabetici,random_forest,0,0.53,0.54,0
+diabetici,random_forest,0,0.54,0.55,0
+diabetici,random_forest,0,0.55,0.56,0
+diabetici,random_forest,0,0.56,0.5700000000000001,0
+diabetici,random_forest,0,0.5700000000000001,0.58,0
+diabetici,random_forest,0,0.58,0.59,0
+diabetici,random_forest,0,0.59,0.6,0
+diabetici,random_forest,0,0.6,0.61,0
+diabetici,random_forest,0,0.61,0.62,0
+diabetici,random_forest,0,0.62,0.63,0
+diabetici,random_forest,0,0.63,0.64,0
+diabetici,random_forest,0,0.64,0.65,0
+diabetici,random_forest,0,0.65,0.66,0
+diabetici,random_forest,0,0.66,0.67,0
+diabetici,random_forest,0,0.67,0.68,0
+diabetici,random_forest,0,0.68,0.6900000000000001,0
+diabetici,random_forest,0,0.6900000000000001,0.7000000000000001,0
+diabetici,random_forest,0,0.7000000000000001,0.71,0
+diabetici,random_forest,0,0.71,0.72,0
+diabetici,random_forest,0,0.72,0.73,0
+diabetici,random_forest,0,0.73,0.74,0
+diabetici,random_forest,0,0.74,0.75,0
+diabetici,random_forest,0,0.75,0.76,0
+diabetici,random_forest,0,0.76,0.77,0
+diabetici,random_forest,0,0.77,0.78,0
+diabetici,random_forest,0,0.78,0.79,0
+diabetici,random_forest,0,0.79,0.8,0
+diabetici,random_forest,0,0.8,0.81,0
+diabetici,random_forest,0,0.81,0.8200000000000001,0
+diabetici,random_forest,0,0.8200000000000001,0.8300000000000001,0
+diabetici,random_forest,0,0.8300000000000001,0.84,0
+diabetici,random_forest,0,0.84,0.85,0
+diabetici,random_forest,0,0.85,0.86,0
+diabetici,random_forest,0,0.86,0.87,0
+diabetici,random_forest,0,0.87,0.88,0
+diabetici,random_forest,0,0.88,0.89,0
+diabetici,random_forest,0,0.89,0.9,0
+diabetici,random_forest,0,0.9,0.91,0
+diabetici,random_forest,0,0.91,0.92,0
+diabetici,random_forest,0,0.92,0.93,0
+diabetici,random_forest,0,0.93,0.9400000000000001,0
+diabetici,random_forest,0,0.9400000000000001,0.9500000000000001,0
+diabetici,random_forest,0,0.9500000000000001,0.96,0
+diabetici,random_forest,0,0.96,0.97,0
+diabetici,random_forest,0,0.97,0.98,0
+diabetici,random_forest,0,0.98,0.99,0
+diabetici,random_forest,0,0.99,1.0,0
+diabetici,random_forest,1,0.0,0.01,0
+diabetici,random_forest,1,0.01,0.02,0
+diabetici,random_forest,1,0.02,0.03,0
+diabetici,random_forest,1,0.03,0.04,0
+diabetici,random_forest,1,0.04,0.05,0
+diabetici,random_forest,1,0.05,0.06,0
+diabetici,random_forest,1,0.06,0.07,0
+diabetici,random_forest,1,0.07,0.08,1
+diabetici,random_forest,1,0.08,0.09,0
+diabetici,random_forest,1,0.09,0.1,0
+diabetici,random_forest,1,0.1,0.11,1
+diabetici,random_forest,1,0.11,0.12,1
+diabetici,random_forest,1,0.12,0.13,0
+diabetici,random_forest,1,0.13,0.14,0
+diabetici,random_forest,1,0.14,0.15,1
+diabetici,random_forest,1,0.15,0.16,2
+diabetici,random_forest,1,0.16,0.17,3
+diabetici,random_forest,1,0.17,0.18,1
+diabetici,random_forest,1,0.18,0.19,4
+diabetici,random_forest,1,0.19,0.2,3
+diabetici,random_forest,1,0.2,0.21,3
+diabetici,random_forest,1,0.21,0.22,2
+diabetici,random_forest,1,0.22,0.23,6
+diabetici,random_forest,1,0.23,0.24,0
+diabetici,random_forest,1,0.24,0.25,8
+diabetici,random_forest,1,0.25,0.26,4
+diabetici,random_forest,1,0.26,0.27,6
+diabetici,random_forest,1,0.27,0.28,1
+diabetici,random_forest,1,0.28,0.29,4
+diabetici,random_forest,1,0.29,0.3,0
+diabetici,random_forest,1,0.3,0.31,4
+diabetici,random_forest,1,0.31,0.32,2
+diabetici,random_forest,1,0.32,0.33,4
+diabetici,random_forest,1,0.33,0.34,0
+diabetici,random_forest,1,0.34,0.35000000000000003,2
+diabetici,random_forest,1,0.35000000000000003,0.36,3
+diabetici,random_forest,1,0.36,0.37,0
+diabetici,random_forest,1,0.37,0.38,0
+diabetici,random_forest,1,0.38,0.39,0
+diabetici,random_forest,1,0.39,0.4,1
+diabetici,random_forest,1,0.4,0.41000000000000003,1
+diabetici,random_forest,1,0.41000000000000003,0.42,0
+diabetici,random_forest,1,0.42,0.43,0
+diabetici,random_forest,1,0.43,0.44,0
+diabetici,random_forest,1,0.44,0.45,0
+diabetici,random_forest,1,0.45,0.46,0
+diabetici,random_forest,1,0.46,0.47000000000000003,0
+diabetici,random_forest,1,0.47000000000000003,0.48,0
+diabetici,random_forest,1,0.48,0.49,0
+diabetici,random_forest,1,0.49,0.5,0
+diabetici,random_forest,1,0.5,0.51,0
+diabetici,random_forest,1,0.51,0.52,0
+diabetici,random_forest,1,0.52,0.53,0
+diabetici,random_forest,1,0.53,0.54,0
+diabetici,random_forest,1,0.54,0.55,0
+diabetici,random_forest,1,0.55,0.56,0
+diabetici,random_forest,1,0.56,0.5700000000000001,0
+diabetici,random_forest,1,0.5700000000000001,0.58,0
+diabetici,random_forest,1,0.58,0.59,0
+diabetici,random_forest,1,0.59,0.6,0
+diabetici,random_forest,1,0.6,0.61,0
+diabetici,random_forest,1,0.61,0.62,0
+diabetici,random_forest,1,0.62,0.63,0
+diabetici,random_forest,1,0.63,0.64,0
+diabetici,random_forest,1,0.64,0.65,0
+diabetici,random_forest,1,0.65,0.66,0
+diabetici,random_forest,1,0.66,0.67,0
+diabetici,random_forest,1,0.67,0.68,0
+diabetici,random_forest,1,0.68,0.6900000000000001,0
+diabetici,random_forest,1,0.6900000000000001,0.7000000000000001,0
+diabetici,random_forest,1,0.7000000000000001,0.71,0
+diabetici,random_forest,1,0.71,0.72,0
+diabetici,random_forest,1,0.72,0.73,0
+diabetici,random_forest,1,0.73,0.74,0
+diabetici,random_forest,1,0.74,0.75,0
+diabetici,random_forest,1,0.75,0.76,0
+diabetici,random_forest,1,0.76,0.77,0
+diabetici,random_forest,1,0.77,0.78,0
+diabetici,random_forest,1,0.78,0.79,0
+diabetici,random_forest,1,0.79,0.8,0
+diabetici,random_forest,1,0.8,0.81,0
+diabetici,random_forest,1,0.81,0.8200000000000001,0
+diabetici,random_forest,1,0.8200000000000001,0.8300000000000001,0
+diabetici,random_forest,1,0.8300000000000001,0.84,0
+diabetici,random_forest,1,0.84,0.85,0
+diabetici,random_forest,1,0.85,0.86,0
+diabetici,random_forest,1,0.86,0.87,0
+diabetici,random_forest,1,0.87,0.88,0
+diabetici,random_forest,1,0.88,0.89,0
+diabetici,random_forest,1,0.89,0.9,0
+diabetici,random_forest,1,0.9,0.91,0
+diabetici,random_forest,1,0.91,0.92,0
+diabetici,random_forest,1,0.92,0.93,0
+diabetici,random_forest,1,0.93,0.9400000000000001,0
+diabetici,random_forest,1,0.9400000000000001,0.9500000000000001,0
+diabetici,random_forest,1,0.9500000000000001,0.96,0
+diabetici,random_forest,1,0.96,0.97,0
+diabetici,random_forest,1,0.97,0.98,0
+diabetici,random_forest,1,0.98,0.99,0
+diabetici,random_forest,1,0.99,1.0,0
+non diabetici,random_forest,0,0.0,0.01,0
+non diabetici,random_forest,0,0.01,0.02,17
+non diabetici,random_forest,0,0.02,0.03,87
+non diabetici,random_forest,0,0.03,0.04,178
+non diabetici,random_forest,0,0.04,0.05,273
+non diabetici,random_forest,0,0.05,0.06,437
+non diabetici,random_forest,0,0.06,0.07,520
+non diabetici,random_forest,0,0.07,0.08,471
+non diabetici,random_forest,0,0.08,0.09,365
+non diabetici,random_forest,0,0.09,0.1,282
+non diabetici,random_forest,0,0.1,0.11,218
+non diabetici,random_forest,0,0.11,0.12,192
+non diabetici,random_forest,0,0.12,0.13,154
+non diabetici,random_forest,0,0.13,0.14,115
+non diabetici,random_forest,0,0.14,0.15,79
+non diabetici,random_forest,0,0.15,0.16,79
+non diabetici,random_forest,0,0.16,0.17,52
+non diabetici,random_forest,0,0.17,0.18,48
+non diabetici,random_forest,0,0.18,0.19,35
+non diabetici,random_forest,0,0.19,0.2,27
+non diabetici,random_forest,0,0.2,0.21,14
+non diabetici,random_forest,0,0.21,0.22,16
+non diabetici,random_forest,0,0.22,0.23,15
+non diabetici,random_forest,0,0.23,0.24,16
+non diabetici,random_forest,0,0.24,0.25,8
+non diabetici,random_forest,0,0.25,0.26,11
+non diabetici,random_forest,0,0.26,0.27,2
+non diabetici,random_forest,0,0.27,0.28,7
+non diabetici,random_forest,0,0.28,0.29,4
+non diabetici,random_forest,0,0.29,0.3,2
+non diabetici,random_forest,0,0.3,0.31,2
+non diabetici,random_forest,0,0.31,0.32,2
+non diabetici,random_forest,0,0.32,0.33,0
+non diabetici,random_forest,0,0.33,0.34,1
+non diabetici,random_forest,0,0.34,0.35000000000000003,1
+non diabetici,random_forest,0,0.35000000000000003,0.36,0
+non diabetici,random_forest,0,0.36,0.37,0
+non diabetici,random_forest,0,0.37,0.38,0
+non diabetici,random_forest,0,0.38,0.39,0
+non diabetici,random_forest,0,0.39,0.4,0
+non diabetici,random_forest,0,0.4,0.41000000000000003,0
+non diabetici,random_forest,0,0.41000000000000003,0.42,0
+non diabetici,random_forest,0,0.42,0.43,0
+non diabetici,random_forest,0,0.43,0.44,0
+non diabetici,random_forest,0,0.44,0.45,0
+non diabetici,random_forest,0,0.45,0.46,0
+non diabetici,random_forest,0,0.46,0.47000000000000003,0
+non diabetici,random_forest,0,0.47000000000000003,0.48,0
+non diabetici,random_forest,0,0.48,0.49,0
+non diabetici,random_forest,0,0.49,0.5,0
+non diabetici,random_forest,0,0.5,0.51,0
+non diabetici,random_forest,0,0.51,0.52,0
+non diabetici,random_forest,0,0.52,0.53,0
+non diabetici,random_forest,0,0.53,0.54,0
+non diabetici,random_forest,0,0.54,0.55,0
+non diabetici,random_forest,0,0.55,0.56,0
+non diabetici,random_forest,0,0.56,0.5700000000000001,0
+non diabetici,random_forest,0,0.5700000000000001,0.58,0
+non diabetici,random_forest,0,0.58,0.59,0
+non diabetici,random_forest,0,0.59,0.6,0
+non diabetici,random_forest,0,0.6,0.61,0
+non diabetici,random_forest,0,0.61,0.62,0
+non diabetici,random_forest,0,0.62,0.63,0
+non diabetici,random_forest,0,0.63,0.64,0
+non diabetici,random_forest,0,0.64,0.65,0
+non diabetici,random_forest,0,0.65,0.66,0
+non diabetici,random_forest,0,0.66,0.67,0
+non diabetici,random_forest,0,0.67,0.68,0
+non diabetici,random_forest,0,0.68,0.6900000000000001,0
+non diabetici,random_forest,0,0.6900000000000001,0.7000000000000001,0
+non diabetici,random_forest,0,0.7000000000000001,0.71,0
+non diabetici,random_forest,0,0.71,0.72,0
+non diabetici,random_forest,0,0.72,0.73,0
+non diabetici,random_forest,0,0.73,0.74,0
+non diabetici,random_forest,0,0.74,0.75,0
+non diabetici,random_forest,0,0.75,0.76,0
+non diabetici,random_forest,0,0.76,0.77,0
+non diabetici,random_forest,0,0.77,0.78,0
+non diabetici,random_forest,0,0.78,0.79,0
+non diabetici,random_forest,0,0.79,0.8,0
+non diabetici,random_forest,0,0.8,0.81,0
+non diabetici,random_forest,0,0.81,0.8200000000000001,0
+non diabetici,random_forest,0,0.8200000000000001,0.8300000000000001,0
+non diabetici,random_forest,0,0.8300000000000001,0.84,0
+non diabetici,random_forest,0,0.84,0.85,0
+non diabetici,random_forest,0,0.85,0.86,0
+non diabetici,random_forest,0,0.86,0.87,0
+non diabetici,random_forest,0,0.87,0.88,0
+non diabetici,random_forest,0,0.88,0.89,0
+non diabetici,random_forest,0,0.89,0.9,0
+non diabetici,random_forest,0,0.9,0.91,0
+non diabetici,random_forest,0,0.91,0.92,0
+non diabetici,random_forest,0,0.92,0.93,0
+non diabetici,random_forest,0,0.93,0.9400000000000001,0
+non diabetici,random_forest,0,0.9400000000000001,0.9500000000000001,0
+non diabetici,random_forest,0,0.9500000000000001,0.96,0
+non diabetici,random_forest,0,0.96,0.97,0
+non diabetici,random_forest,0,0.97,0.98,0
+non diabetici,random_forest,0,0.98,0.99,0
+non diabetici,random_forest,0,0.99,1.0,0
+non diabetici,random_forest,1,0.0,0.01,0
+non diabetici,random_forest,1,0.01,0.02,0
+non diabetici,random_forest,1,0.02,0.03,2
+non diabetici,random_forest,1,0.03,0.04,6
+non diabetici,random_forest,1,0.04,0.05,16
+non diabetici,random_forest,1,0.05,0.06,21
+non diabetici,random_forest,1,0.06,0.07,26
+non diabetici,random_forest,1,0.07,0.08,24
+non diabetici,random_forest,1,0.08,0.09,41
+non diabetici,random_forest,1,0.09,0.1,23
+non diabetici,random_forest,1,0.1,0.11,25
+non diabetici,random_forest,1,0.11,0.12,23
+non diabetici,random_forest,1,0.12,0.13,16
+non diabetici,random_forest,1,0.13,0.14,22
+non diabetici,random_forest,1,0.14,0.15,11
+non diabetici,random_forest,1,0.15,0.16,16
+non diabetici,random_forest,1,0.16,0.17,16
+non diabetici,random_forest,1,0.17,0.18,12
+non diabetici,random_forest,1,0.18,0.19,9
+non diabetici,random_forest,1,0.19,0.2,5
+non diabetici,random_forest,1,0.2,0.21,3
+non diabetici,random_forest,1,0.21,0.22,8
+non diabetici,random_forest,1,0.22,0.23,6
+non diabetici,random_forest,1,0.23,0.24,4
+non diabetici,random_forest,1,0.24,0.25,2
+non diabetici,random_forest,1,0.25,0.26,5
+non diabetici,random_forest,1,0.26,0.27,1
+non diabetici,random_forest,1,0.27,0.28,4
+non diabetici,random_forest,1,0.28,0.29,2
+non diabetici,random_forest,1,0.29,0.3,2
+non diabetici,random_forest,1,0.3,0.31,1
+non diabetici,random_forest,1,0.31,0.32,2
+non diabetici,random_forest,1,0.32,0.33,0
+non diabetici,random_forest,1,0.33,0.34,2
+non diabetici,random_forest,1,0.34,0.35000000000000003,1
+non diabetici,random_forest,1,0.35000000000000003,0.36,0
+non diabetici,random_forest,1,0.36,0.37,0
+non diabetici,random_forest,1,0.37,0.38,0
+non diabetici,random_forest,1,0.38,0.39,0
+non diabetici,random_forest,1,0.39,0.4,0
+non diabetici,random_forest,1,0.4,0.41000000000000003,0
+non diabetici,random_forest,1,0.41000000000000003,0.42,0
+non diabetici,random_forest,1,0.42,0.43,0
+non diabetici,random_forest,1,0.43,0.44,0
+non diabetici,random_forest,1,0.44,0.45,0
+non diabetici,random_forest,1,0.45,0.46,0
+non diabetici,random_forest,1,0.46,0.47000000000000003,0
+non diabetici,random_forest,1,0.47000000000000003,0.48,0
+non diabetici,random_forest,1,0.48,0.49,0
+non diabetici,random_forest,1,0.49,0.5,0
+non diabetici,random_forest,1,0.5,0.51,0
+non diabetici,random_forest,1,0.51,0.52,0
+non diabetici,random_forest,1,0.52,0.53,0
+non diabetici,random_forest,1,0.53,0.54,0
+non diabetici,random_forest,1,0.54,0.55,0
+non diabetici,random_forest,1,0.55,0.56,0
+non diabetici,random_forest,1,0.56,0.5700000000000001,0
+non diabetici,random_forest,1,0.5700000000000001,0.58,0
+non diabetici,random_forest,1,0.58,0.59,0
+non diabetici,random_forest,1,0.59,0.6,0
+non diabetici,random_forest,1,0.6,0.61,0
+non diabetici,random_forest,1,0.61,0.62,0
+non diabetici,random_forest,1,0.62,0.63,0
+non diabetici,random_forest,1,0.63,0.64,0
+non diabetici,random_forest,1,0.64,0.65,0
+non diabetici,random_forest,1,0.65,0.66,0
+non diabetici,random_forest,1,0.66,0.67,0
+non diabetici,random_forest,1,0.67,0.68,0
+non diabetici,random_forest,1,0.68,0.6900000000000001,0
+non diabetici,random_forest,1,0.6900000000000001,0.7000000000000001,0
+non diabetici,random_forest,1,0.7000000000000001,0.71,0
+non diabetici,random_forest,1,0.71,0.72,0
+non diabetici,random_forest,1,0.72,0.73,0
+non diabetici,random_forest,1,0.73,0.74,0
+non diabetici,random_forest,1,0.74,0.75,0
+non diabetici,random_forest,1,0.75,0.76,0
+non diabetici,random_forest,1,0.76,0.77,0
+non diabetici,random_forest,1,0.77,0.78,0
+non diabetici,random_forest,1,0.78,0.79,0
+non diabetici,random_forest,1,0.79,0.8,0
+non diabetici,random_forest,1,0.8,0.81,0
+non diabetici,random_forest,1,0.81,0.8200000000000001,0
+non diabetici,random_forest,1,0.8200000000000001,0.8300000000000001,0
+non diabetici,random_forest,1,0.8300000000000001,0.84,0
+non diabetici,random_forest,1,0.84,0.85,0
+non diabetici,random_forest,1,0.85,0.86,0
+non diabetici,random_forest,1,0.86,0.87,0
+non diabetici,random_forest,1,0.87,0.88,0
+non diabetici,random_forest,1,0.88,0.89,0
+non diabetici,random_forest,1,0.89,0.9,0
+non diabetici,random_forest,1,0.9,0.91,0
+non diabetici,random_forest,1,0.91,0.92,0
+non diabetici,random_forest,1,0.92,0.93,0
+non diabetici,random_forest,1,0.93,0.9400000000000001,0
+non diabetici,random_forest,1,0.9400000000000001,0.9500000000000001,0
+non diabetici,random_forest,1,0.9500000000000001,0.96,0
+non diabetici,random_forest,1,0.96,0.97,0
+non diabetici,random_forest,1,0.97,0.98,0
+non diabetici,random_forest,1,0.98,0.99,0
+non diabetici,random_forest,1,0.99,1.0,0
+tutti,random_forest,0,0.0,0.01,0
+tutti,random_forest,0,0.01,0.02,17
+tutti,random_forest,0,0.02,0.03,87
+tutti,random_forest,0,0.03,0.04,178
+tutti,random_forest,0,0.04,0.05,274
+tutti,random_forest,0,0.05,0.06,437
+tutti,random_forest,0,0.06,0.07,522
+tutti,random_forest,0,0.07,0.08,475
+tutti,random_forest,0,0.08,0.09,372
+tutti,random_forest,0,0.09,0.1,286
+tutti,random_forest,0,0.1,0.11,226
+tutti,random_forest,0,0.11,0.12,203
+tutti,random_forest,0,0.12,0.13,159
+tutti,random_forest,0,0.13,0.14,125
+tutti,random_forest,0,0.14,0.15,84
+tutti,random_forest,0,0.15,0.16,90
+tutti,random_forest,0,0.16,0.17,61
+tutti,random_forest,0,0.17,0.18,57
+tutti,random_forest,0,0.18,0.19,43
+tutti,random_forest,0,0.19,0.2,43
+tutti,random_forest,0,0.2,0.21,23
+tutti,random_forest,0,0.21,0.22,34
+tutti,random_forest,0,0.22,0.23,23
+tutti,random_forest,0,0.23,0.24,21
+tutti,random_forest,0,0.24,0.25,14
+tutti,random_forest,0,0.25,0.26,17
+tutti,random_forest,0,0.26,0.27,7
+tutti,random_forest,0,0.27,0.28,16
+tutti,random_forest,0,0.28,0.29,8
+tutti,random_forest,0,0.29,0.3,4
+tutti,random_forest,0,0.3,0.31,5
+tutti,random_forest,0,0.31,0.32,4
+tutti,random_forest,0,0.32,0.33,2
+tutti,random_forest,0,0.33,0.34,1
+tutti,random_forest,0,0.34,0.35000000000000003,1
+tutti,random_forest,0,0.35000000000000003,0.36,1
+tutti,random_forest,0,0.36,0.37,0
+tutti,random_forest,0,0.37,0.38,1
+tutti,random_forest,0,0.38,0.39,1
+tutti,random_forest,0,0.39,0.4,0
+tutti,random_forest,0,0.4,0.41000000000000003,0
+tutti,random_forest,0,0.41000000000000003,0.42,0
+tutti,random_forest,0,0.42,0.43,2
+tutti,random_forest,0,0.43,0.44,1
+tutti,random_forest,0,0.44,0.45,0
+tutti,random_forest,0,0.45,0.46,0
+tutti,random_forest,0,0.46,0.47000000000000003,0
+tutti,random_forest,0,0.47000000000000003,0.48,0
+tutti,random_forest,0,0.48,0.49,0
+tutti,random_forest,0,0.49,0.5,0
+tutti,random_forest,0,0.5,0.51,0
+tutti,random_forest,0,0.51,0.52,0
+tutti,random_forest,0,0.52,0.53,0
+tutti,random_forest,0,0.53,0.54,0
+tutti,random_forest,0,0.54,0.55,0
+tutti,random_forest,0,0.55,0.56,0
+tutti,random_forest,0,0.56,0.5700000000000001,0
+tutti,random_forest,0,0.5700000000000001,0.58,0
+tutti,random_forest,0,0.58,0.59,0
+tutti,random_forest,0,0.59,0.6,0
+tutti,random_forest,0,0.6,0.61,0
+tutti,random_forest,0,0.61,0.62,0
+tutti,random_forest,0,0.62,0.63,0
+tutti,random_forest,0,0.63,0.64,0
+tutti,random_forest,0,0.64,0.65,0
+tutti,random_forest,0,0.65,0.66,0
+tutti,random_forest,0,0.66,0.67,0
+tutti,random_forest,0,0.67,0.68,0
+tutti,random_forest,0,0.68,0.6900000000000001,0
+tutti,random_forest,0,0.6900000000000001,0.7000000000000001,0
+tutti,random_forest,0,0.7000000000000001,0.71,0
+tutti,random_forest,0,0.71,0.72,0
+tutti,random_forest,0,0.72,0.73,0
+tutti,random_forest,0,0.73,0.74,0
+tutti,random_forest,0,0.74,0.75,0
+tutti,random_forest,0,0.75,0.76,0
+tutti,random_forest,0,0.76,0.77,0
+tutti,random_forest,0,0.77,0.78,0
+tutti,random_forest,0,0.78,0.79,0
+tutti,random_forest,0,0.79,0.8,0
+tutti,random_forest,0,0.8,0.81,0
+tutti,random_forest,0,0.81,0.8200000000000001,0
+tutti,random_forest,0,0.8200000000000001,0.8300000000000001,0
+tutti,random_forest,0,0.8300000000000001,0.84,0
+tutti,random_forest,0,0.84,0.85,0
+tutti,random_forest,0,0.85,0.86,0
+tutti,random_forest,0,0.86,0.87,0
+tutti,random_forest,0,0.87,0.88,0
+tutti,random_forest,0,0.88,0.89,0
+tutti,random_forest,0,0.89,0.9,0
+tutti,random_forest,0,0.9,0.91,0
+tutti,random_forest,0,0.91,0.92,0
+tutti,random_forest,0,0.92,0.93,0
+tutti,random_forest,0,0.93,0.9400000000000001,0
+tutti,random_forest,0,0.9400000000000001,0.9500000000000001,0
+tutti,random_forest,0,0.9500000000000001,0.96,0
+tutti,random_forest,0,0.96,0.97,0
+tutti,random_forest,0,0.97,0.98,0
+tutti,random_forest,0,0.98,0.99,0
+tutti,random_forest,0,0.99,1.0,0
+tutti,random_forest,1,0.0,0.01,0
+tutti,random_forest,1,0.01,0.02,0
+tutti,random_forest,1,0.02,0.03,2
+tutti,random_forest,1,0.03,0.04,6
+tutti,random_forest,1,0.04,0.05,16
+tutti,random_forest,1,0.05,0.06,21
+tutti,random_forest,1,0.06,0.07,26
+tutti,random_forest,1,0.07,0.08,25
+tutti,random_forest,1,0.08,0.09,41
+tutti,random_forest,1,0.09,0.1,23
+tutti,random_forest,1,0.1,0.11,26
+tutti,random_forest,1,0.11,0.12,24
+tutti,random_forest,1,0.12,0.13,16
+tutti,random_forest,1,0.13,0.14,22
+tutti,random_forest,1,0.14,0.15,12
+tutti,random_forest,1,0.15,0.16,18
+tutti,random_forest,1,0.16,0.17,19
+tutti,random_forest,1,0.17,0.18,13
+tutti,random_forest,1,0.18,0.19,13
+tutti,random_forest,1,0.19,0.2,8
+tutti,random_forest,1,0.2,0.21,6
+tutti,random_forest,1,0.21,0.22,10
+tutti,random_forest,1,0.22,0.23,12
+tutti,random_forest,1,0.23,0.24,4
+tutti,random_forest,1,0.24,0.25,10
+tutti,random_forest,1,0.25,0.26,9
+tutti,random_forest,1,0.26,0.27,7
+tutti,random_forest,1,0.27,0.28,5
+tutti,random_forest,1,0.28,0.29,6
+tutti,random_forest,1,0.29,0.3,2
+tutti,random_forest,1,0.3,0.31,5
+tutti,random_forest,1,0.31,0.32,4
+tutti,random_forest,1,0.32,0.33,4
+tutti,random_forest,1,0.33,0.34,2
+tutti,random_forest,1,0.34,0.35000000000000003,3
+tutti,random_forest,1,0.35000000000000003,0.36,3
+tutti,random_forest,1,0.36,0.37,0
+tutti,random_forest,1,0.37,0.38,0
+tutti,random_forest,1,0.38,0.39,0
+tutti,random_forest,1,0.39,0.4,1
+tutti,random_forest,1,0.4,0.41000000000000003,1
+tutti,random_forest,1,0.41000000000000003,0.42,0
+tutti,random_forest,1,0.42,0.43,0
+tutti,random_forest,1,0.43,0.44,0
+tutti,random_forest,1,0.44,0.45,0
+tutti,random_forest,1,0.45,0.46,0
+tutti,random_forest,1,0.46,0.47000000000000003,0
+tutti,random_forest,1,0.47000000000000003,0.48,0
+tutti,random_forest,1,0.48,0.49,0
+tutti,random_forest,1,0.49,0.5,0
+tutti,random_forest,1,0.5,0.51,0
+tutti,random_forest,1,0.51,0.52,0
+tutti,random_forest,1,0.52,0.53,0
+tutti,random_forest,1,0.53,0.54,0
+tutti,random_forest,1,0.54,0.55,0
+tutti,random_forest,1,0.55,0.56,0
+tutti,random_forest,1,0.56,0.5700000000000001,0
+tutti,random_forest,1,0.5700000000000001,0.58,0
+tutti,random_forest,1,0.58,0.59,0
+tutti,random_forest,1,0.59,0.6,0
+tutti,random_forest,1,0.6,0.61,0
+tutti,random_forest,1,0.61,0.62,0
+tutti,random_forest,1,0.62,0.63,0
+tutti,random_forest,1,0.63,0.64,0
+tutti,random_forest,1,0.64,0.65,0
+tutti,random_forest,1,0.65,0.66,0
+tutti,random_forest,1,0.66,0.67,0
+tutti,random_forest,1,0.67,0.68,0
+tutti,random_forest,1,0.68,0.6900000000000001,0
+tutti,random_forest,1,0.6900000000000001,0.7000000000000001,0
+tutti,random_forest,1,0.7000000000000001,0.71,0
+tutti,random_forest,1,0.71,0.72,0
+tutti,random_forest,1,0.72,0.73,0
+tutti,random_forest,1,0.73,0.74,0
+tutti,random_forest,1,0.74,0.75,0
+tutti,random_forest,1,0.75,0.76,0
+tutti,random_forest,1,0.76,0.77,0
+tutti,random_forest,1,0.77,0.78,0
+tutti,random_forest,1,0.78,0.79,0
+tutti,random_forest,1,0.79,0.8,0
+tutti,random_forest,1,0.8,0.81,0
+tutti,random_forest,1,0.81,0.8200000000000001,0
+tutti,random_forest,1,0.8200000000000001,0.8300000000000001,0
+tutti,random_forest,1,0.8300000000000001,0.84,0
+tutti,random_forest,1,0.84,0.85,0
+tutti,random_forest,1,0.85,0.86,0
+tutti,random_forest,1,0.86,0.87,0
+tutti,random_forest,1,0.87,0.88,0
+tutti,random_forest,1,0.88,0.89,0
+tutti,random_forest,1,0.89,0.9,0
+tutti,random_forest,1,0.9,0.91,0
+tutti,random_forest,1,0.91,0.92,0
+tutti,random_forest,1,0.92,0.93,0
+tutti,random_forest,1,0.93,0.9400000000000001,0
+tutti,random_forest,1,0.9400000000000001,0.9500000000000001,0
+tutti,random_forest,1,0.9500000000000001,0.96,0
+tutti,random_forest,1,0.96,0.97,0
+tutti,random_forest,1,0.97,0.98,0
+tutti,random_forest,1,0.98,0.99,0
+tutti,random_forest,1,0.99,1.0,0
+diabetici,xgboost,0,0.0,0.01,0
+diabetici,xgboost,0,0.01,0.02,0
+diabetici,xgboost,0,0.02,0.03,1
+diabetici,xgboost,0,0.03,0.04,4
+diabetici,xgboost,0,0.04,0.05,8
+diabetici,xgboost,0,0.05,0.06,6
+diabetici,xgboost,0,0.06,0.07,6
+diabetici,xgboost,0,0.07,0.08,6
+diabetici,xgboost,0,0.08,0.09,11
+diabetici,xgboost,0,0.09,0.1,8
+diabetici,xgboost,0,0.1,0.11,6
+diabetici,xgboost,0,0.11,0.12,5
+diabetici,xgboost,0,0.12,0.13,4
+diabetici,xgboost,0,0.13,0.14,5
+diabetici,xgboost,0,0.14,0.15,7
+diabetici,xgboost,0,0.15,0.16,9
+diabetici,xgboost,0,0.16,0.17,5
+diabetici,xgboost,0,0.17,0.18,8
+diabetici,xgboost,0,0.18,0.19,4
+diabetici,xgboost,0,0.19,0.2,5
+diabetici,xgboost,0,0.2,0.21,8
+diabetici,xgboost,0,0.21,0.22,3
+diabetici,xgboost,0,0.22,0.23,6
+diabetici,xgboost,0,0.23,0.24,4
+diabetici,xgboost,0,0.24,0.25,10
+diabetici,xgboost,0,0.25,0.26,4
+diabetici,xgboost,0,0.26,0.27,2
+diabetici,xgboost,0,0.27,0.28,1
+diabetici,xgboost,0,0.28,0.29,6
+diabetici,xgboost,0,0.29,0.3,3
+diabetici,xgboost,0,0.3,0.31,3
+diabetici,xgboost,0,0.31,0.32,2
+diabetici,xgboost,0,0.32,0.33,3
+diabetici,xgboost,0,0.33,0.34,2
+diabetici,xgboost,0,0.34,0.35000000000000003,2
+diabetici,xgboost,0,0.35000000000000003,0.36,3
+diabetici,xgboost,0,0.36,0.37,2
+diabetici,xgboost,0,0.37,0.38,3
+diabetici,xgboost,0,0.38,0.39,0
+diabetici,xgboost,0,0.39,0.4,3
+diabetici,xgboost,0,0.4,0.41000000000000003,2
+diabetici,xgboost,0,0.41000000000000003,0.42,1
+diabetici,xgboost,0,0.42,0.43,0
+diabetici,xgboost,0,0.43,0.44,2
+diabetici,xgboost,0,0.44,0.45,1
+diabetici,xgboost,0,0.45,0.46,1
+diabetici,xgboost,0,0.46,0.47000000000000003,0
+diabetici,xgboost,0,0.47000000000000003,0.48,1
+diabetici,xgboost,0,0.48,0.49,0
+diabetici,xgboost,0,0.49,0.5,1
+diabetici,xgboost,0,0.5,0.51,0
+diabetici,xgboost,0,0.51,0.52,0
+diabetici,xgboost,0,0.52,0.53,1
+diabetici,xgboost,0,0.53,0.54,1
+diabetici,xgboost,0,0.54,0.55,0
+diabetici,xgboost,0,0.55,0.56,0
+diabetici,xgboost,0,0.56,0.5700000000000001,0
+diabetici,xgboost,0,0.5700000000000001,0.58,0
+diabetici,xgboost,0,0.58,0.59,0
+diabetici,xgboost,0,0.59,0.6,1
+diabetici,xgboost,0,0.6,0.61,0
+diabetici,xgboost,0,0.61,0.62,1
+diabetici,xgboost,0,0.62,0.63,1
+diabetici,xgboost,0,0.63,0.64,0
+diabetici,xgboost,0,0.64,0.65,0
+diabetici,xgboost,0,0.65,0.66,2
+diabetici,xgboost,0,0.66,0.67,1
+diabetici,xgboost,0,0.67,0.68,0
+diabetici,xgboost,0,0.68,0.6900000000000001,0
+diabetici,xgboost,0,0.6900000000000001,0.7000000000000001,0
+diabetici,xgboost,0,0.7000000000000001,0.71,0
+diabetici,xgboost,0,0.71,0.72,0
+diabetici,xgboost,0,0.72,0.73,0
+diabetici,xgboost,0,0.73,0.74,0
+diabetici,xgboost,0,0.74,0.75,0
+diabetici,xgboost,0,0.75,0.76,0
+diabetici,xgboost,0,0.76,0.77,0
+diabetici,xgboost,0,0.77,0.78,0
+diabetici,xgboost,0,0.78,0.79,0
+diabetici,xgboost,0,0.79,0.8,0
+diabetici,xgboost,0,0.8,0.81,0
+diabetici,xgboost,0,0.81,0.8200000000000001,0
+diabetici,xgboost,0,0.8200000000000001,0.8300000000000001,0
+diabetici,xgboost,0,0.8300000000000001,0.84,0
+diabetici,xgboost,0,0.84,0.85,0
+diabetici,xgboost,0,0.85,0.86,0
+diabetici,xgboost,0,0.86,0.87,0
+diabetici,xgboost,0,0.87,0.88,0
+diabetici,xgboost,0,0.88,0.89,0
+diabetici,xgboost,0,0.89,0.9,0
+diabetici,xgboost,0,0.9,0.91,0
+diabetici,xgboost,0,0.91,0.92,0
+diabetici,xgboost,0,0.92,0.93,0
+diabetici,xgboost,0,0.93,0.9400000000000001,0
+diabetici,xgboost,0,0.9400000000000001,0.9500000000000001,0
+diabetici,xgboost,0,0.9500000000000001,0.96,0
+diabetici,xgboost,0,0.96,0.97,0
+diabetici,xgboost,0,0.97,0.98,0
+diabetici,xgboost,0,0.98,0.99,0
+diabetici,xgboost,0,0.99,1.0,0
+diabetici,xgboost,1,0.0,0.01,0
+diabetici,xgboost,1,0.01,0.02,0
+diabetici,xgboost,1,0.02,0.03,0
+diabetici,xgboost,1,0.03,0.04,1
+diabetici,xgboost,1,0.04,0.05,0
+diabetici,xgboost,1,0.05,0.06,1
+diabetici,xgboost,1,0.06,0.07,3
+diabetici,xgboost,1,0.07,0.08,0
+diabetici,xgboost,1,0.08,0.09,0
+diabetici,xgboost,1,0.09,0.1,0
+diabetici,xgboost,1,0.1,0.11,2
+diabetici,xgboost,1,0.11,0.12,3
+diabetici,xgboost,1,0.12,0.13,1
+diabetici,xgboost,1,0.13,0.14,1
+diabetici,xgboost,1,0.14,0.15,3
+diabetici,xgboost,1,0.15,0.16,1
+diabetici,xgboost,1,0.16,0.17,1
+diabetici,xgboost,1,0.17,0.18,1
+diabetici,xgboost,1,0.18,0.19,1
+diabetici,xgboost,1,0.19,0.2,2
+diabetici,xgboost,1,0.2,0.21,1
+diabetici,xgboost,1,0.21,0.22,3
+diabetici,xgboost,1,0.22,0.23,1
+diabetici,xgboost,1,0.23,0.24,2
+diabetici,xgboost,1,0.24,0.25,3
+diabetici,xgboost,1,0.25,0.26,1
+diabetici,xgboost,1,0.26,0.27,1
+diabetici,xgboost,1,0.27,0.28,1
+diabetici,xgboost,1,0.28,0.29,1
+diabetici,xgboost,1,0.29,0.3,3
+diabetici,xgboost,1,0.3,0.31,2
+diabetici,xgboost,1,0.31,0.32,1
+diabetici,xgboost,1,0.32,0.33,4
+diabetici,xgboost,1,0.33,0.34,1
+diabetici,xgboost,1,0.34,0.35000000000000003,0
+diabetici,xgboost,1,0.35000000000000003,0.36,2
+diabetici,xgboost,1,0.36,0.37,3
+diabetici,xgboost,1,0.37,0.38,1
+diabetici,xgboost,1,0.38,0.39,0
+diabetici,xgboost,1,0.39,0.4,1
+diabetici,xgboost,1,0.4,0.41000000000000003,1
+diabetici,xgboost,1,0.41000000000000003,0.42,1
+diabetici,xgboost,1,0.42,0.43,2
+diabetici,xgboost,1,0.43,0.44,2
+diabetici,xgboost,1,0.44,0.45,0
+diabetici,xgboost,1,0.45,0.46,0
+diabetici,xgboost,1,0.46,0.47000000000000003,0
+diabetici,xgboost,1,0.47000000000000003,0.48,2
+diabetici,xgboost,1,0.48,0.49,0
+diabetici,xgboost,1,0.49,0.5,0
+diabetici,xgboost,1,0.5,0.51,0
+diabetici,xgboost,1,0.51,0.52,0
+diabetici,xgboost,1,0.52,0.53,0
+diabetici,xgboost,1,0.53,0.54,1
+diabetici,xgboost,1,0.54,0.55,0
+diabetici,xgboost,1,0.55,0.56,0
+diabetici,xgboost,1,0.56,0.5700000000000001,1
+diabetici,xgboost,1,0.5700000000000001,0.58,1
+diabetici,xgboost,1,0.58,0.59,0
+diabetici,xgboost,1,0.59,0.6,0
+diabetici,xgboost,1,0.6,0.61,0
+diabetici,xgboost,1,0.61,0.62,0
+diabetici,xgboost,1,0.62,0.63,0
+diabetici,xgboost,1,0.63,0.64,0
+diabetici,xgboost,1,0.64,0.65,1
+diabetici,xgboost,1,0.65,0.66,0
+diabetici,xgboost,1,0.66,0.67,2
+diabetici,xgboost,1,0.67,0.68,1
+diabetici,xgboost,1,0.68,0.6900000000000001,0
+diabetici,xgboost,1,0.6900000000000001,0.7000000000000001,0
+diabetici,xgboost,1,0.7000000000000001,0.71,0
+diabetici,xgboost,1,0.71,0.72,0
+diabetici,xgboost,1,0.72,0.73,0
+diabetici,xgboost,1,0.73,0.74,0
+diabetici,xgboost,1,0.74,0.75,0
+diabetici,xgboost,1,0.75,0.76,0
+diabetici,xgboost,1,0.76,0.77,0
+diabetici,xgboost,1,0.77,0.78,0
+diabetici,xgboost,1,0.78,0.79,0
+diabetici,xgboost,1,0.79,0.8,0
+diabetici,xgboost,1,0.8,0.81,0
+diabetici,xgboost,1,0.81,0.8200000000000001,0
+diabetici,xgboost,1,0.8200000000000001,0.8300000000000001,0
+diabetici,xgboost,1,0.8300000000000001,0.84,0
+diabetici,xgboost,1,0.84,0.85,0
+diabetici,xgboost,1,0.85,0.86,0
+diabetici,xgboost,1,0.86,0.87,0
+diabetici,xgboost,1,0.87,0.88,0
+diabetici,xgboost,1,0.88,0.89,0
+diabetici,xgboost,1,0.89,0.9,0
+diabetici,xgboost,1,0.9,0.91,0
+diabetici,xgboost,1,0.91,0.92,0
+diabetici,xgboost,1,0.92,0.93,0
+diabetici,xgboost,1,0.93,0.9400000000000001,0
+diabetici,xgboost,1,0.9400000000000001,0.9500000000000001,0
+diabetici,xgboost,1,0.9500000000000001,0.96,0
+diabetici,xgboost,1,0.96,0.97,0
+diabetici,xgboost,1,0.97,0.98,0
+diabetici,xgboost,1,0.98,0.99,0
+diabetici,xgboost,1,0.99,1.0,0
+non diabetici,xgboost,0,0.0,0.01,4
+non diabetici,xgboost,0,0.01,0.02,71
+non diabetici,xgboost,0,0.02,0.03,301
+non diabetici,xgboost,0,0.03,0.04,510
+non diabetici,xgboost,0,0.04,0.05,525
+non diabetici,xgboost,0,0.05,0.06,396
+non diabetici,xgboost,0,0.06,0.07,320
+non diabetici,xgboost,0,0.07,0.08,263
+non diabetici,xgboost,0,0.08,0.09,208
+non diabetici,xgboost,0,0.09,0.1,160
+non diabetici,xgboost,0,0.1,0.11,162
+non diabetici,xgboost,0,0.11,0.12,114
+non diabetici,xgboost,0,0.12,0.13,103
+non diabetici,xgboost,0,0.13,0.14,86
+non diabetici,xgboost,0,0.14,0.15,58
+non diabetici,xgboost,0,0.15,0.16,59
+non diabetici,xgboost,0,0.16,0.17,42
+non diabetici,xgboost,0,0.17,0.18,51
+non diabetici,xgboost,0,0.18,0.19,45
+non diabetici,xgboost,0,0.19,0.2,33
+non diabetici,xgboost,0,0.2,0.21,31
+non diabetici,xgboost,0,0.21,0.22,27
+non diabetici,xgboost,0,0.22,0.23,13
+non diabetici,xgboost,0,0.23,0.24,18
+non diabetici,xgboost,0,0.24,0.25,13
+non diabetici,xgboost,0,0.25,0.26,16
+non diabetici,xgboost,0,0.26,0.27,11
+non diabetici,xgboost,0,0.27,0.28,10
+non diabetici,xgboost,0,0.28,0.29,5
+non diabetici,xgboost,0,0.29,0.3,11
+non diabetici,xgboost,0,0.3,0.31,5
+non diabetici,xgboost,0,0.31,0.32,7
+non diabetici,xgboost,0,0.32,0.33,4
+non diabetici,xgboost,0,0.33,0.34,2
+non diabetici,xgboost,0,0.34,0.35000000000000003,4
+non diabetici,xgboost,0,0.35000000000000003,0.36,4
+non diabetici,xgboost,0,0.36,0.37,4
+non diabetici,xgboost,0,0.37,0.38,5
+non diabetici,xgboost,0,0.38,0.39,3
+non diabetici,xgboost,0,0.39,0.4,7
+non diabetici,xgboost,0,0.4,0.41000000000000003,3
+non diabetici,xgboost,0,0.41000000000000003,0.42,1
+non diabetici,xgboost,0,0.42,0.43,2
+non diabetici,xgboost,0,0.43,0.44,0
+non diabetici,xgboost,0,0.44,0.45,3
+non diabetici,xgboost,0,0.45,0.46,3
+non diabetici,xgboost,0,0.46,0.47000000000000003,0
+non diabetici,xgboost,0,0.47000000000000003,0.48,1
+non diabetici,xgboost,0,0.48,0.49,0
+non diabetici,xgboost,0,0.49,0.5,2
+non diabetici,xgboost,0,0.5,0.51,0
+non diabetici,xgboost,0,0.51,0.52,2
+non diabetici,xgboost,0,0.52,0.53,0
+non diabetici,xgboost,0,0.53,0.54,1
+non diabetici,xgboost,0,0.54,0.55,0
+non diabetici,xgboost,0,0.55,0.56,0
+non diabetici,xgboost,0,0.56,0.5700000000000001,0
+non diabetici,xgboost,0,0.5700000000000001,0.58,0
+non diabetici,xgboost,0,0.58,0.59,0
+non diabetici,xgboost,0,0.59,0.6,0
+non diabetici,xgboost,0,0.6,0.61,0
+non diabetici,xgboost,0,0.61,0.62,0
+non diabetici,xgboost,0,0.62,0.63,0
+non diabetici,xgboost,0,0.63,0.64,0
+non diabetici,xgboost,0,0.64,0.65,0
+non diabetici,xgboost,0,0.65,0.66,0
+non diabetici,xgboost,0,0.66,0.67,0
+non diabetici,xgboost,0,0.67,0.68,0
+non diabetici,xgboost,0,0.68,0.6900000000000001,0
+non diabetici,xgboost,0,0.6900000000000001,0.7000000000000001,0
+non diabetici,xgboost,0,0.7000000000000001,0.71,1
+non diabetici,xgboost,0,0.71,0.72,0
+non diabetici,xgboost,0,0.72,0.73,0
+non diabetici,xgboost,0,0.73,0.74,0
+non diabetici,xgboost,0,0.74,0.75,0
+non diabetici,xgboost,0,0.75,0.76,0
+non diabetici,xgboost,0,0.76,0.77,0
+non diabetici,xgboost,0,0.77,0.78,0
+non diabetici,xgboost,0,0.78,0.79,0
+non diabetici,xgboost,0,0.79,0.8,0
+non diabetici,xgboost,0,0.8,0.81,0
+non diabetici,xgboost,0,0.81,0.8200000000000001,0
+non diabetici,xgboost,0,0.8200000000000001,0.8300000000000001,0
+non diabetici,xgboost,0,0.8300000000000001,0.84,0
+non diabetici,xgboost,0,0.84,0.85,0
+non diabetici,xgboost,0,0.85,0.86,0
+non diabetici,xgboost,0,0.86,0.87,0
+non diabetici,xgboost,0,0.87,0.88,0
+non diabetici,xgboost,0,0.88,0.89,0
+non diabetici,xgboost,0,0.89,0.9,0
+non diabetici,xgboost,0,0.9,0.91,0
+non diabetici,xgboost,0,0.91,0.92,0
+non diabetici,xgboost,0,0.92,0.93,0
+non diabetici,xgboost,0,0.93,0.9400000000000001,0
+non diabetici,xgboost,0,0.9400000000000001,0.9500000000000001,0
+non diabetici,xgboost,0,0.9500000000000001,0.96,0
+non diabetici,xgboost,0,0.96,0.97,0
+non diabetici,xgboost,0,0.97,0.98,0
+non diabetici,xgboost,0,0.98,0.99,0
+non diabetici,xgboost,0,0.99,1.0,0
+non diabetici,xgboost,1,0.0,0.01,0
+non diabetici,xgboost,1,0.01,0.02,1
+non diabetici,xgboost,1,0.02,0.03,16
+non diabetici,xgboost,1,0.03,0.04,20
+non diabetici,xgboost,1,0.04,0.05,32
+non diabetici,xgboost,1,0.05,0.06,21
+non diabetici,xgboost,1,0.06,0.07,27
+non diabetici,xgboost,1,0.07,0.08,21
+non diabetici,xgboost,1,0.08,0.09,20
+non diabetici,xgboost,1,0.09,0.1,20
+non diabetici,xgboost,1,0.1,0.11,19
+non diabetici,xgboost,1,0.11,0.12,15
+non diabetici,xgboost,1,0.12,0.13,11
+non diabetici,xgboost,1,0.13,0.14,9
+non diabetici,xgboost,1,0.14,0.15,9
+non diabetici,xgboost,1,0.15,0.16,7
+non diabetici,xgboost,1,0.16,0.17,9
+non diabetici,xgboost,1,0.17,0.18,7
+non diabetici,xgboost,1,0.18,0.19,4
+non diabetici,xgboost,1,0.19,0.2,4
+non diabetici,xgboost,1,0.2,0.21,5
+non diabetici,xgboost,1,0.21,0.22,6
+non diabetici,xgboost,1,0.22,0.23,5
+non diabetici,xgboost,1,0.23,0.24,5
+non diabetici,xgboost,1,0.24,0.25,10
+non diabetici,xgboost,1,0.25,0.26,5
+non diabetici,xgboost,1,0.26,0.27,6
+non diabetici,xgboost,1,0.27,0.28,2
+non diabetici,xgboost,1,0.28,0.29,3
+non diabetici,xgboost,1,0.29,0.3,1
+non diabetici,xgboost,1,0.3,0.31,1
+non diabetici,xgboost,1,0.31,0.32,3
+non diabetici,xgboost,1,0.32,0.33,1
+non diabetici,xgboost,1,0.33,0.34,2
+non diabetici,xgboost,1,0.34,0.35000000000000003,3
+non diabetici,xgboost,1,0.35000000000000003,0.36,3
+non diabetici,xgboost,1,0.36,0.37,2
+non diabetici,xgboost,1,0.37,0.38,1
+non diabetici,xgboost,1,0.38,0.39,1
+non diabetici,xgboost,1,0.39,0.4,0
+non diabetici,xgboost,1,0.4,0.41000000000000003,0
+non diabetici,xgboost,1,0.41000000000000003,0.42,1
+non diabetici,xgboost,1,0.42,0.43,2
+non diabetici,xgboost,1,0.43,0.44,1
+non diabetici,xgboost,1,0.44,0.45,1
+non diabetici,xgboost,1,0.45,0.46,3
+non diabetici,xgboost,1,0.46,0.47000000000000003,0
+non diabetici,xgboost,1,0.47000000000000003,0.48,0
+non diabetici,xgboost,1,0.48,0.49,3
+non diabetici,xgboost,1,0.49,0.5,1
+non diabetici,xgboost,1,0.5,0.51,1
+non diabetici,xgboost,1,0.51,0.52,0
+non diabetici,xgboost,1,0.52,0.53,0
+non diabetici,xgboost,1,0.53,0.54,1
+non diabetici,xgboost,1,0.54,0.55,0
+non diabetici,xgboost,1,0.55,0.56,1
+non diabetici,xgboost,1,0.56,0.5700000000000001,0
+non diabetici,xgboost,1,0.5700000000000001,0.58,0
+non diabetici,xgboost,1,0.58,0.59,1
+non diabetici,xgboost,1,0.59,0.6,0
+non diabetici,xgboost,1,0.6,0.61,0
+non diabetici,xgboost,1,0.61,0.62,0
+non diabetici,xgboost,1,0.62,0.63,0
+non diabetici,xgboost,1,0.63,0.64,1
+non diabetici,xgboost,1,0.64,0.65,0
+non diabetici,xgboost,1,0.65,0.66,1
+non diabetici,xgboost,1,0.66,0.67,0
+non diabetici,xgboost,1,0.67,0.68,0
+non diabetici,xgboost,1,0.68,0.6900000000000001,0
+non diabetici,xgboost,1,0.6900000000000001,0.7000000000000001,0
+non diabetici,xgboost,1,0.7000000000000001,0.71,0
+non diabetici,xgboost,1,0.71,0.72,1
+non diabetici,xgboost,1,0.72,0.73,0
+non diabetici,xgboost,1,0.73,0.74,0
+non diabetici,xgboost,1,0.74,0.75,0
+non diabetici,xgboost,1,0.75,0.76,0
+non diabetici,xgboost,1,0.76,0.77,1
+non diabetici,xgboost,1,0.77,0.78,0
+non diabetici,xgboost,1,0.78,0.79,0
+non diabetici,xgboost,1,0.79,0.8,0
+non diabetici,xgboost,1,0.8,0.81,0
+non diabetici,xgboost,1,0.81,0.8200000000000001,0
+non diabetici,xgboost,1,0.8200000000000001,0.8300000000000001,0
+non diabetici,xgboost,1,0.8300000000000001,0.84,0
+non diabetici,xgboost,1,0.84,0.85,0
+non diabetici,xgboost,1,0.85,0.86,0
+non diabetici,xgboost,1,0.86,0.87,0
+non diabetici,xgboost,1,0.87,0.88,0
+non diabetici,xgboost,1,0.88,0.89,0
+non diabetici,xgboost,1,0.89,0.9,0
+non diabetici,xgboost,1,0.9,0.91,0
+non diabetici,xgboost,1,0.91,0.92,0
+non diabetici,xgboost,1,0.92,0.93,0
+non diabetici,xgboost,1,0.93,0.9400000000000001,0
+non diabetici,xgboost,1,0.9400000000000001,0.9500000000000001,0
+non diabetici,xgboost,1,0.9500000000000001,0.96,0
+non diabetici,xgboost,1,0.96,0.97,0
+non diabetici,xgboost,1,0.97,0.98,0
+non diabetici,xgboost,1,0.98,0.99,0
+non diabetici,xgboost,1,0.99,1.0,0
+tutti,xgboost,0,0.0,0.01,4
+tutti,xgboost,0,0.01,0.02,71
+tutti,xgboost,0,0.02,0.03,302
+tutti,xgboost,0,0.03,0.04,514
+tutti,xgboost,0,0.04,0.05,533
+tutti,xgboost,0,0.05,0.06,402
+tutti,xgboost,0,0.06,0.07,326
+tutti,xgboost,0,0.07,0.08,269
+tutti,xgboost,0,0.08,0.09,219
+tutti,xgboost,0,0.09,0.1,168
+tutti,xgboost,0,0.1,0.11,168
+tutti,xgboost,0,0.11,0.12,119
+tutti,xgboost,0,0.12,0.13,107
+tutti,xgboost,0,0.13,0.14,91
+tutti,xgboost,0,0.14,0.15,65
+tutti,xgboost,0,0.15,0.16,68
+tutti,xgboost,0,0.16,0.17,47
+tutti,xgboost,0,0.17,0.18,59
+tutti,xgboost,0,0.18,0.19,49
+tutti,xgboost,0,0.19,0.2,38
+tutti,xgboost,0,0.2,0.21,39
+tutti,xgboost,0,0.21,0.22,30
+tutti,xgboost,0,0.22,0.23,19
+tutti,xgboost,0,0.23,0.24,22
+tutti,xgboost,0,0.24,0.25,23
+tutti,xgboost,0,0.25,0.26,20
+tutti,xgboost,0,0.26,0.27,13
+tutti,xgboost,0,0.27,0.28,11
+tutti,xgboost,0,0.28,0.29,11
+tutti,xgboost,0,0.29,0.3,14
+tutti,xgboost,0,0.3,0.31,8
+tutti,xgboost,0,0.31,0.32,9
+tutti,xgboost,0,0.32,0.33,7
+tutti,xgboost,0,0.33,0.34,4
+tutti,xgboost,0,0.34,0.35000000000000003,6
+tutti,xgboost,0,0.35000000000000003,0.36,7
+tutti,xgboost,0,0.36,0.37,6
+tutti,xgboost,0,0.37,0.38,8
+tutti,xgboost,0,0.38,0.39,3
+tutti,xgboost,0,0.39,0.4,10
+tutti,xgboost,0,0.4,0.41000000000000003,5
+tutti,xgboost,0,0.41000000000000003,0.42,2
+tutti,xgboost,0,0.42,0.43,2
+tutti,xgboost,0,0.43,0.44,2
+tutti,xgboost,0,0.44,0.45,4
+tutti,xgboost,0,0.45,0.46,4
+tutti,xgboost,0,0.46,0.47000000000000003,0
+tutti,xgboost,0,0.47000000000000003,0.48,2
+tutti,xgboost,0,0.48,0.49,0
+tutti,xgboost,0,0.49,0.5,3
+tutti,xgboost,0,0.5,0.51,0
+tutti,xgboost,0,0.51,0.52,2
+tutti,xgboost,0,0.52,0.53,1
+tutti,xgboost,0,0.53,0.54,2
+tutti,xgboost,0,0.54,0.55,0
+tutti,xgboost,0,0.55,0.56,0
+tutti,xgboost,0,0.56,0.5700000000000001,0
+tutti,xgboost,0,0.5700000000000001,0.58,0
+tutti,xgboost,0,0.58,0.59,0
+tutti,xgboost,0,0.59,0.6,1
+tutti,xgboost,0,0.6,0.61,0
+tutti,xgboost,0,0.61,0.62,1
+tutti,xgboost,0,0.62,0.63,1
+tutti,xgboost,0,0.63,0.64,0
+tutti,xgboost,0,0.64,0.65,0
+tutti,xgboost,0,0.65,0.66,2
+tutti,xgboost,0,0.66,0.67,1
+tutti,xgboost,0,0.67,0.68,0
+tutti,xgboost,0,0.68,0.6900000000000001,0
+tutti,xgboost,0,0.6900000000000001,0.7000000000000001,0
+tutti,xgboost,0,0.7000000000000001,0.71,1
+tutti,xgboost,0,0.71,0.72,0
+tutti,xgboost,0,0.72,0.73,0
+tutti,xgboost,0,0.73,0.74,0
+tutti,xgboost,0,0.74,0.75,0
+tutti,xgboost,0,0.75,0.76,0
+tutti,xgboost,0,0.76,0.77,0
+tutti,xgboost,0,0.77,0.78,0
+tutti,xgboost,0,0.78,0.79,0
+tutti,xgboost,0,0.79,0.8,0
+tutti,xgboost,0,0.8,0.81,0
+tutti,xgboost,0,0.81,0.8200000000000001,0
+tutti,xgboost,0,0.8200000000000001,0.8300000000000001,0
+tutti,xgboost,0,0.8300000000000001,0.84,0
+tutti,xgboost,0,0.84,0.85,0
+tutti,xgboost,0,0.85,0.86,0
+tutti,xgboost,0,0.86,0.87,0
+tutti,xgboost,0,0.87,0.88,0
+tutti,xgboost,0,0.88,0.89,0
+tutti,xgboost,0,0.89,0.9,0
+tutti,xgboost,0,0.9,0.91,0
+tutti,xgboost,0,0.91,0.92,0
+tutti,xgboost,0,0.92,0.93,0
+tutti,xgboost,0,0.93,0.9400000000000001,0
+tutti,xgboost,0,0.9400000000000001,0.9500000000000001,0
+tutti,xgboost,0,0.9500000000000001,0.96,0
+tutti,xgboost,0,0.96,0.97,0
+tutti,xgboost,0,0.97,0.98,0
+tutti,xgboost,0,0.98,0.99,0
+tutti,xgboost,0,0.99,1.0,0
+tutti,xgboost,1,0.0,0.01,0
+tutti,xgboost,1,0.01,0.02,1
+tutti,xgboost,1,0.02,0.03,16
+tutti,xgboost,1,0.03,0.04,21
+tutti,xgboost,1,0.04,0.05,32
+tutti,xgboost,1,0.05,0.06,22
+tutti,xgboost,1,0.06,0.07,30
+tutti,xgboost,1,0.07,0.08,21
+tutti,xgboost,1,0.08,0.09,20
+tutti,xgboost,1,0.09,0.1,20
+tutti,xgboost,1,0.1,0.11,21
+tutti,xgboost,1,0.11,0.12,18
+tutti,xgboost,1,0.12,0.13,12
+tutti,xgboost,1,0.13,0.14,10
+tutti,xgboost,1,0.14,0.15,12
+tutti,xgboost,1,0.15,0.16,8
+tutti,xgboost,1,0.16,0.17,10
+tutti,xgboost,1,0.17,0.18,8
+tutti,xgboost,1,0.18,0.19,5
+tutti,xgboost,1,0.19,0.2,6
+tutti,xgboost,1,0.2,0.21,6
+tutti,xgboost,1,0.21,0.22,9
+tutti,xgboost,1,0.22,0.23,6
+tutti,xgboost,1,0.23,0.24,7
+tutti,xgboost,1,0.24,0.25,13
+tutti,xgboost,1,0.25,0.26,6
+tutti,xgboost,1,0.26,0.27,7
+tutti,xgboost,1,0.27,0.28,3
+tutti,xgboost,1,0.28,0.29,4
+tutti,xgboost,1,0.29,0.3,4
+tutti,xgboost,1,0.3,0.31,3
+tutti,xgboost,1,0.31,0.32,4
+tutti,xgboost,1,0.32,0.33,5
+tutti,xgboost,1,0.33,0.34,3
+tutti,xgboost,1,0.34,0.35000000000000003,3
+tutti,xgboost,1,0.35000000000000003,0.36,5
+tutti,xgboost,1,0.36,0.37,5
+tutti,xgboost,1,0.37,0.38,2
+tutti,xgboost,1,0.38,0.39,1
+tutti,xgboost,1,0.39,0.4,1
+tutti,xgboost,1,0.4,0.41000000000000003,1
+tutti,xgboost,1,0.41000000000000003,0.42,2
+tutti,xgboost,1,0.42,0.43,4
+tutti,xgboost,1,0.43,0.44,3
+tutti,xgboost,1,0.44,0.45,1
+tutti,xgboost,1,0.45,0.46,3
+tutti,xgboost,1,0.46,0.47000000000000003,0
+tutti,xgboost,1,0.47000000000000003,0.48,2
+tutti,xgboost,1,0.48,0.49,3
+tutti,xgboost,1,0.49,0.5,1
+tutti,xgboost,1,0.5,0.51,1
+tutti,xgboost,1,0.51,0.52,0
+tutti,xgboost,1,0.52,0.53,0
+tutti,xgboost,1,0.53,0.54,2
+tutti,xgboost,1,0.54,0.55,0
+tutti,xgboost,1,0.55,0.56,1
+tutti,xgboost,1,0.56,0.5700000000000001,1
+tutti,xgboost,1,0.5700000000000001,0.58,1
+tutti,xgboost,1,0.58,0.59,1
+tutti,xgboost,1,0.59,0.6,0
+tutti,xgboost,1,0.6,0.61,0
+tutti,xgboost,1,0.61,0.62,0
+tutti,xgboost,1,0.62,0.63,0
+tutti,xgboost,1,0.63,0.64,1
+tutti,xgboost,1,0.64,0.65,1
+tutti,xgboost,1,0.65,0.66,1
+tutti,xgboost,1,0.66,0.67,2
+tutti,xgboost,1,0.67,0.68,1
+tutti,xgboost,1,0.68,0.6900000000000001,0
+tutti,xgboost,1,0.6900000000000001,0.7000000000000001,0
+tutti,xgboost,1,0.7000000000000001,0.71,0
+tutti,xgboost,1,0.71,0.72,1
+tutti,xgboost,1,0.72,0.73,0
+tutti,xgboost,1,0.73,0.74,0
+tutti,xgboost,1,0.74,0.75,0
+tutti,xgboost,1,0.75,0.76,0
+tutti,xgboost,1,0.76,0.77,1
+tutti,xgboost,1,0.77,0.78,0
+tutti,xgboost,1,0.78,0.79,0
+tutti,xgboost,1,0.79,0.8,0
+tutti,xgboost,1,0.8,0.81,0
+tutti,xgboost,1,0.81,0.8200000000000001,0
+tutti,xgboost,1,0.8200000000000001,0.8300000000000001,0
+tutti,xgboost,1,0.8300000000000001,0.84,0
+tutti,xgboost,1,0.84,0.85,0
+tutti,xgboost,1,0.85,0.86,0
+tutti,xgboost,1,0.86,0.87,0
+tutti,xgboost,1,0.87,0.88,0
+tutti,xgboost,1,0.88,0.89,0
+tutti,xgboost,1,0.89,0.9,0
+tutti,xgboost,1,0.9,0.91,0
+tutti,xgboost,1,0.91,0.92,0
+tutti,xgboost,1,0.92,0.93,0
+tutti,xgboost,1,0.93,0.9400000000000001,0
+tutti,xgboost,1,0.9400000000000001,0.9500000000000001,0
+tutti,xgboost,1,0.9500000000000001,0.96,0
+tutti,xgboost,1,0.96,0.97,0
+tutti,xgboost,1,0.97,0.98,0
+tutti,xgboost,1,0.98,0.99,0
+tutti,xgboost,1,0.99,1.0,0
