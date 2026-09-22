@@ -28,6 +28,7 @@ from src.data.imputed import METHOD, OUTPUT as IMPUTED, fold_name, load_fold
 from src.data.kidney import egfr, target
 from src.data.preprocess import select_features
 from src.data.split import PROCESSED
+from src.models.interpretation import OUTPUT as INTERPRETATION, shap_values
 from src.models.phase_a import fit, objective, tune
 from src.models.phase_b import SPACES_B
 from src.models.zoo import SEED
@@ -134,6 +135,80 @@ def nested(tag, name, load, space, n_trials=N_TRIALS, output=OUTPUT, pruner=True
         print(f"{tag} {record['fold']}: {record['seconds']:.0f} s", flush=True)
 
 
+# --- tri-ensemble sulle variabili più importanti --------------------------------------------
+
+def consensus_top(rankings, k):
+    """Prime k variabili per rango medio fra più classifiche (ognuna dalla più importante); a parità
+    di rango medio vale l'ordine della prima classifica."""
+    features = list(rankings[0])
+    if any(sorted(r) != sorted(features) for r in rankings):
+        raise ValueError("le classifiche non contengono le stesse variabili")
+    positions = [{f: i for i, f in enumerate(r)} for r in rankings]
+    mean_rank = {f: np.mean([p[f] for p in positions]) for f in features}
+    return sorted(features, key=lambda f: (mean_rank[f], positions[0][f]))[:k]
+
+
+def ranking(model, name, X, y, shap_rows):
+    """Variabili dalla più importante, col criterio di interpretation.top_features: |coefficiente|
+    per la logistica, SHAP medio assoluto per gli alberi (per la Random Forest su shap_rows righe
+    estratte per classe, perché TreeSHAP su centinaia di alberi profondi è molto lento)."""
+    if name == "lr_penalized":
+        scores = np.abs(model.coef_[0])
+    else:
+        rows = np.arange(len(X))
+        if name == "random_forest" and shap_rows and shap_rows < len(X):
+            rows = stratified_subsample(y, shap_rows / len(X), np.random.default_rng(SEED))
+        scores = np.abs(shap_values(model, X.iloc[rows])).mean(axis=0)
+    return list(X.columns[np.argsort(-scores, kind="stable")])
+
+
+def fold_rankings(X_tr, y_tr, outer, members, shap_rows):
+    """Classifiche stimate sul solo training del fold esterno, con gli iperparametri della Fase A."""
+    return [ranking(fit(name, reference_record(name, outer)["params"], X_tr, y_tr), name, X_tr, y_tr,
+                    shap_rows) for name in members]
+
+
+def full_training_rankings(members, directory=INTERPRETATION):
+    """Classifiche dei modelli finali della Fase A, stimati sull'intero training (coefficienti e SHAP
+    di analytics/phase_a/interpretation/): la selezione vede anche i soggetti di validazione."""
+    odds = pd.read_csv(directory / "odds_ratios.csv").query("feature_set == @FEATURE_SET")
+    importance = pd.read_csv(directory / "shap_importance.csv").query("feature_set == @FEATURE_SET")
+    lists = []
+    for name in members:
+        if name == "lr_penalized":
+            table = odds[odds["model"] == name]
+            lists.append(list(table.iloc[np.argsort(-table["coefficient"].abs().to_numpy(),
+                                                    kind="stable")]["feature"]))
+        else:
+            table = importance[importance["model"] == name]
+            lists.append(list(table.sort_values("mean_abs_shap", ascending=False, kind="stable")["feature"]))
+    return lists
+
+
+def run_tri_ensemble(tag, spec, df, output=OUTPUT, members=REFERENCES):
+    """Media delle probabilità dei riferimenti addestrati sulle prime spec["top"] variabili, con gli
+    iperparametri della Fase A del fold. selection: "nested" (classifica sul training del fold) o
+    "full_training" (classifica sull'intero training, solo come diagnostica)."""
+    if spec["selection"] not in ("nested", "full_training"):
+        raise ValueError(f"{tag}: selezione sconosciuta {spec['selection']}")
+    load = loader(df, target(df).to_numpy(), spec["data"])
+    for outer in range(OUTER):
+        if record_path(tag, outer, output).exists():
+            continue
+        start = time.perf_counter()
+        X_tr, y_tr, X_va, _ = load(outer, None)
+        rankings = (fold_rankings(X_tr, y_tr, outer, members, spec.get("shap_rows"))
+                    if spec["selection"] == "nested" else full_training_rankings(members))
+        features = consensus_top(rankings, spec["top"])
+        p = np.mean([fit(name, reference_record(name, outer)["params"], X_tr[features], y_tr)
+                     .predict_proba(X_va[features])[:, 1] for name in members], axis=0)
+        record = {"candidate": tag, "members": list(members), "selection": spec["selection"],
+                  "fold": fold_name(outer), "features": features, "rows": X_va.index.tolist(),
+                  "probability": p.tolist(), "seconds": round(time.perf_counter() - start, 1)}
+        save_record(tag, outer, record, output)
+        print(f"{tag} {record['fold']}: {record['seconds']:.0f} s", flush=True)
+
+
 # --- candidati ----------------------------------------------------------------------------
 
 def run_candidate(tag, df, output=OUTPUT):
@@ -148,6 +223,9 @@ def run_candidate(tag, df, output=OUTPUT):
             p = np.mean([r["probability"] for r in records], axis=0)
             save_record(tag, outer, {"candidate": tag, "members": REFERENCES, "fold": fold_name(outer),
                                      "rows": rows, "probability": p.tolist()}, output)
+        return
+    if kind == "tri_ensemble":
+        run_tri_ensemble(tag, spec, df, output)
         return
     if kind == "xgboost":
         space = {**SPACES_B["xgboost"], **spec.get("space", {})}
@@ -320,8 +398,13 @@ if __name__ == "__main__":
     train = pd.read_csv(PROCESSED / "train.csv")
     for tag in args.candidates:
         run_candidate(tag, train)
+    # diagnostiche con le metriche in discrimination.csv, fuori dalla famiglia di Holm
+    scored_diagnostics = ["positive_control"] + [name for name, spec in DIAGNOSTICS.items()
+                                                 if spec.get("kind") == "tri_ensemble"]
     for name in args.diagnostics:
-        if name == "positive_control":
+        if DIAGNOSTICS[name].get("kind") == "tri_ensemble":
+            run_tri_ensemble(name, DIAGNOSTICS[name], train)
+        elif name == "positive_control":
             positive_control(train)
         elif name == "learning_curve":
             print(learning_curve(train).groupby(["model", "fraction"])[["auc", "pr_auc"]].mean().round(3))
@@ -330,6 +413,6 @@ if __name__ == "__main__":
             print("giornate UCRE basso:", low_days)
             print(table.round(3).to_string(index=False))
     if args.evaluate:
-        metrics, comparison = evaluate(train, completed(CANDIDATES), completed(["positive_control"]))
+        metrics, comparison = evaluate(train, completed(CANDIDATES), completed(scored_diagnostics))
         print(metrics.round(3).to_string(index=False))
         print(comparison.round(4).to_string(index=False))

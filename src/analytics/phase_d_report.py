@@ -26,6 +26,8 @@ CANDIDATE_NAMES = {
     "xgboost_no_pruner": "XGBoost senza pruner",
     "lr_all_scaled": "logistica, tutto standardizzato",
     "positive_control": "controllo positivo (+ albumina urinaria)",
+    "tri_ensemble_top21": "tri-ensemble, 21 variabili",
+    "tri_ensemble_leaky": "tri-ensemble, 21 var. scelte su tutto il training",
 }
 LABELS = {**NAMES, **CANDIDATE_NAMES}
 
