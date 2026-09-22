@@ -1535,6 +1535,50 @@ Quelli dichiarati nel protocollo, più due emersi dai risultati:
 
 ---
 
+## Conclusioni delle domande 1–6 (22/09/2026, previsioni out-of-fold)
+Risposte alle domande dello Scope, sulle previsioni out-of-fold del training (4.350 soggetti, 425 positivi, prevalenza 9,8%). Sono le affermazioni che il test set dovrà confermare o smentire (sezione "Conferma finale sul test set — protocollo"). Popolazione: coorte ospedaliera di Shanghai, 2012, in maggioranza senza diabete noto.
+
+### Domanda 1 — il modello distingue chi ha marcatori di malattia renale?
+**Sì, in modo modesto.** AUROC da 0,675 (logistica SCORED) a 0,703 (Random Forest); PR-AUC 0,224–0,251, cioè 2,3–2,6 volte la prevalenza. Alla soglia con sensibilità 0,90 va esaminato il 77–80% dei soggetti (specificità 0,21–0,26).
+- **nessun modello è migliore degli altri in modo dimostrabile** (p di Holm ≥ 0,44). I modelli con 74 variabili superano la logistica SCORED a 5 predittori su tutte le misure (AUROC +0,021 / +0,029, meno esami a parità di sensibilità, net benefit più alto), ma senza significatività: è la replica di Christodoulou et al. 2019
+- **il tetto è nell'informazione**: dieci strategie in più (Fase D) restano fra 0,692 e 0,710. L'eGFR < 60 si riconosce bene (AUROC 0,80–0,86), l'albuminuria no (0,67–0,69); la letteratura con lo stesso tipo di bersaglio riporta 0,68–0,76
+- **serve?** Sì, da soglie del 5–6% in su: al 7% evita 9–13 esami inutili ogni 100 persone rispetto a "testare tutti", al 10% 25–28 (decision curve, blocco qualità). Sotto il 5% equivale a testare tutti
+- **calibrazione**: buona in media (intercetta 0, rapporto O:E 1) e per le due logistiche (pendenze 0,97 e 0,94); Random Forest schiaccia le probabilità (pendenza 1,31), XGBoost le esaspera (0,86)
+
+### Domanda 2 — il rischio stimato cresce con la gravità KDIGO?
+**Sì.** In tutti i modelli la probabilità media cresce a ogni livello (XGBoost: 0,086 basso, 0,142 moderato, 0,194 alto, 0,284 molto alto) e circa il 70% delle coppie di soggetti di livelli diversi è ordinato come KDIGO (concordanza di Jonckheere-Terpstra 0,674–0,702). La separazione netta è fra "basso" e gli altri livelli; "alto" e "molto alto" si sovrappongono.
+
+### Domanda 3 — quanti casi "alto" e "molto alto" riconosce?
+**Alla soglia con sensibilità 0,90, 46–47 "alto" su 50 e 18–20 "molto alto" su 21** (1–3 "molto alto" mancati). I casi gravi non sono riconosciuti più dei moderati: sensibilità simili, con intervalli larghi per i 21 "molto alto".
+
+### Domanda 4 — le fasce del modello corrispondono alla stratificazione clinica?
+**Poco.** Kappa pesato 0,197–0,228; l'accordo osservato alto (0,85) viene quasi tutto dal livello "basso", il 90% dei soggetti (paradosso della prevalenza). Fino a metà dei "molto alto" finisce nella fascia di rischio più bassa. Con la domanda 3: il modello riconosce la **presenza** dei marcatori, non il loro **grado**.
+
+### Domanda 5 — l'augmentation migliora il riconoscimento dei casi gravi o solo la metrica media?
+**Nessuna delle due, se misurata bene.** A parità di sensibilità complessiva (0,90) nessuna tecnica riconosce più casi gravi di "nessuna correzione" (differenze entro ±3 casi su 71, p di Holm 1,00); SMOTE-NC e CTGAN peggiorano la discriminazione; pesatura e campionamento distruggono la calibrazione (intercetta fino a −2,2), che la ricalibrazione di Platt recupera. Nemmeno i pesi per livello KDIGO, costruiti apposta per i casi gravi, li fanno riconoscere di più.
+
+**Ma alla soglia 0,5 sembrano trasformare il modello**: il recall passa dal 2% al 61% e i casi gravi riconosciuti da 0 a circa 50 su 71. È un effetto della soglia, non del modello (Elkan 2001; van den Goorbergh et al. 2022).
+
+### Domanda 6 — come si comporta lo stesso modello sui diabetici?
+**Discrimina come sugli altri** (differenze di AUROC da −0,038 a +0,042, tutti gli intervalli coprono lo zero), **ma alla soglia globale degenera in "testare tutti"**: segnala il 97–100% dei diabetici (specificità 0,000–0,036). La decision curve lo conferma: fino al 10% nessun modello batte "testare tutti" fra i diabetici. La PR-AUC dei diabetici sembra doppia (0,44 contro 0,19) solo per la prevalenza (25,9% contro 8,7%). Random Forest sottostima di circa un quinto il rischio dei diabetici (O:E 1,26). **Il modello ha senso fra i soggetti senza diabete; fra i diabetici hanno ragione le linee guida**, che prescrivono l'esame ogni anno.
+
+### Il filo della tesi
+Esiste una convinzione diffusa: bilanciare le classi aiuta a trovare i casi rari. La tesi l'ha messa alla prova con protocolli scritti prima dei risultati, su dati clinici reali e senza esami renali. **Non regge**: nessuna tecnica fa riconoscere più casi gravi. In compenso **sembra** reggere, e la tesi misura quattro modi in cui un numero, letto senza controllare come è stato ottenuto, inganna:
+1. la soglia 0,5 (Fase B): recall dal 2% al 61% senza che il modello migliori;
+2. la PR-AUC fra gruppi con prevalenza diversa (Fase C): 0,44 contro 0,19 con un ordinamento peggiore;
+3. la media delle pendenze di calibrazione (blocco qualità): 1,02 come media di 1,31 e 0,86;
+4. la selezione delle variabili fuori dalla validazione (Fase D): AUROC da 0,703 a 0,716 e un vantaggio su SCORED che diventa "significativo".
+
+Accanto a questo, un risultato positivo e misurato: con i soli esami del sangue di routine il modello raggiunge il tetto di prestazione di questo bersaglio e, a soglie cliniche ragionevoli, evita esami inutili nei soggetti senza diabete.
+
+### Limiti delle conclusioni
+- previsioni out-of-fold di un solo dataset: conferma sul test set in sospeso, nessuna validazione esterna
+- coorte ospedaliera, non screening di popolazione; ACR da campione singolo, con tipo di campione e unità non documentati
+- 71 casi gravi nel training (23 nel test) e 68 positivi fra i diabetici: stime per livello e per sottogruppo instabili
+- Fase D e blocco qualità sono post-hoc ed esplorativi
+
+---
+
 ## Conferma finale sul test set — preparazione (20/09/2026)
 Il test set **non è ancora stato letto**. Qui si annota solo quanto verificato per prepararne la trasformazione.
 

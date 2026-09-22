@@ -4,7 +4,7 @@
 
 ### Screening dei marcatori di malattia renale cronica senza esami renali
 
-*Pipeline di machine learning riproducibile per stimare il rischio renale da dati di screening metabolico, confrontata con la stratificazione clinica KDIGO e con tecniche di data augmentation per classi sbilanciate.*
+*Pipeline di machine learning riproducibile per stimare il rischio renale da esami del sangue di routine, confrontata con la stratificazione clinica KDIGO e con tecniche di data augmentation per classi sbilanciate.*
 
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/)
 [![scikit-learn](https://img.shields.io/badge/scikit--learn-1.9-F7931E.svg)](https://scikit-learn.org/)
@@ -28,7 +28,7 @@ Progetto di tesi di laurea triennale · Francesco Coppola
 5. [Definizione del target](#-definizione-del-target)
 6. [Architettura della pipeline](#-architettura-della-pipeline)
 7. [Metodologia](#-metodologia)
-8. [Risultati preliminari](#-risultati-preliminari)
+8. [Risultati principali](#-risultati-principali)
 9. [Stato di avanzamento](#-stato-di-avanzamento)
 10. [Riproducibilità](#-riproducibilità)
 11. [Struttura del repository](#-struttura-del-repository)
@@ -43,8 +43,8 @@ K-Risk allena modelli di classificazione che, **senza usare esami renali**, stim
 
 | | |
 |---|---|
-| **Popolazione** | 5.801 soggetti di uno screening metabolico di popolazione (Cina, 2012) |
-| **Input** | 74 variabili di screening: anagrafica, antropometria, pressione, glicemia, lipidi, emocromo, anamnesi, stili di vita |
+| **Popolazione** | 5.801 soggetti di una coorte ospedaliera (reparto di Diabetologia ed Endocrinologia, Shanghai, 2012), in maggioranza senza diabete noto |
+| **Input** | 74 variabili, nessun esame renale: anagrafica, antropometria, pressione, glicemia, lipidi, emocromo, anamnesi, stili di vita |
 | **Escluse** | tutte le variabili renali (creatinina, ACR, albuminuria, azotemia, eGFR e derivati) |
 | **Target** | binario: `ACR ≥ 30 mg/g` oppure `eGFR < 60 ml/min/1,73 m²` (eGFR ricalcolato con CKD-EPI 2021) |
 | **Prevalenza** | 567 positivi su 5.801 (**9,77%**): classi sbilanciate |
@@ -58,7 +58,7 @@ Il contributo non è un nuovo algoritmo, ma una **pipeline completa, riproducibi
 
 La malattia renale cronica è spesso **asintomatica fino a stadi avanzati** e si diagnostica con due esami specifici: la creatinina sierica (da cui si stima il filtrato, eGFR) e il rapporto albumina/creatinina urinaria (ACR). Nelle persone con diabete le linee guida prescrivono questi esami ogni anno; nella **popolazione generale** invece non vengono eseguiti di routine.
 
-La domanda di K-Risk è quindi: **con i soli dati di uno screening metabolico standard, è possibile stabilire a chi dare la priorità per gli esami renali?** Un modello di questo tipo non sostituisce gli esami: aiuta a indirizzarli.
+La domanda di K-Risk è quindi: **con i soli esami del sangue di routine, è possibile stabilire a chi dare la priorità per gli esami renali?** Un modello di questo tipo non sostituisce gli esami: aiuta a indirizzarli.
 
 ---
 
@@ -234,7 +234,10 @@ La scelta è stata fatta dopo aver visto i risultati ed è dichiarata come tale.
 |------|-----------|
 | **A — dati originali** | cinque modelli, uno per ruolo: classificatore di maggioranza (soglia minima), regressione logistica con i predittori del punteggio clinico SCORED (Bang et al. 2007), regressione logistica penalizzata, Random Forest, XGBoost. Cross-validation annidata, stesso budget di ottimizzazione per tutti |
 | **B — bilanciamento** | gli stessi cinque modelli con: nessuna correzione, pesi di classe, undersampling, oversampling, SMOTE, CTGAN (anche condizionato al livello KDIGO) |
-| **C — conclusioni** | confronto fra tecniche, analisi del sottogruppo diabetico |
+| **C — sottogruppo diabetico** | stesse previsioni filtrate sui diabetici, soglia e fasce globali fisse |
+| **D — tetto di prestazione** (post-hoc) | dieci strategie in più (ensemble, altre famiglie di modelli, TabPFN…) e il tri-ensemble su 21 variabili, con una regola di decisione fissata prima; controllo positivo, curva di apprendimento, qualità dell'etichetta |
+| **Qualità e utilità clinica** (post-hoc) | decision curve, calibrazione anche nei sottogruppi, costo per caso trovato, confronto con Bragg-Gresham et al. 2025 |
+| **Conclusioni e test** | risposte alle domande 1–6, poi conferma sul test set una sola volta, con protocollo fissato prima |
 
 ### 6. Regole metodologiche
 
@@ -246,13 +249,28 @@ La scelta è stata fatta dopo aver visto i risultati ed è dichiarata come tale.
 
 ---
 
-## 📈 Risultati preliminari
+## 📈 Risultati principali
 
-> I risultati definitivi dei modelli (Fasi A–C) sono in fase di sviluppo. Quelli che seguono vengono dal confronto dei metodi di imputazione, dove una regressione logistica fissa fa da strumento di misura.
+> Previsioni out-of-fold sul training (4.350 soggetti, 425 positivi). La conferma sul test set, una sola volta, ha il protocollo già fissato nel [`Notepad.md`](Notepad.md) ed è in preparazione. Sintesi completa, con lo stato dell'arte verificato, in [`valorizzazione_tesi.md`](valorizzazione_tesi.md).
 
-- con una semplice regressione logistica e **nessuna variabile renale**, la PR-AUC in cross-validation è **~0,25**, cioè **circa 2,6 volte** la prevalenza (9,77%, valore atteso di un classificatore casuale); l'AUC è **~0,69**
-- togliendo le 7 variabili alterate dalla malattia renale (set `no_consequence`) la PR-AUC scende di circa 0,01 (0,257 → 0,246 con MissForest), ben dentro l'errore standard (~0,03): **il segnale non dipende dalle conseguenze della malattia**
-- nessun segno di leakage residuo: la migliore feature da sola ha AUC 0,65 (soglia di allarme univariata 0,75) e il modello completo resta intorno a 0,69 (soglia di allarme 0,9)
+| # | Domanda | Risposta |
+|---|---------|----------|
+| 1 | Il modello distingue chi ha marcatori di malattia renale? | sì, in modo modesto: AUROC 0,675–0,703, PR-AUC 2,3–2,6 volte la prevalenza; nessun modello migliore degli altri in modo dimostrabile |
+| 2 | Il rischio stimato cresce con la gravità KDIGO? | sì: circa il 70% delle coppie di soggetti è ordinato come KDIGO |
+| 3 | Quanti casi "alto" e "molto alto" riconosce? | a sensibilità 0,90, 46–47 "alto" su 50 e 18–20 "molto alto" su 21, ma non più dei moderati |
+| 4 | Le fasce corrispondono alla stratificazione clinica? | poco: kappa pesato circa 0,2. Il modello riconosce la presenza dei marcatori, non il grado |
+| 5 | L'augmentation migliora il riconoscimento dei casi gravi? | no, a parità di sensibilità; alla soglia 0,5 però **sembra** portare il recall dal 2% al 61% |
+| 6 | Come si comporta sui diabetici? | discrimina come sugli altri, ma alla soglia globale degenera in "testare tutti" |
+
+- **tetto di prestazione** (Fase D, post-hoc): dieci strategie in più restano fra AUROC 0,692 e 0,710. Il limite è l'albuminuria: i casi con eGFR < 60 si riconoscono bene (0,80–0,86), quelli con sola albuminuria no (0,67–0,69). Con l'albumina urinaria fra le feature (controllo positivo) l'AUROC sale a 0,933
+- **utilità clinica** (post-hoc): alla soglia del 7% il modello evita 9–13 esami inutili ogni 100 persone rispetto a "testare tutti", al 10% 25–28; sui diabetici nessun vantaggio fino al 10%
+- **contro SCORED** (Bang et al. 2007): i modelli con gli esami del sangue di routine sono superiori su tutte le misure, ma le differenze non sono significative: replica di Christodoulou et al. 2019
+- **quattro risultati apparenti**, misurati: la soglia 0,5, la PR-AUC fra gruppi con prevalenza diversa, la media delle pendenze di calibrazione, la selezione delle variabili fuori dalla validazione
+
+<p align="center">
+  <img src="analytics/phase_b/05_naive_vs_real.png" width="48%" alt="Miglioramento apparente alla soglia 0,5 contro guadagno reale">
+  <img src="analytics/quality/01_decision_curve.png" width="48%" alt="Decision curve">
+</p>
 
 ---
 
@@ -265,11 +283,14 @@ La scelta è stata fatta dopo aver visto i risultati ed è dichiarata come tale.
 - [x] Confronto dei metodi di imputazione in cross-validation (mediana, KNN, MICE, MissForest)
 - [x] Scelta motivata dell'imputer (MissForest)
 - [x] Test automatici su split e preprocessing
-- [ ] **Fase A** — modelli sui dati originali e confronto con KDIGO
-- [ ] **Fase B** — tecniche di bilanciamento e data augmentation (SMOTE, CTGAN)
-- [ ] **Fase C** — conclusioni e analisi del sottogruppo diabetico
-- [ ] Interpretabilità (SHAP, coefficienti)
-- [ ] Valutazione finale sul test set
+- [x] **Fase A** — modelli sui dati originali e confronto con KDIGO
+- [x] **Fase B** — tecniche di bilanciamento e data augmentation (SMOTE, CTGAN)
+- [x] **Fase C** — sottogruppo diabetico
+- [x] Interpretabilità (SHAP, coefficienti)
+- [x] **Fase D** — ricerca del tetto di prestazione (post-hoc)
+- [x] Qualità e utilità clinica: decision curve, calibrazione, costi (post-hoc)
+- [x] Conclusioni delle domande 1–6
+- [ ] Valutazione finale sul test set (protocollo fissato; codice revisionato prima dell'esecuzione)
 - [ ] Prototipo dimostrativo
 
 ---
@@ -311,6 +332,13 @@ python -m src.models.phase_b --calibrate none class_weight level_weight undersam
 python -m src.models.phase_b --collect        # previsioni out-of-fold in analytics/phase_b/
 python -m src.models.evaluation_b             # valutazione Fase B (esito primario, confronti, calibrazione)
 python -m src.analytics.phase_b_report        # figure della Fase B in analytics/phase_b/
+python -m src.models.phase_c                  # Fase C: sottogruppo diabetico (~3 min)
+python -m src.analytics.phase_c_report        # figure della Fase C in analytics/phase_c/
+python -m src.models.phase_d --candidates <candidati> --diagnostics <diagnostiche> --evaluate   # Fase D (nomi in configs/config.yaml)
+python -m src.analytics.phase_d_report        # figure della Fase D in analytics/phase_d/
+python -m src.models.clinical_utility         # qualità e utilità clinica (~3 min)
+python -m src.analytics.quality_report        # figure in analytics/quality/
+python -m src.models.final_test --run         # conferma sul test set: una volta sola, solo con final_test.authorized = true
 python -m pytest                              # test automatici
 ```
 
@@ -333,14 +361,20 @@ K-Risk/
 │   ├── split/                 verifica dello split train/test
 │   ├── preprocessing/         selezione feature e confronto imputazione
 │   ├── phase_a/               Fase A: previsioni out-of-fold, tabelle di valutazione (evaluation/), figure
-│   └── phase_b/               Fase B: risultati per tecnica, valutazione (evaluation/), figure
+│   ├── phase_b/               Fase B: risultati per tecnica, valutazione (evaluation/), figure
+│   ├── phase_c/               Fase C: sottogruppo diabetico
+│   ├── phase_d/               Fase D: candidati, diagnostiche, confronto con la regola
+│   ├── quality/               qualità e utilità clinica: decision curve, calibrazione, costi
+│   └── test/                  conferma finale sul test set (dopo l'esecuzione unica)
 ├── configs/
 │   └── config.yaml            unica fonte di configurazione
 ├── data/
 │   ├── raw/                   dataset originale (CC BY 4.0, non modificato)
 │   ├── processed/             split train/test (non versionato)
 │   └── augmented/             training set bilanciati (non versionato)
-├── docs/thesis/               materiale della tesi
+├── docs/
+│   ├── thesis/                materiale della tesi
+│   └── verifica_stato_arte.md verifica bibliografica dello stato dell'arte
 ├── papers/                    letteratura di riferimento (KDIGO, preprocessing, modelli)
 ├── src/
 │   ├── config.py              caricamento della configurazione
@@ -359,10 +393,15 @@ K-Risk/
 │   │   ├── evaluation.py      valutazione sulle previsioni out-of-fold (domande 1-4, confronti)
 │   │   ├── interpretation.py  odds ratio delle logistiche, SHAP degli alberi
 │   │   ├── phase_b.py         addestramento della Fase B (tecniche, avvio caldo, ricalibrazione di Platt)
-│   │   └── evaluation_b.py    valutazione della Fase B (casi gravi, McNemar, calibrazione)
+│   │   ├── evaluation_b.py    valutazione della Fase B (casi gravi, McNemar, calibrazione)
+│   │   ├── phase_c.py         Fase C: sottogruppo diabetico a soglia e fasce fisse
+│   │   ├── phase_d.py         Fase D: candidati, diagnostiche, regola di decisione
+│   │   ├── clinical_utility.py qualità e utilità clinica
+│   │   └── final_test.py      conferma finale sul test set (protetta da final_test.authorized)
 │   └── analytics/             generazione delle figure
 ├── tests/                     test automatici (pytest)
 ├── Scope.md                   perimetro e domande della tesi
+├── valorizzazione_tesi.md     posizionamento rispetto allo stato dell'arte e sintesi dei risultati
 └── Notepad.md                 registro delle decisioni metodologiche
 ```
 
@@ -376,6 +415,7 @@ K-Risk/
 - **sottogruppo diabetico piccolo** (91 positivi): risultati solo descrittivi
 - **dati trasversali**: il modello riconosce lo stato presente, non prevede la progressione
 - **nessuna validazione esterna**: una sola popolazione, una sola finestra temporale
+- **coorte ospedaliera, non screening**: gli autori del dataset descrivono dati di un reparto di diabetologia; tipo di campione urinario per l'ACR e unità della creatinina e dell'albumina urinarie non documentati. L'utilità del modello va dimostrata in popolazioni di screening
 - **possibile struttura per comunità**: la prevalenza varia dal 4,5% al 24,5% fra giornate di raccolta, effetto non modellato
 
 > **Avvertenza.** K-Risk è un progetto di ricerca accademica. Non è un dispositivo medico, non è validato clinicamente e non deve essere usato per decisioni diagnostiche o terapeutiche.
