@@ -275,6 +275,11 @@ phase_d:
     # qualità del target: AUROC out-of-fold dei riferimenti nelle giornate di raccolta con mediana di
     # UCRE nel quartile più basso delle giornate contro le altre, e per componente del target
     label_quality: {day: Data, urine_creatinine: UCRE, low_quantile: 0.25}
+    # aggiunto il 22/09/2026, prima di calcolarlo: stesso tri-ensemble con le 21 variabili scelte
+    # sull'INTERO training (coefficienti e SHAP dei modelli finali della Fase A,
+    # analytics/phase_a/interpretation/), quindi con una selezione che vede anche i soggetti di
+    # validazione. Misura la distorsione da selezione (Ambroise & McLachlan 2002): non è mai un candidato
+    tri_ensemble_leaky: {kind: tri_ensemble, data: imputed, top: 21, selection: full_training}
   candidates:
     # media delle probabilità out-of-fold dei tre riferimenti (nessun nuovo addestramento)
     ensemble_mean: {kind: ensemble}
@@ -301,6 +306,15 @@ phase_d:
     # logistica penalizzata con anche le categoriche standardizzate (nelle fasi A-C restano 0/1/2 e la
     # penalizzazione le tratta su una scala diversa dalle numeriche)
     lr_all_scaled: {kind: lr_penalized, data: imputed_scaled}
+    # aggiunto il 22/09/2026, prima di calcolarlo: il "tri-ensemble sulle 21 variabili più importanti"
+    # di un'analisi preliminare non registrata (AUROC 0,717, non riproducibile dal repository). Media
+    # delle probabilità di logistica penalizzata, Random Forest e XGBoost (i riferimenti) addestrati
+    # sulle prime 21 variabili, con gli iperparametri della Fase A del fold: nessuna nuova ottimizzazione.
+    # Selezione DENTRO ogni fold esterno, sul solo training del fold: rango medio fra i tre modelli col
+    # criterio di interpretation.top_features (|coefficiente| della logistica, SHAP medio assoluto per
+    # gli alberi; per la Random Forest su 500 righe del training estratte per classe). Stessa regola di
+    # decisione degli altri candidati
+    tri_ensemble_top21: {kind: tri_ensemble, data: imputed, top: 21, selection: nested, shap_rows: 500}
   spaces:
     catboost:
       iterations: {type: int, low: 200, high: 1200}
