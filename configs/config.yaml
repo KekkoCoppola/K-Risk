@@ -357,3 +357,20 @@ quality:
   # curva di calibrazione flessibile: logistica su spline cubica ristretta del logit di p, nodi ai
   # quantili di Harrell 2015 per 4 nodi; punti ai decili di p
   calibration: {knots: [0.05, 0.35, 0.65, 0.95], bins: 10}
+
+# conferma finale sul test set: protocollo fissato il 22/09/2026 prima di scrivere il codice e prima
+# di leggere il test (Notepad, "Conferma finale sul test set — protocollo"). Si esegue UNA volta
+final_test:
+  output: analytics/test
+  # il codice legge data/processed/test.csv solo se authorized è true. Si cambia a mano, in un commit
+  # a parte, dopo l'autorizzazione esplicita dell'utente
+  authorized: false
+  feature_set: main
+  # numerosità attese, note dallo split: se non coincidono l'esecuzione si ferma prima delle metriche
+  expected: {n: 1451, positives: 142, alto: 17, molto alto: 6, diabetici: 88}
+  # modelli reali (affermazioni); il classificatore di maggioranza serve solo al controllo di coerenza
+  real_models: [lr_scored, lr_penalized, random_forest, xgboost]
+  # tecniche della Fase B portate al test: "none" = modelli della Fase A con XGBoost profondità 1-12
+  techniques: [none, class_weight, level_weight, undersampling, oversampling, smote_nc, smote_nc_level, ctgan, ctgan_level]
+  # criteri delle affermazioni (A)-(E)
+  claims: {min_models: 3, diabetic_alert_rate: 0.90, utility_thresholds: [0.07, 0.10], naive_threshold: 0.5}

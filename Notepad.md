@@ -1464,6 +1464,51 @@ Quelli dichiarati nel protocollo, più due emersi dai risultati:
 
 ---
 
+## Fase D — ricerca del tetto di prestazione (21/09/2026)
+**Dichiarazione**: analisi post-hoc, decisa dopo aver visto le Fasi A–C per rispondere alla domanda "si poteva fare meglio?"; va letta come esplorativa. Regola di decisione, candidati e diagnostiche sono stati scritti in `configs/config.yaml` (blocco `phase_d`, commit `b51f00a`) **prima di qualsiasi calcolo**. Stessi fold esterni della Fase A; il test set non viene letto. Prima dei candidati è stato fatto un audit riga per riga della pipeline, controllato da un revisore indipendente: nessun leakage, imputazione e bilanciamento stimati solo dentro i fold, test set mai letto dal codice dei modelli.
+
+### Protocollo
+- **riferimenti**: logistica penalizzata, Random Forest e XGBoost con profondità 1–12 (Fase A)
+- **regola**: un candidato migliora se, contro il riferimento con AUROC media sui fold più alta (Random Forest, 0,708), la differenza di AUROC è ≥ 0,01, il limite inferiore dell'IC 95% di Nadeau-Bengio è > 0 e il p di Holm fra i candidati è < 0,05. Chi la supera va ripetuto su 3 partizioni diverse prima di essere adottato
+- **metriche**: AUROC, PR-AUC, specificità a sensibilità 0,90
+- **candidati** (10, più il tri-ensemble aggiunto il 22/09/2026, sezione successiva): media dei tre riferimenti; XGBoost sui dati non imputati (valori mancanti gestiti dall'algoritmo); XGBoost con spazio allargato (`min_child_weight`, `gamma`, 100 tentativi); bersaglio scomposto (un XGBoost per l'albuminuria e uno per l'eGFR < 60, probabilità combinate); CatBoost; LightGBM; EBM; TabPFN v2; XGBoost senza pruner; logistica penalizzata con tutte le colonne standardizzate
+- **diagnostiche**, non candidati: controllo positivo (XGBoost con l'albumina urinaria fra le feature), curva di apprendimento (dal 20% al 100% del training di ogni fold), qualità dell'etichetta (creatinina urinaria per giornata di raccolta; AUROC per componente del bersaglio)
+
+### Risultati (`analytics/phase_d/`, figure 01–04)
+
+| modello | AUROC (IC 95%) | PR-AUC | specificità a sens. 0,90 | Δ AUROC contro RF (IC 95%) |
+|---|---|---|---|---|
+| Random Forest (riferimento) | 0,703 (0,676–0,731) | 0,246 | 0,232 | — |
+| logistica penalizzata (riferimento) | 0,697 (0,669–0,725) | 0,242 | 0,223 | — |
+| XGBoost profondità 1–12 (riferimento) | 0,696 (0,668–0,724) | 0,250 | 0,256 | — |
+| TabPFN v2 | 0,710 (0,682–0,737) | 0,253 | 0,231 | +0,009 (−0,014; +0,032) |
+| ensemble (media dei 3) | 0,708 (0,680–0,735) | 0,258 | 0,253 | +0,002 (−0,009; +0,013) |
+| tri-ensemble, 21 variabili | 0,703 (0,676–0,731) | 0,252 | 0,267 | −0,002 (−0,025; +0,020) |
+| bersaglio scomposto | 0,702 (0,674–0,729) | 0,260 | 0,243 | −0,001 (−0,015; +0,013) |
+| XGBoost, NaN nativi | 0,701 (0,673–0,729) | 0,250 | 0,256 | −0,001 (−0,015; +0,012) |
+| LightGBM | 0,701 (0,674–0,728) | 0,246 | 0,247 | −0,001 (−0,023; +0,022) |
+| logistica, tutto standardizzato | 0,696 (0,669–0,724) | 0,250 | 0,248 | −0,011 (−0,060; +0,039) |
+| CatBoost | 0,695 (0,667–0,723) | 0,240 | 0,240 | −0,008 (−0,030; +0,014) |
+| XGBoost senza pruner | 0,695 (0,667–0,723) | 0,249 | 0,239 | −0,011 (−0,030; +0,009) |
+| XGBoost, spazio allargato | 0,693 (0,665–0,721) | 0,244 | 0,233 | −0,009 (−0,027; +0,010) |
+| EBM | 0,692 (0,664–0,720) | 0,257 | 0,233 | −0,009 (−0,020; +0,002) |
+
+- **nessun candidato supera la regola** (p di Holm fra 0,99 e 1,00): strategie molto diverse restano fra 0,692 e 0,710. TabPFN ha la stima più alta ma resta sotto la soglia di rilevanza, con un intervallo che comprende lo zero
+
+**Diagnostiche**
+- **controllo positivo**: aggiungendo l'albumina urinaria l'AUROC sale a 0,933 (0,917–0,949). La pipeline impara quando l'informazione c'è
+- **curva di apprendimento**: dal 60% al 100% del training l'AUROC sale da 0,694 a 0,700 (logistica) e da 0,690 a 0,698 (XGBoost). Più soggetti aiuterebbero poco
+- **per componente del bersaglio**: i positivi per eGFR < 60 (63 nel training) si distinguono dai negativi con AUROC 0,81–0,84 nei riferimenti (0,80–0,86 su tutti i modelli); i positivi per sola albuminuria (362) con 0,67–0,69. **Il limite è l'albuminuria**, che è presente nel 91% dei positivi
+- **qualità dell'etichetta**: per giornata di raccolta, dove la creatinina urinaria mediana è bassa la quota di ACR ≥ 30 sale (rho di Spearman −0,70, p = 6·10⁻⁷), mentre l'albumina urinaria non segue (rho +0,16): l'ACR sale perché scende il denominatore. Nelle giornate con creatinina urinaria bassa l'AUROC non è peggiore (0,71–0,73 contro 0,69), quindi l'anomalia non spiega le prestazioni; va dichiarata insieme alle unità di `UCRE` e `UmALB`, non documentate
+
+**Letteratura** (verificata il 22/09/2026, dettaglio in `docs/verifica_stato_arte.md`)
+- modelli per la sola albuminuria senza esami: C 0,709–0,714 (Muntner et al. 2011) e 0,728–0,761 (Tanner et al. 2015); con eGFR, HbA1c, HDL e acido urico fra i predittori 0,752 (Bragg-Gresham et al. 2025); nel diabete tipo 2, anche con la creatinina sierica, 0,61–0,67 (Khitan et al. 2021)
+- un ACR su campione singolo è un'etichetta rumorosa: solo il 43,5% degli ACR ≥ 30 su urina casuale viene confermato sulla prima urina del mattino (Saydah et al. 2013); variabilità intra-individuale del 48,8% nel diabete tipo 2 (Rasaratnam et al. 2024); con etichette rumorose l'AUROC misurata si schiaccia verso 0,5 anche per un modello perfetto (Menon et al. 2015)
+
+**Sintesi**: con esami del sangue di routine e un ACR da campione singolo il tetto è intorno a 0,70–0,71. Il limite sta nell'informazione (l'albuminuria), non nel metodo.
+
+---
+
 ## Fase D — candidato aggiunto: tri-ensemble su 21 variabili (22/09/2026)
 **Perché.** `valorizzazione_tesi.md` citava un "tri-ensemble sulle 21 variabili più importanti" con AUROC 0,717 e PR-AUC 0,273, stimato in un'analisi preliminare di cui nel repository non c'erano né codice né tabelle. Su richiesta dell'utente è stato registrato come candidato della Fase D, **in `configs/config.yaml` prima di scrivere il codice e di calcolarlo**, con la stessa regola di decisione degli altri candidati.
 
@@ -1490,6 +1535,50 @@ Quelli dichiarati nel protocollo, più due emersi dai risultati:
 
 ---
 
+## Conclusioni delle domande 1–6 (22/09/2026, previsioni out-of-fold)
+Risposte alle domande dello Scope, sulle previsioni out-of-fold del training (4.350 soggetti, 425 positivi, prevalenza 9,8%). Sono le affermazioni che il test set doveva confermare o smentire (sezione "Conferma finale sul test set — protocollo"). **Esito del 22/09/2026: nessuna contraddetta** (sezione "Conferma finale sul test set — risultati"); sul test l'AUROC è 0,71–0,74 e la buona calibrazione della logistica penalizzata non si conferma. Popolazione: coorte ospedaliera di Shanghai, 2012, in maggioranza senza diabete noto.
+
+### Domanda 1 — il modello distingue chi ha marcatori di malattia renale?
+**Sì, in modo modesto.** AUROC da 0,675 (logistica SCORED) a 0,703 (Random Forest); PR-AUC 0,224–0,251, cioè 2,3–2,6 volte la prevalenza. Alla soglia con sensibilità 0,90 va esaminato il 77–80% dei soggetti (specificità 0,21–0,26).
+- **nessun modello è migliore degli altri in modo dimostrabile** (p di Holm ≥ 0,44). I modelli con 74 variabili superano la logistica SCORED a 5 predittori su tutte le misure (AUROC +0,021 / +0,029, meno esami a parità di sensibilità, net benefit più alto), ma senza significatività: è la replica di Christodoulou et al. 2019
+- **il tetto è nell'informazione**: dieci strategie in più (Fase D) restano fra 0,692 e 0,710. L'eGFR < 60 si riconosce bene (AUROC 0,80–0,86), l'albuminuria no (0,67–0,69); la letteratura con lo stesso tipo di bersaglio riporta 0,68–0,76
+- **serve?** Sì, da soglie del 5–6% in su: al 7% evita 9–13 esami inutili ogni 100 persone rispetto a "testare tutti", al 10% 25–28 (decision curve, blocco qualità). Sotto il 5% equivale a testare tutti
+- **calibrazione**: buona in media (intercetta 0, rapporto O:E 1) e per le due logistiche (pendenze 0,97 e 0,94); Random Forest schiaccia le probabilità (pendenza 1,31), XGBoost le esaspera (0,86)
+
+### Domanda 2 — il rischio stimato cresce con la gravità KDIGO?
+**Sì.** In tutti i modelli la probabilità media cresce a ogni livello (XGBoost: 0,086 basso, 0,142 moderato, 0,194 alto, 0,284 molto alto) e circa il 70% delle coppie di soggetti di livelli diversi è ordinato come KDIGO (concordanza di Jonckheere-Terpstra 0,674–0,702). La separazione netta è fra "basso" e gli altri livelli; "alto" e "molto alto" si sovrappongono.
+
+### Domanda 3 — quanti casi "alto" e "molto alto" riconosce?
+**Alla soglia con sensibilità 0,90, 46–47 "alto" su 50 e 18–20 "molto alto" su 21** (1–3 "molto alto" mancati). I casi gravi non sono riconosciuti più dei moderati: sensibilità simili, con intervalli larghi per i 21 "molto alto".
+
+### Domanda 4 — le fasce del modello corrispondono alla stratificazione clinica?
+**Poco.** Kappa pesato 0,197–0,228; l'accordo osservato alto (0,85) viene quasi tutto dal livello "basso", il 90% dei soggetti (paradosso della prevalenza). Fino a metà dei "molto alto" finisce nella fascia di rischio più bassa. Con la domanda 3: il modello riconosce la **presenza** dei marcatori, non il loro **grado**.
+
+### Domanda 5 — l'augmentation migliora il riconoscimento dei casi gravi o solo la metrica media?
+**Nessuna delle due, se misurata bene.** A parità di sensibilità complessiva (0,90) nessuna tecnica riconosce più casi gravi di "nessuna correzione" (differenze entro ±3 casi su 71, p di Holm 1,00); SMOTE-NC e CTGAN peggiorano la discriminazione; pesatura e campionamento distruggono la calibrazione (intercetta fino a −2,2), che la ricalibrazione di Platt recupera. Nemmeno i pesi per livello KDIGO, costruiti apposta per i casi gravi, li fanno riconoscere di più.
+
+**Ma alla soglia 0,5 sembrano trasformare il modello**: il recall passa dal 2% al 61% e i casi gravi riconosciuti da 0 a circa 50 su 71. È un effetto della soglia, non del modello (Elkan 2001; van den Goorbergh et al. 2022).
+
+### Domanda 6 — come si comporta lo stesso modello sui diabetici?
+**Discrimina come sugli altri** (differenze di AUROC da −0,038 a +0,042, tutti gli intervalli coprono lo zero), **ma alla soglia globale degenera in "testare tutti"**: segnala il 97–100% dei diabetici (specificità 0,000–0,036). La decision curve lo conferma: fino al 10% nessun modello batte "testare tutti" fra i diabetici. La PR-AUC dei diabetici sembra doppia (0,44 contro 0,19) solo per la prevalenza (25,9% contro 8,7%). Random Forest sottostima di circa un quinto il rischio dei diabetici (O:E 1,26). **Il modello ha senso fra i soggetti senza diabete; fra i diabetici hanno ragione le linee guida**, che prescrivono l'esame ogni anno.
+
+### Il filo della tesi
+Esiste una convinzione diffusa: bilanciare le classi aiuta a trovare i casi rari. La tesi l'ha messa alla prova con protocolli scritti prima dei risultati, su dati clinici reali e senza esami renali. **Non regge**: nessuna tecnica fa riconoscere più casi gravi. In compenso **sembra** reggere, e la tesi misura quattro modi in cui un numero, letto senza controllare come è stato ottenuto, inganna:
+1. la soglia 0,5 (Fase B): recall dal 2% al 61% senza che il modello migliori;
+2. la PR-AUC fra gruppi con prevalenza diversa (Fase C): 0,44 contro 0,19 con un ordinamento peggiore;
+3. la media delle pendenze di calibrazione (blocco qualità): 1,02 come media di 1,31 e 0,86;
+4. la selezione delle variabili fuori dalla validazione (Fase D): AUROC da 0,703 a 0,716 e un vantaggio su SCORED che diventa "significativo".
+
+Accanto a questo, un risultato positivo e misurato: con i soli esami del sangue di routine il modello raggiunge il tetto di prestazione di questo bersaglio e, a soglie cliniche ragionevoli, evita esami inutili nei soggetti senza diabete.
+
+### Limiti delle conclusioni
+- previsioni out-of-fold di un solo dataset: conferma sul test set in sospeso, nessuna validazione esterna
+- coorte ospedaliera, non screening di popolazione; ACR da campione singolo, con tipo di campione e unità non documentati
+- 71 casi gravi nel training (23 nel test) e 68 positivi fra i diabetici: stime per livello e per sottogruppo instabili
+- Fase D e blocco qualità sono post-hoc ed esplorativi
+
+---
+
 ## Conferma finale sul test set — preparazione (20/09/2026)
 Il test set **non è ancora stato letto**. Qui si annota solo quanto verificato per prepararne la trasformazione.
 
@@ -1509,7 +1598,133 @@ Il fold `full` della cache è già stimato su tutto il training (`train_idx = ar
 
 ---
 
+## Conferma finale sul test set — protocollo (22/09/2026)
+Fissato **prima di scrivere il codice e prima di leggere il test set**, insieme al blocco `final_test` di `configs/config.yaml`. Il test set (1.451 soggetti, 142 positivi, circa 118 "moderato", 17 "alto", 6 "molto alto", 88 diabetici di cui 23 positivi, numeri noti dallo split) non è mai stato letto da nessuna analisi.
+
+### Che cosa deve dire il test, e che cosa no
+**Non** sceglie modelli, tecniche, soglie o fasce: sono già fissati dalla cross-validation. Cambiarne uno dopo aver visto il test trasformerebbe la conferma in un'altra fase di selezione. Il test deve dire una cosa sola: **le conclusioni raggiunte sulle previsioni out-of-fold reggono su soggetti mai visti?**
+
+### Affermazioni da confermare o smentire, con il criterio fissato ora
+Per "modelli reali" si intendono logistica SCORED, logistica penalizzata, Random Forest e XGBoost.
+- **(A) Discriminazione**: per ogni modello reale della Fase A, l'AUROC out-of-fold (`analytics/phase_a/evaluation/q1_discrimination.csv`, set `main`) cade dentro l'IC 95% di DeLong dell'AUROC sul test. Esito: **non contraddetta** se vale per almeno 3 modelli su 4, **contraddetta** altrimenti, indicando la direzione
+- **(B) Bilanciamento**: nessuna tecnica principale della Fase B riconosce più casi gravi (alto + molto alto) di "nessuna correzione", ciascuna alla propria soglia fissata in cross-validation. Confronto appaiato sugli stessi soggetti: McNemar esatto e IC di Newcombe, Holm sulle 6 tecniche principali per modello, come in Fase B. Esito: **contraddetta** se almeno una tecnica ha p di Holm < 0,05 a favore della tecnica; **non contraddetta** altrimenti. Con 23 casi gravi la potenza è quasi nulla: il test può solo non contraddire
+- **(C) Diabetici**: alla soglia globale fissata ("nessuna correzione", `analytics/phase_b/evaluation/cutpoints.csv`) il modello segnala quasi tutti i diabetici. Esito: **confermata** se la quota di allerta fra i diabetici è ≥ 0,90 per almeno 3 modelli reali su 4
+- **(D) Utilità clinica**: alle soglie 7% e 10% il net benefit del modello supera sia "testare tutti" sia "non testare nessuno", su tutto il test. Esito: **confermata** se vale a entrambe le soglie per almeno 3 modelli reali su 4 ("nessuna correzione"). Solo stime puntuali, senza intervalli (Vickers et al. 2023)
+- **(E) Miglioramento apparente**: alla soglia 0,5, sulle probabilità grezze, ogni tecnica principale della Fase B ha un recall medio sui 4 modelli reali più alto di "nessuna correzione". Esito: **confermata** se vale per tutte e 6 le tecniche
+
+### Modelli portati al test
+Nessun modello nuovo, nessun riaddestramento: si usano i modelli finali già salvati, addestrati sull'intero training con gli iperparametri scelti in cross-validation.
+- **Fase A**, set `main`: i 5 modelli finali (`models/phase_a_<modello>_main.joblib`), con soglia e fasce di `analytics/phase_a/evaluation/cutpoints.csv`. Servono per le domande 1–4 e per l'affermazione (A)
+- **Fase B**: "nessuna correzione" (i modelli della Fase A, con XGBoost profondità 1–12 da `models/sensitivity/depth_1_12/`) e le 8 tecniche (6 principali e 2 CTGAN esplorative), 5 modelli ciascuna (`models/phase_b/<tecnica>/`), con soglia e fasce di `analytics/phase_b/evaluation/cutpoints.csv`. Probabilità grezze per soglie, fasce e affermazioni (B) ed (E); probabilità ricalibrate con i parametri di Platt del modello finale (`analytics/phase_b/<tecnica>/calibration/main/<modello>_full.json`, "nessuna correzione" compresa) per la calibrazione; i bracci CTGAN non sono ricalibrati, come in Fase B
+- **esclusi**: i candidati della Fase D (nessuno ha superato la regola, e la regola vieta di costruire modelli finali in quel caso) e il set `no_consequence` (analisi di sensibilità già chiusa in Fase A)
+
+### Preparazione del test
+1. **controlli prima di trasformare**: nessun identificativo (`NO`) del test compare nel training; numerosità uguali a quelle dello split (1.451 soggetti, 142 positivi, 17 "alto", 6 "molto alto", 88 diabetici). Se un controllo fallisce, l'esecuzione si ferma senza calcolare nessuna metrica
+2. **preprocessore**: ristimato sull'intero training (standardizzazione, moda, MissForest), poi verificato **bit a bit** contro `data/processed/imputed/main/full.npz`, come il 20/09/2026. Solo se coincide si applica una singola `.transform` al test
+3. **previsioni**: per ogni modello, sulle colonne con cui è stato addestrato
+
+### Metriche (con gli stessi metodi delle fasi precedenti, a soglie e fasce fisse)
+- **domande 1–4** per ogni modello e tecnica, in tre gruppi (tutti, diabetici, non diabetici): AUROC (DeLong), PR-AUC (logit di Boyd) accanto alla prevalenza del gruppo, precision, recall, specificità e quota di allerta alla soglia fissata (Wilson); probabilità media per livello e concordanza di Jonckheere-Terpstra (bootstrap stratificato sul livello, 2.000 campioni, seed 42); sensibilità per livello e sui casi gravi (Wilson); fasce contro livelli e kappa pesato. Soglia e fasce **mai ristimate** sul test
+- **esito primario della Fase B** (affermazione B) e **soglia 0,5** (affermazione E)
+- **calibrazione**: intercetta, pendenza, rapporto O:E e Brier, con IC da **bootstrap semplice** (per la calibrazione il bootstrap stratificato sul livello fissa il numero di eventi: lezione del blocco qualità)
+- **decision curve** su tutto il test e nei due sottogruppi, soglie 0,02–0,20, con esami inutili evitati ogni 100 (affermazione D)
+- **controllo di coerenza**: il classificatore di maggioranza deve dare AUROC 0,5 e PR-AUC uguale alla prevalenza del test
+
+### Sicurezza dell'esecuzione
+- il codice legge `data/processed/test.csv` solo se `final_test.authorized` in `configs/config.yaml` è `true`. Resta `false` finché l'utente non autorizza esplicitamente; il cambio va in un commit a parte, che documenta quando il test è stato aperto. **Dopo l'esecuzione torna `false`**, in un altro commit: il test resta chiuso anche dopo
+- **prima di aprire il test**, `run()` fa tutti i controlli che non lo richiedono: albero git pulito (il codice eseguito è quello del commit registrato); preprocessore ristimato identico bit a bit alla cache; i 50 modelli finali e i parametri di Platt caricati, con `n_jobs = 1` (la Random Forest in parallelo non è riproducibile bit a bit); soglie, fasce e AUROC out-of-fold complete. `python -m src.models.final_test --check` esegue gli stessi controlli e una prova completa su righe del training, **senza leggere il test**: va eseguito prima del commit di autorizzazione
+- `analytics/test/RUN.json` si scrive nel momento in cui il test viene aperto e registra data, commit, versioni delle librerie, hash sha256 del file, numerosità ed esito. Se esiste, il codice rifiuta una seconda esecuzione, salvo un'opzione esplicita che obbliga a scrivere il motivo; ogni esecuzione scrive le tabelle in una cartella propria (`analytics/test/run_<k>/`)
+- `test.csv` è letto anche dal report descrittivo dello split (`src/analytics/split_report.py`: numerosità e bilanciamento, già noti e pubblicati nella sezione dello split); nessun codice di valutazione lo legge
+- **regola d'oro**: se dopo l'esecuzione si scopre un errore, si corregge e **si dichiara apertamente che il test è stato usato due volte**. Non si ritoccano soglie, fasce o modelli dopo aver visto il test
+
+### Limiti, dichiarati prima
+- 23 casi gravi (17 alto, 6 molto alto), 88 diabetici con 23 positivi: intervalli amplissimi, per livello e per sottogruppo solo descrittivi. Con 142 eventi le stime complessive sono accettabili ma non strette (Riley et al. 2024 indicano almeno 100 eventi)
+- stessa coorte ospedaliera e stessa finestra temporale del training: è una conferma interna, non una validazione esterna
+
+### Codice
+Modulo nuovo `src/models/final_test.py` più `tests/test_final_test.py` (dati sintetici; nessun test legge `test.csv`), revisione indipendente in sola lettura **prima** dell'esecuzione. Tabelle in `analytics/test/`. Riusa gli helper esistenti: `phase_c` (tabelle a soglia e fasce fisse per gruppo), `evaluation_b` (McNemar, Newcombe), `phase_b` (applicazione di Platt), `clinical_utility` (decision curve con i suoi controlli di coerenza, calibrazione con bootstrap semplice).
+
+### Revisione indipendente del codice (22/09/2026, prima dell'esecuzione)
+Agente revisore separato, in sola lettura, con il divieto di aprire `test.csv`. Ha fatto anche una prova completa sulle righe del training con i modelli e i file reali: preprocessore identico bit a bit alla cache, 50 modelli caricati e allineati alle righe, `evaluate()` completo sui `cutpoints.csv` veri. **Nessun difetto critico.** Verificati: bracci, modelli (iperparametri uguali ai record `_full.json`; XGBoost di "nessuna correzione" con profondità 1), soglie mai ristimate, parametri di Platt ricalcolati a 1e-9, criteri delle affermazioni uguali al protocollo, colonne passate a ogni modello.
+- **corretti (maggiori)**: (1) i controlli che non richiedono il test ora avvengono prima di aprirlo, e `--check` li esegue senza aprirlo: un guasto evitabile non costringe più a dichiarare un doppio uso del test; (2) test per ogni ramo delle affermazioni (B)–(E) e un test completo di `run()` su file finti; (3) le affermazioni si fermano con un errore se una tabella ha meno modelli o soglie del previsto, invece di decidere su dati incompleti
+- **corretti (minori)**: RUN.json completo (versioni, hash, esito) e scritto al momento dell'apertura; albero git pulito obbligatorio; una cartella per esecuzione; `n_jobs = 1`; controllo esplicito delle colonne dei modelli; controlli di coerenza della decision curve riusati; ID, esito, livello e diabete nel file delle previsioni; errore anche per probabilità ricalibrate mancanti; aggiunto il test di riproducibilità permanente contro la cache annunciato il 20/09/2026
+- **integrazioni al protocollo nate dalla revisione**, scritte prima dell'esecuzione: riguardano solo la sicurezza dell'esecuzione (sottosezione precedente). Nessun criterio, modello, soglia o metrica è cambiato
+
+---
+
+## Conferma finale sul test set — risultati (22/09/2026)
+**Esecuzione unica**: 22/09/2026, 18:20–18:37, dal commit `b7d5f61` (autorizzazione), con il protocollo della sezione precedente e il codice del commit `a7a0a6b`. `analytics/test/RUN.json` registra versioni delle librerie, hash sha256 di `test.csv` (`9d3fc900…`) e numerosità: 1.451 soggetti, 142 positivi, 17 "alto", 6 "molto alto", 88 diabetici, **tutte uguali a quelle attese**. Preprocessore ristimato identico bit a bit alla cache, poi una sola `.transform`. Tabelle in `analytics/test/run_1/`. Test richiuso subito dopo (`authorized: false`, commit `5ffadf6`). **Il test è stato usato una volta sola.**
+
+### Esito delle affermazioni fissate prima
+
+| | affermazione | esito | numeri |
+|---|---|---|---|
+| (A) | AUROC del test compatibile con quella out-of-fold | **non contraddetta** | dentro l'IC per 3 modelli su 4; per la logistica SCORED il test è **più alto** (0,723, IC 0,677–0,769, contro 0,675 out-of-fold) |
+| (B) | nessuna tecnica principale riconosce più casi gravi | **non contraddetta** | differenze da −2 a +2 casi gravi su 23, p di Holm 1,00 per tutti |
+| (C) | alla soglia globale il modello segnala quasi tutti i diabetici | **confermata** | quota di allerta fra i diabetici 0,977–1,000 |
+| (D) | utilità clinica alle soglie 7% e 10% | **confermata** | tutti e 4 i modelli sopra "testare tutti" e "nessuno" a entrambe le soglie |
+| (E) | alla soglia 0,5 il bilanciamento sembra migliorare il recall | **confermata** | recall medio: nessuna correzione 0,044, tecniche 0,403–0,646 |
+
+### Domande 1–4 sul test (modelli della Fase A, soglie e fasce out-of-fold)
+
+| modello | AUROC (IC 95%) | PR-AUC | recall alla soglia fissata | specificità | esaminati | casi gravi riconosciuti | kappa |
+|---|---|---|---|---|---|---|---|
+| logistica SCORED | 0,723 (0,677–0,769) | 0,266 | 0,937 | 0,200 | 81,3% | 20 su 23 | 0,190 |
+| logistica penalizzata | 0,714 (0,668–0,760) | 0,239 | 0,894 | 0,307 | 71,3% | 21 su 23 | 0,204 |
+| Random Forest | 0,743 (0,699–0,786) | 0,249 | 0,894 | 0,322 | 70,0% | 22 su 23 | 0,225 |
+| XGBoost | 0,725 (0,680–0,771) | 0,254 | 0,887 | 0,283 | 73,4% | 22 su 23 | 0,205 |
+
+- **discriminazione**: sul test l'AUROC è **più alta** che out-of-fold (+0,02 / +0,05), la PR-AUC è 2,4–2,7 volte la prevalenza. Non va letta come un miglioramento: gli intervalli sono larghi (±0,045) e comprendono la stima out-of-fold per 3 modelli su 4; inoltre i modelli finali sono addestrati sul 100% del training, i modelli dei fold sull'80% (la curva di apprendimento della Fase D prevedeva però un guadagno di appena 0,006–0,008, quindi il resto è variabilità di campionamento). **Nessuna differenza fra modelli emerge nemmeno qui**
+- **soglia**: le soglie stimate out-of-fold per sensibilità 0,90 danno sul test recall 0,887–0,937: la soglia si trasferisce bene
+- **tendenza** (domanda 2): concordanza di Jonckheere-Terpstra 0,713–0,741; la probabilità media cresce da "basso" (0,088–0,095) a "moderato" (0,153–0,171) e "alto" (0,203–0,271). "Molto alto" (6 soggetti) non è sempre sopra "alto": con 6 casi è atteso
+- **casi gravi** (domanda 3): 20–22 su 23 alla soglia fissata; "molto alto" 5 o 6 su 6. Come out-of-fold, non riconosciuti meglio dei moderati (104–113 su 119)
+- **fasce** (domanda 4): kappa pesato 0,190–0,225, come out-of-fold (0,197–0,228)
+
+### Domanda 5 e miglioramento apparente
+- (B) a parità di soglia fissata nessuna tecnica guadagna casi gravi: su 24 confronti, 15 identici, gli altri entro ±2 casi su 23 (p di Holm 1,00)
+- (E) alla soglia 0,5 lo stesso inganno della Fase B: recall 4,4% senza correzione contro 40–65% con le tecniche. Il risultato centrale della tesi **si riproduce su soggetti mai visti**
+
+### Domanda 6 e decision curve
+- **diabetici** (88, 23 positivi): AUROC 0,639–0,702, intervalli larghissimi (circa 0,51–0,83), contro 0,690–0,726 fra i non diabetici; alla soglia globale il modello segnala il 97,7–100% dei diabetici (specificità 0,000–0,031)
+- **decision curve su tutto il test**, esami inutili evitati ogni 100 persone rispetto a "testare tutti":
+
+| soglia | test | out-of-fold (blocco qualità) |
+|---|---|---|
+| 5% | da +4,6 a +11,3 | da +0,1 a +2,3 |
+| 7% | da +12,8 a +19,2 | da +9,2 a +13,1 |
+| 10% | da +29,5 a +33,1 | da +24,9 a +27,8 |
+| 20% | da +54,3 a +58,0 | da +54,9 a +56,8 |
+
+- sul test il vantaggio è **uguale o più grande** che out-of-fold, coerente con l'AUROC più alta; fra i diabetici fino al 7% il modello evita al massimo 4,5 esami ogni 100 (0 per la logistica SCORED e la Random Forest), cioè resta vicino a "testare tutti"
+
+### Calibrazione sul test (descrittiva, IC da bootstrap semplice)
+| modello | intercetta | pendenza grezza (IC) | O:E | pendenza dopo Platt (IC) |
+|---|---|---|---|---|
+| logistica SCORED | −0,05 | 1,11 (0,90–1,35) | 0,96 | 1,15 (0,92–1,39) |
+| logistica penalizzata | −0,07 | **0,79 (0,62–0,98)** | 0,95 | 1,01 (0,79–1,27) |
+| Random Forest | −0,05 | **1,27 (1,02–1,56)** | 0,96 | 1,07 (0,86–1,31) |
+| XGBoost | −0,03 | 0,95 (0,74–1,17) | 0,97 | 1,03 (0,81–1,27) |
+
+- **calibrazione in media confermata**: intercetta vicina a 0 e O:E 0,95–0,97 con intervalli che comprendono 1
+- **pendenza della Random Forest confermata**: 1,27 sul test contro 1,31 out-of-fold, probabilità troppo schiacciate
+- **non confermate** due letture out-of-fold: XGBoost, troppo estremo out-of-fold (0,86), sul test è calibrato (0,95); **la logistica penalizzata, calibrata out-of-fold (0,94), sul test ha pendenza 0,79**, cioè probabilità troppo estreme. La ricalibrazione di Platt riporta tutte le pendenze vicino a 1 (1,01–1,15)
+- fra i diabetici la sottostima della Random Forest vista out-of-fold (O:E 1,26) non si ripete (1,08, IC 0,73–1,47): con 23 eventi non si può dire nulla in nessuna direzione
+
+### Sintesi per la tesi
+1. **le conclusioni della cross-validation reggono su 1.451 soggetti mai visti**: nessuna delle cinque affermazioni fissate prima è contraddetta
+2. discriminazione modesta confermata, anzi leggermente più alta sul test (AUROC 0,71–0,74), senza differenze fra modelli; la logistica SCORED a 5 predittori resta vicina ai modelli con 74 variabili
+3. **il bilanciamento non fa riconoscere più casi gravi, ma alla soglia 0,5 sembra farlo**: il risultato centrale si riproduce identico
+4. sui diabetici il modello equivale a testare tutti; nella popolazione del dataset evita 13–19 esami inutili ogni 100 persone al 7% e 30–33 al 10%
+5. la calibrazione va letta per modello: solida in media, instabile nella pendenza fra un campione e l'altro. Il dettaglio che resta: la Random Forest comprime le probabilità in entrambi i campioni; per la logistica penalizzata la buona calibrazione out-of-fold non si conferma
+
+### Limiti
+Quelli dichiarati nel protocollo: 23 casi gravi, 88 diabetici con 23 positivi (intervalli larghissimi); stessa coorte ospedaliera e stessa finestra temporale del training, quindi conferma interna, non validazione esterna.
+
+---
+
 ## Da fare per concludere il progetto (scritto il 20/09/2026)
+**Superata il 22/09/2026**: Fase C, Fase D, blocco qualità e conclusioni delle domande 1–6 sono conclusi; il protocollo del test finale è nella sezione "Conferma finale sul test set — protocollo". Il testo che segue resta come traccia storica.
+
 Restano due blocchi: la **Fase C** (sottogruppo diabetico e conclusioni) e la **conferma finale sul test set**. Qui c'è esattamente cosa fare, nell'ordine consigliato.
 
 ### Fase C — sottogruppo diabetico (domanda 6) e conclusioni
@@ -1555,7 +1770,7 @@ Tempo stimato: un giorno di lavoro, più qualche minuto di calcolo.
 
 ## Indice delle figure
 
-Rigenerare con `python -m src.analytics.dataset_overview`, `python -m src.analytics.split_report`, (dopo `python -m src.data.imputation`) `python -m src.analytics.preprocessing_report` e (dopo `python -m src.models.evaluation` e `python -m src.models.interpretation`) `python -m src.analytics.phase_a_report`. Le figure della Fase B: `python -m src.analytics.phase_b_report` (dopo `python -m src.models.evaluation_b`). Le figure della Fase C: `python -m src.analytics.phase_c_report` (dopo `python -m src.models.phase_c`). Le figure del blocco qualità e utilità clinica: `python -m src.analytics.quality_report` (dopo `python -m src.models.clinical_utility`).
+Rigenerare con `python -m src.analytics.dataset_overview`, `python -m src.analytics.split_report`, (dopo `python -m src.data.imputation`) `python -m src.analytics.preprocessing_report` e (dopo `python -m src.models.evaluation` e `python -m src.models.interpretation`) `python -m src.analytics.phase_a_report`. Le figure della Fase B: `python -m src.analytics.phase_b_report` (dopo `python -m src.models.evaluation_b`). Le figure della Fase C: `python -m src.analytics.phase_c_report` (dopo `python -m src.models.phase_c`). Le figure della Fase D: `python -m src.analytics.phase_d_report` (dopo `python -m src.models.phase_d --evaluate`). Le figure del blocco qualità e utilità clinica: `python -m src.analytics.quality_report` (dopo `python -m src.models.clinical_utility`).
 
 | file | cosa mostra | sezione |
 |------|-------------|---------|
@@ -1593,6 +1808,10 @@ Rigenerare con `python -m src.analytics.dataset_overview`, `python -m src.analyt
 | `analytics/phase_b/06_kappa.png` | kappa pesato fasce/livelli per tecnica e modello | Fase B — risultati |
 | `analytics/phase_c/01_discrimination_diabetici.png` | AUC e PR-AUC con IC: diabetici, non diabetici e training completo; per la PR-AUC la prevalenza di ciascun gruppo è la linea di riferimento | Fase C — protocollo |
 | `analytics/phase_c/02_severe_cases.png` | casi gravi riconosciuti su 16 fra i diabetici alla soglia globale fissa, per modello e braccio, con IC di Wilson | Fase C — protocollo |
+| `analytics/phase_d/01_candidates.png` | AUROC dei candidati della Fase D con IC di DeLong e differenza contro Random Forest con IC di Nadeau-Bengio e soglia di rilevanza | Fase D — ricerca del tetto |
+| `analytics/phase_d/02_learning_curve.png` | curva di apprendimento di logistica penalizzata e XGBoost (20–100% del training di ogni fold) | Fase D — diagnostiche |
+| `analytics/phase_d/03_urine_creatinine_by_day.png` | per giornata di raccolta: creatinina urinaria mediana contro quota di ACR ≥ 30 e contro albumina urinaria mediana | Fase D — qualità dell'etichetta |
+| `analytics/phase_d/04_label_quality.png` | AUROC per componente del bersaglio (eGFR < 60, sola albuminuria) e per gruppo di giornate | Fase D — diagnostiche |
 | `analytics/quality/01_decision_curve.png` | decision curve su tutto il training (soglie 2–20%) contro "testare tutti" e "non testare nessuno"; a destra esami inutili evitati ogni 100 | Qualità e utilità clinica — risultati, punto 1 |
 | `analytics/quality/02_decision_curve_subgroups.png` | decision curve dentro diabetici e non diabetici, ciascuno contro il proprio "testare tutti" (scale diverse di proposito) | punto 2 |
 | `analytics/quality/03_costs.png` | costo del test ACR per caso trovato e costo di ogni caso in più trovato testando tutti ($49 a test) | punto 7 |
@@ -1788,6 +2007,17 @@ Verificate su Crossref il 20/09/2026 (DOI, titolo, autori, rivista, anno). Testo
 - **Collins et al. 2024 (TRIPOD+AI)** — Collins G.S., Moons K.G.M., Dhiman P., Riley R.D., Beam A.L., Van Calster B., et al. *TRIPOD+AI statement: updated guidance for reporting clinical prediction models that use regression or machine learning methods.* BMJ 385:e078378 (2024). doi:10.1136/bmj-2023-078378. Item 23a: performance nei sottogruppi **con intervalli di confidenza**
 - **Riley et al. 2024 (parte 3)** — Riley R.D., Snell K.I.E., Archer L., Ensor J., Debray T.P.A., Van Calster B., van Smeden M., Collins G.S. *Evaluation of clinical prediction models (part 3): calculating the sample size required for an external validation study.* BMJ 384:e074821 (2024). doi:10.1136/bmj-2023-074821. **Fonte della scelta di non fare test formali**: servono almeno 100 eventi e 100 non-eventi per stimare la c-statistic con precisione accettabile; il sottogruppo ne ha 68
 - **Vickers & Holland 2021** — Vickers A.J., Holland F. *Decision curve analysis to evaluate the clinical benefit of prediction models.* Spine J 21(10):1643–1648 (2021). doi:10.1016/j.spinee.2021.02.024. A supporto: la soglia riflette il compromesso clinico fra danni e benefici, non una quantità stimata dai dati
+
+### Fase D: tetto di prestazione e qualità dell'etichetta
+Verificate il 22/09/2026 (Crossref, PubMed, sito dell'editore; dettaglio in `docs/verifica_stato_arte.md`). Abstract letto per Muntner, Tanner, Saydah, Rasaratnam, Hollmann, Ambroise; testo completo per Khitan; pagina degli atti per Menon.
+- **Muntner et al. 2011** — Muntner P., Woodward M., Carson A.P., et al. *Am J Kidney Dis* 58(2):196–205 (2011). doi:10.1053/j.ajkd.2011.01.027 — albuminuria senza esami, 8 domande, C 0,709–0,714
+- **Tanner et al. 2015** — Tanner R.M., Woodward M., Peralta C., et al. *Ethn Dis* 25(4):427–434 (2015). doi:10.18865/ed.25.4.427 — stesso strumento in MESA, C 0,728–0,761
+- **Khitan et al. 2021** — Khitan Z., Nath T., Santhanam P. *J Clin Hypertens* 23(12):2137–2145 (2021). doi:10.1111/jch.14397 — albuminuria nel diabete tipo 2, con esami del sangue compresa la creatinina, AUC 0,61–0,67
+- **Saydah et al. 2013** — Saydah S.H., Pavkov M.E., Zhang C., et al. *Clin Chem* 59(4):675–683 (2013). doi:10.1373/clinchem.2012.195644 — il 43,5% degli ACR ≥ 30 su urina casuale confermato sulla prima urina del mattino
+- **Rasaratnam et al. 2024** — Rasaratnam N., Salim A., Blackberry I., et al. *Am J Kidney Dis* 84(1):8–17.e1 (2024). doi:10.1053/j.ajkd.2023.12.018 — variabilità intra-individuale dell'ACR 48,8% nel diabete tipo 2
+- **Menon et al. 2015** — Menon A.K., van Rooyen B., Ong C.S., Williamson R.C. *Learning from corrupted binary labels via class-probability estimation.* ICML 2015, PMLR 37:125–134 — etichette rumorose e AUROC
+- **Hollmann et al. 2025** — Hollmann N., Müller S., Purucker L., et al. *Accurate predictions on small data with a tabular foundation model.* Nature 637(8045):319–326 (2025). doi:10.1038/s41586-024-08328-6 — TabPFN
+- **Ambroise & McLachlan 2002** — Ambroise C., McLachlan G.J. *Selection bias in gene extraction on the basis of microarray gene-expression data.* PNAS 99(10):6562–6566 (2002). doi:10.1073/pnas.102102699 — distorsione da selezione delle variabili fuori dalla validazione
 
 ### Utilità clinica e misure di qualità (post-hoc)
 Verificate su Crossref il 22/09/2026 (DOI, titolo, autori, rivista, anno). Testo completo letto: Bragg-Gresham et al. 2024 (PMC), Benitez-Aurioles et al. 2024 (arXiv), Vickers, van Calster & Steyerberg 2019 e Vickers et al. 2023 (PMC, accesso aperto); Cusick et al. 2023 letto nel testo completo il 20/09/2026. Solo metadati: Harrell 2015 (libro). Servono anche Vickers & Elkin 2006, Van Calster et al. 2016 e 2019 (sezioni Fase A e Fase B), Van Calster et al. 2025, Matos et al. 2026 e TRIPOD+AI (sezione Fase C); di Van Calster et al. 2019 il testo completo è stato letto il 22/09/2026 (PMC).

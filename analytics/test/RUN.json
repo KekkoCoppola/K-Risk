@@ -1,0 +1,29 @@
+{
+ "runs": [
+  {
+   "run": 1,
+   "started": "2026-09-22T18:20:04",
+   "commit": "b7d5f617663c5eaa9679640958916dfbee87fd9b",
+   "versions": {
+    "python": "3.12.10",
+    "numpy": "2.5.3",
+    "pandas": "2.3.3",
+    "scipy": "1.18.1",
+    "scikit-learn": "1.9.1",
+    "xgboost": "3.4.1"
+   },
+   "reason": "prima esecuzione",
+   "status": "completato",
+   "sha256": "9d3fc900a6e8b621fe8e91e6fa8f7cf0c7b3d277825b948b2c45044cbcbf5a75",
+   "counts": {
+    "n": 1451,
+    "positives": 142,
+    "alto": 17,
+    "molto alto": 6,
+    "diabetici": 88
+   },
+   "finished": "2026-09-22T18:37:20",
+   "tables": "run_1"
+  }
+ ]
+}

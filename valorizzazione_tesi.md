@@ -2,7 +2,7 @@
 
 Documento di sintesi metodologica, clinica e bibliografica ad uso della tesi. Definisce il posizionamento di K-Risk rispetto allo stato dell'arte e raccoglie tutti i risultati che ne misurano il valore.
 
-**Regole di questo documento.** Ogni numero del progetto viene da una tabella in `analytics/` (previsioni out-of-fold sul training, 4.350 soggetti; il test set non è mai stato letto). Ogni fonte esterna è stata verificata il 22/09/2026 su Crossref, PubMed, Europe PMC o sul sito dell'editore: **TC** = contenuto letto nel testo completo, **AB** = letto nell'abstract. Rapporto completo della verifica in `docs/verifica_stato_arte.md`. Le analisi della Fase D e del blocco "qualità e utilità clinica" sono post-hoc e vanno presentate come esplorative.
+**Regole di questo documento.** Ogni numero del progetto viene da una tabella in `analytics/`: previsioni out-of-fold sul training (4.350 soggetti) e, nella sezione 5bis, la conferma unica sul test set (1.451 soggetti, 22/09/2026). Ogni fonte esterna è stata verificata il 22/09/2026 su Crossref, PubMed, Europe PMC o sul sito dell'editore: **TC** = contenuto letto nel testo completo, **AB** = letto nell'abstract. Rapporto completo della verifica in `docs/verifica_stato_arte.md`. Le analisi della Fase D e del blocco "qualità e utilità clinica" sono post-hoc e vanno presentate come esplorative.
 
 ---
 
@@ -10,9 +10,9 @@ Documento di sintesi metodologica, clinica e bibliografica ad uso della tesi. De
 
 1. **Serve a qualcosa, e lo dimostra con la misura giusta.** Con la decision curve analysis, alla soglia del 7% il modello evita **9–13 esami inutili ogni 100 persone** rispetto a "testare tutti", a parità di casi trovati; al 10% ne evita 25–28 (sezione 5). Le revisioni recenti segnalano che i modelli di CKD per la comunità quasi mai riportano un'analisi di utilità clinica (Haris et al. 2024).
 2. **Batte SCORED, di poco ma in modo coerente.** È superiore su tutte e quattro le misure (AUROC, PR-AUC, esami necessari a parità di sensibilità, net benefit), senza differenze statisticamente significative. Il tri-ensemble su 21 variabili, con selezione verificata dentro ogni fold, ottiene le stesse prestazioni della Random Forest con meno di un terzo delle variabili ed è il migliore sul piano operativo: 7,8 esami in meno ogni 100 persone rispetto a SCORED per trovare l'85% dei casi (sezione 4).
-3. **Il tetto di prestazione è spiegato con i dati, non ipotizzato.** L'eGFR < 60 si riconosce bene (AUROC 0,81–0,86), l'albuminuria no (0,67–0,69). La letteratura mostra lo stesso schema (sezione 6).
+3. **Il tetto di prestazione è spiegato con i dati, non ipotizzato.** L'eGFR < 60 si riconosce bene (AUROC 0,80–0,86), l'albuminuria no (0,67–0,69). La letteratura mostra lo stesso schema (sezione 6).
 4. **Non c'è leakage, ed è verificato.** Esami renali esclusi per costruzione e bloccati da un controllo automatico; controllo positivo con l'albumina urinaria a AUROC 0,933: la pipeline impara quando l'informazione c'è (sezione 7).
-5. **Rigore metodologico da articolo.** Protocolli scritti prima dei risultati, validazione incrociata annidata, test set mai toccato, 143 test automatici, revisioni indipendenti del codice.
+5. **Rigore metodologico da articolo, e conferma su dati mai visti.** Protocolli scritti prima dei risultati, validazione incrociata annidata, 170 test automatici, revisioni indipendenti del codice. Il test set (1.451 soggetti) è stato aperto una sola volta, dopo aver fissato protocollo e codice: **nessuna delle cinque affermazioni pre-registrate è contraddetta**, AUROC 0,71–0,74 (sezione 5bis).
 6. **Quattro "risultati apparenti" smascherati.** La soglia 0,5 che gonfia il recall dal 2% al 61%, la PR-AUC dei diabetici che sembra doppia, la pendenza di calibrazione "media 1,02" che nasconde due errori opposti, e la selezione delle variabili fatta su tutti i dati che porta l'AUROC da 0,703 a 0,716 e rende "significativo" un vantaggio che non lo è (sezione 7).
 
 ---
@@ -29,7 +29,7 @@ Documento di sintesi metodologica, clinica e bibliografica ad uso della tesi. De
 - **A monte** del percorso diagnostico: un triage di primo livello che non sostituisce gli esami renali, ma decide a chi prescriverli.
 - **Input**: dati anagrafici, antropometrici, pressori ed esami del sangue di routine (glicemia, lipidi, enzimi epatici, emocromo, peptide C…).
 - **Vincolo**: tutti gli esami renali sono esclusi dall'input (`SCRE`, `UMAUCR`, `GFR`, `BUN` e derivati), con un controllo automatico che blocca il codice se una colonna vietata entra fra le feature.
-- **Uscita**: una probabilità di avere marcatori di CKD. È calibrata per le due logistiche; Random Forest e XGBoost lo sono solo in media (sezione 5).
+- **Uscita**: una probabilità di avere marcatori di CKD. In media è calibrata (O:E 0,95–1,01 out-of-fold e sul test); la pendenza varia fra modelli e fra campioni, e la ricalibrazione di Platt la riporta vicino a 1 (sezioni 5 e 5bis).
 
 ### I dati
 Li J et al. 2026, *Sci Data* (TC): **reparto di Diabetologia ed Endocrinologia dello Shanghai Sixth People's Hospital, febbraio-aprile 2012**, 5.922 record e 190 variabili. Dopo aver escluso chi non ha creatinina, ACR, età o sesso restano 5.801 soggetti (training 4.350, test 1.451). Nel training solo il 6% ha la variabile `DM` = 1 e la prevalenza dei marcatori di CKD è 9,8%.
@@ -112,7 +112,7 @@ Fonti: `analytics/phase_a/evaluation/` (AUROC, PR-AUC, punti operativi, confront
 
 **La lettura corretta del "di poco"**: è la replica, su un dataset nuovo, di Christodoulou et al. 2019, che su 145 confronti a basso rischio di bias non trovano differenze fra machine learning e regressione logistica (differenza di logit(AUROC) 0,00; IC −0,18; 0,18). Nei confronti ad alto rischio di bias lo stesso lavoro trova un vantaggio apparente del machine learning: l'assenza di un grande vantaggio è quindi un segnale di correttezza.
 
-**Il candidato con il miglior equilibrio**: la **logistica penalizzata** è l'unico modello della Fase A superiore a SCORED su tutte e quattro le misure e anche ben calibrato (pendenza 0,94, IC 0,80–1,07). Random Forest discrimina un po' meglio ma è mal calibrato (sezione 5). È un'osservazione descrittiva, non una nuova scelta del modello.
+**Il candidato con il miglior equilibrio, out-of-fold**: la **logistica penalizzata** è l'unico modello della Fase A superiore a SCORED su tutte e quattro le misure e anche ben calibrato (pendenza 0,94, IC 0,80–1,07). **Sul test set però la sua pendenza è 0,79 (IC 0,62–0,98)**: la buona calibrazione non si conferma, e va ricalibrata come gli altri (dopo Platt 1,01). Random Forest comprime le probabilità in entrambi i campioni (1,31 e 1,27). È un'osservazione descrittiva, non una nuova scelta del modello.
 
 ### Il tri-ensemble su 21 variabili, verificato
 Un'analisi preliminare non registrata riportava per un "tri-ensemble sulle 21 variabili più importanti" AUROC 0,717 e PR-AUC 0,273. Il 22/09/2026 è stato registrato come candidato della Fase D **prima** di calcolarlo (`configs/config.yaml`, `tri_ensemble_top21`): media delle probabilità di logistica penalizzata, Random Forest e XGBoost, addestrati sulle prime 21 variabili con gli iperparametri della Fase A di ogni fold. Le 21 variabili si scelgono **dentro ogni fold, sul solo training**, per rango medio fra i tre modelli (|coefficiente| per la logistica, SHAP medio per gli alberi). Come diagnostica si è calcolata anche la versione con le variabili scelte su tutto il training.
@@ -166,7 +166,7 @@ Fra i diabetici (prevalenza 25,9%) nessun modello fa meglio di "testare tutti" f
 
 ### Calibrazione
 - **In media è buona**: intercetta 0,00 e rapporto O:E 1,00 per tutti i modelli.
-- **Le due logistiche sono calibrate** (pendenze 0,97 e 0,94); **Random Forest schiaccia le probabilità** (pendenza 1,31, IC 1,13–1,48), **XGBoost le esaspera** (0,86, IC 0,75–0,97).
+- **out-of-fold le due logistiche sono calibrate** (pendenze 0,97 e 0,94; sul test la penalizzata scende a 0,79, sezione 5bis); **Random Forest schiaccia le probabilità** (pendenza 1,31, IC 1,13–1,48), **XGBoost le esaspera** (0,86, IC 0,75–0,97).
 - **Controllo di equità** (TRIPOD+AI, item 23a): fra i non diabetici nessun problema; fra i diabetici Random Forest sottostima il rischio di circa un quinto (O:E 1,26, IC 1,01–1,52). Non cambia nessuna decisione, perché i diabetici vanno testati comunque, ma va dichiarato.
 
 ### Confronto con Bragg-Gresham (riferimento esterno)
@@ -174,11 +174,29 @@ Per trovare il 73% dei casi di albuminuria fra i non diabetici servono 12–22 p
 
 ---
 
+## 5bis. Conferma sul test set (22/09/2026)
+
+Esecuzione unica su 1.451 soggetti mai visti, con protocollo, criteri e codice fissati e revisionati prima (commit di autorizzazione `b7d5f61`, test richiuso subito dopo). Tabelle in `analytics/test/run_1/`.
+
+| affermazione fissata prima | esito sul test |
+|---|---|
+| (A) discriminazione come out-of-fold | **non contraddetta**: AUROC 0,714–0,743, dentro l'IC per 3 modelli su 4 (per SCORED il test è più alto) |
+| (B) nessuna tecnica fa riconoscere più casi gravi | **non contraddetta**: differenze da −2 a +2 su 23, p di Holm 1,00 |
+| (C) sui diabetici il modello segnala quasi tutti | **confermata**: 97,7–100% |
+| (D) utilità clinica al 7% e al 10% | **confermata** per tutti e 4 i modelli: 13–19 esami inutili evitati ogni 100 persone al 7%, 30–33 al 10% |
+| (E) alla soglia 0,5 il bilanciamento sembra migliorare il recall | **confermata**: 4,4% contro 40–65% |
+
+- l'AUROC più alta del test non è un miglioramento: gli intervalli (±0,045) comprendono la stima out-of-fold per 3 modelli su 4
+- la calibrazione in media si conferma (O:E 0,95–0,97); la pendenza della Random Forest (1,27) anche; quella della logistica penalizzata no (0,79)
+- limite: stessa coorte ospedaliera e stessa finestra temporale, 23 casi gravi e 88 diabetici: è una conferma interna, non una validazione esterna
+
+---
+
 ## 6. Il tetto di prestazione: spiegato con i dati
 
 La vecchia versione di questo documento attribuiva il tetto di AUROC 0,70–0,75 a ragioni biologiche non documentate. Il progetto ora ha prove dirette.
 
-1. **Il limite è l'albuminuria.** Con le stesse previsioni, i positivi per eGFR < 60 si distinguono dai negativi con AUROC 0,81–0,86; i positivi per sola albuminuria con 0,67–0,69. Il bersaglio è per il 91% albuminuria (362 + 25 casi su 425 nel training). Lo stesso schema compare in letteratura (sezione 2).
+1. **Il limite è l'albuminuria.** Con le stesse previsioni, i positivi per eGFR < 60 si distinguono dai negativi con AUROC 0,80–0,86; i positivi per sola albuminuria con 0,67–0,69. Il bersaglio è per il 91% albuminuria (362 + 25 casi su 425 nel training). Lo stesso schema compare in letteratura (sezione 2).
 2. **Non è la tecnica.** Dieci strategie diverse nella Fase D (ensemble, NaN gestiti dall'algoritmo, spazio degli iperparametri allargato, bersaglio scomposto, CatBoost, LightGBM, EBM, TabPFN…) restano fra 0,692 e 0,710.
 3. **Non sono i dati che mancano.** Dal 60% al 100% del training l'AUROC sale di 0,006–0,008: più soggetti aiuterebbero poco.
 4. **La pipeline funziona.** Aggiungendo l'albumina urinaria l'AUROC sale a 0,933: quando l'informazione c'è, il modello la trova.
@@ -202,7 +220,7 @@ In sintesi: con esami del sangue di routine e un'albuminuria misurata su un solo
 - **Rischio di bias**: nei confronti ad alto rischio di bias il machine learning sembra migliore della logistica, in quelli a basso rischio no (Christodoulou et al. 2019).
 
 ### Metodo
-Validazione incrociata annidata 5 × 5 stratificata; iperparametri scelti solo sui fold interni; soglie, fasce e regole di decisione scritte nel Notepad prima di calcolare; intervalli di confidenza per ogni stima; 143 test automatici; revisioni indipendenti del codice per ogni fase.
+Validazione incrociata annidata 5 × 5 stratificata; iperparametri scelti solo sui fold interni; soglie, fasce e regole di decisione scritte nel Notepad prima di calcolare; intervalli di confidenza per ogni stima; 170 test automatici; revisioni indipendenti del codice per ogni fase.
 
 ### Quattro risultati apparenti, misurati
 1. **Fase B**: alla soglia 0,5 le tecniche di bilanciamento portano il recall dal 2% al 61%, ma a parità di sensibilità non riconoscono un solo caso grave in più.
@@ -218,7 +236,7 @@ Quattro esempi indipendenti di come un numero, letto senza controllare come è s
 
 - dataset **ospedaliero** (Shanghai, 2012), non di screening: la validità esterna va dimostrata;
 - ACR da un solo campione, di tipo non documentato, unità di `UCRE` e `UmALB` non documentate;
-- nessuna validazione esterna; il test set interno darà solo una conferma;
+- nessuna validazione esterna: il test set interno (eseguito una volta, nessuna conclusione contraddetta) è una conferma nella stessa coorte;
 - SCORED ristimato con 5 dei 9 predittori originali;
 - Fase D e blocco qualità sono post-hoc ed esplorativi;
 - il tri-ensemble usa gli iperparametri scelti in Fase A su 74 variabili: con un'ottimizzazione dedicata alle 21 variabili potrebbe cambiare di poco; il numero 21 viene dall'analisi preliminare e non è stato ottimizzato.

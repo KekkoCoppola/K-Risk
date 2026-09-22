@@ -50,7 +50,9 @@ Perché non una regressione: l'ACR è fortemente asimmetrica, le tecniche di aug
 
    Protocollo: cross-validation annidata (5 fold esterni per le previsioni, 5 interni per gli iperparametri), stesso budget di ottimizzazione per tutti i modelli (Optuna), metrica di ottimizzazione PR-AUC.
 4. **Fase B — stesse domande, stessi cinque modelli, per ogni tecnica di bilanciamento**: nessuna correzione, pesi di classe, pesi per livello KDIGO, undersampling, oversampling, SMOTE-NC, SMOTE-NC per livello KDIGO; CTGAN (anche condizionato al livello KDIGO) come analisi esplorativa. Esito principale: sensibilità sui casi gravi a parità di sensibilità complessiva (protocollo nel Notepad, sezione "Fase B").
-5. **Fase C — conclusioni** sul confronto fra tecniche e sul sottogruppo diabetico.
+5. **Fase C — sottogruppo diabetico** (domanda 6): le stesse previsioni filtrate sui diabetici, con soglia e fasce globali fisse (protocollo nel Notepad, sezione "Fase C").
+6. **Analisi post-hoc, dichiarate tali**: la Fase D (ricerca del tetto di prestazione: dieci strategie più il tri-ensemble, e tre diagnostiche) e il blocco "qualità e utilità clinica" (decision curve, calibrazione anche nei sottogruppi, costi, confronto con la letteratura). Regole scritte prima dei calcoli, risultati esplorativi.
+7. **Conclusioni** delle domande 1–6 sulle previsioni out-of-fold, poi **conferma finale sul test set**, una sola volta, con il protocollo fissato prima (Notepad, sezione "Conferma finale sul test set — protocollo").
 
 ## Le domande della tesi
 Valgono per la Fase A e, identiche, per ogni tecnica della Fase B:
