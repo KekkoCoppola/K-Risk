@@ -316,3 +316,30 @@ phase_d:
       colsample_bytree: {type: float, low: 0.5, high: 1.0}
       reg_alpha: {type: float, low: 0.0, high: 5.0}
       reg_lambda: {type: float, low: 0.0, high: 5.0}
+
+# qualità e utilità clinica: analisi POST-HOC, decise il 22/09/2026 dopo aver visto i risultati delle
+# fasi A-D, da riportare come esplorative (Notepad, "Qualità e utilità clinica — protocollo post-hoc").
+# Previsioni out-of-fold della Fase B, braccio "nessuna correzione" (per XGBoost l'analisi depth_1_12,
+# come in Fase C); test set mai letto. Tutto qui è fissato prima di qualsiasi calcolo del blocco
+quality:
+  technique: none
+  evaluation:
+    output: analytics/quality/evaluation
+  # soglie della decision curve: da 0,02 (49 esami inutili accettati per caso trovato) a 0,20 (4),
+  # passo 0,005. Non si ritoccano dopo aver visto la curva
+  thresholds: {low: 0.02, high: 0.20, step: 0.005}
+  # soglie usate come esempi di punto operativo da Bragg-Gresham et al. 2024
+  operating_thresholds: [0.05, 0.07]
+  # costo di un test ACR in dollari USA (Cusick et al. 2023): valore centrale e intervallo
+  test_cost: {central: 49, low: 36, high: 64}
+  # confronto esterno con Bragg-Gresham et al. 2024 (adulti USA senza diabete, ACR >= 30 mg/g):
+  # quota da esaminare a sensibilità 0,85 e punti riportati nel loro testo (al 5% "just under half"
+  # esaminati, quota esatta non riportata nel testo)
+  external:
+    sensitivity: 0.85
+    reference:
+      - {threshold: 0.05, detected: 0.85, screened: null}
+      - {threshold: 0.07, detected: 0.732, screened: 0.377}
+  # curva di calibrazione flessibile: logistica su spline cubica ristretta del logit di p, nodi ai
+  # quantili di Harrell 2015 per 4 nodi; punti ai decili di p
+  calibration: {knots: [0.05, 0.35, 0.65, 0.95], bins: 10}
