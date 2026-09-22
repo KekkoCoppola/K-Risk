@@ -251,7 +251,7 @@ La scelta è stata fatta dopo aver visto i risultati ed è dichiarata come tale.
 
 ## 📈 Risultati principali
 
-> Previsioni out-of-fold sul training (4.350 soggetti, 425 positivi). La conferma sul test set, una sola volta, ha il protocollo già fissato nel [`Notepad.md`](Notepad.md) ed è in preparazione. Sintesi completa, con lo stato dell'arte verificato, in [`valorizzazione_tesi.md`](valorizzazione_tesi.md).
+> Previsioni out-of-fold sul training (4.350 soggetti, 425 positivi), **confermate sul test set** (1.451 soggetti mai visti, esecuzione unica del 22/09/2026, protocollo fissato prima): nessuna delle cinque affermazioni pre-registrate è contraddetta; sul test l'AUROC è 0,71–0,74. Dettaglio nel [`Notepad.md`](Notepad.md), tabelle in [`analytics/test/`](analytics/test/). Sintesi completa, con lo stato dell'arte verificato, in [`valorizzazione_tesi.md`](valorizzazione_tesi.md).
 
 | # | Domanda | Risposta |
 |---|---------|----------|
@@ -290,7 +290,7 @@ La scelta è stata fatta dopo aver visto i risultati ed è dichiarata come tale.
 - [x] **Fase D** — ricerca del tetto di prestazione (post-hoc)
 - [x] Qualità e utilità clinica: decision curve, calibrazione, costi (post-hoc)
 - [x] Conclusioni delle domande 1–6
-- [ ] Valutazione finale sul test set (protocollo fissato; codice revisionato prima dell'esecuzione)
+- [x] Valutazione finale sul test set: eseguita una volta sola il 22/09/2026, nessuna conclusione contraddetta
 - [ ] Prototipo dimostrativo
 
 ---

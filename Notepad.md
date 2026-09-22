@@ -1536,7 +1536,7 @@ Quelli dichiarati nel protocollo, più due emersi dai risultati:
 ---
 
 ## Conclusioni delle domande 1–6 (22/09/2026, previsioni out-of-fold)
-Risposte alle domande dello Scope, sulle previsioni out-of-fold del training (4.350 soggetti, 425 positivi, prevalenza 9,8%). Sono le affermazioni che il test set dovrà confermare o smentire (sezione "Conferma finale sul test set — protocollo"). Popolazione: coorte ospedaliera di Shanghai, 2012, in maggioranza senza diabete noto.
+Risposte alle domande dello Scope, sulle previsioni out-of-fold del training (4.350 soggetti, 425 positivi, prevalenza 9,8%). Sono le affermazioni che il test set doveva confermare o smentire (sezione "Conferma finale sul test set — protocollo"). **Esito del 22/09/2026: nessuna contraddetta** (sezione "Conferma finale sul test set — risultati"); sul test l'AUROC è 0,71–0,74 e la buona calibrazione della logistica penalizzata non si conferma. Popolazione: coorte ospedaliera di Shanghai, 2012, in maggioranza senza diabete noto.
 
 ### Domanda 1 — il modello distingue chi ha marcatori di malattia renale?
 **Sì, in modo modesto.** AUROC da 0,675 (logistica SCORED) a 0,703 (Random Forest); PR-AUC 0,224–0,251, cioè 2,3–2,6 volte la prevalenza. Alla soglia con sensibilità 0,90 va esaminato il 77–80% dei soggetti (specificità 0,21–0,26).
@@ -1649,6 +1649,76 @@ Agente revisore separato, in sola lettura, con il divieto di aprire `test.csv`. 
 - **corretti (maggiori)**: (1) i controlli che non richiedono il test ora avvengono prima di aprirlo, e `--check` li esegue senza aprirlo: un guasto evitabile non costringe più a dichiarare un doppio uso del test; (2) test per ogni ramo delle affermazioni (B)–(E) e un test completo di `run()` su file finti; (3) le affermazioni si fermano con un errore se una tabella ha meno modelli o soglie del previsto, invece di decidere su dati incompleti
 - **corretti (minori)**: RUN.json completo (versioni, hash, esito) e scritto al momento dell'apertura; albero git pulito obbligatorio; una cartella per esecuzione; `n_jobs = 1`; controllo esplicito delle colonne dei modelli; controlli di coerenza della decision curve riusati; ID, esito, livello e diabete nel file delle previsioni; errore anche per probabilità ricalibrate mancanti; aggiunto il test di riproducibilità permanente contro la cache annunciato il 20/09/2026
 - **integrazioni al protocollo nate dalla revisione**, scritte prima dell'esecuzione: riguardano solo la sicurezza dell'esecuzione (sottosezione precedente). Nessun criterio, modello, soglia o metrica è cambiato
+
+---
+
+## Conferma finale sul test set — risultati (22/09/2026)
+**Esecuzione unica**: 22/09/2026, 18:20–18:37, dal commit `b7d5f61` (autorizzazione), con il protocollo della sezione precedente e il codice del commit `a7a0a6b`. `analytics/test/RUN.json` registra versioni delle librerie, hash sha256 di `test.csv` (`9d3fc900…`) e numerosità: 1.451 soggetti, 142 positivi, 17 "alto", 6 "molto alto", 88 diabetici, **tutte uguali a quelle attese**. Preprocessore ristimato identico bit a bit alla cache, poi una sola `.transform`. Tabelle in `analytics/test/run_1/`. Test richiuso subito dopo (`authorized: false`, commit `5ffadf6`). **Il test è stato usato una volta sola.**
+
+### Esito delle affermazioni fissate prima
+
+| | affermazione | esito | numeri |
+|---|---|---|---|
+| (A) | AUROC del test compatibile con quella out-of-fold | **non contraddetta** | dentro l'IC per 3 modelli su 4; per la logistica SCORED il test è **più alto** (0,723, IC 0,677–0,769, contro 0,675 out-of-fold) |
+| (B) | nessuna tecnica principale riconosce più casi gravi | **non contraddetta** | differenze da −2 a +2 casi gravi su 23, p di Holm 1,00 per tutti |
+| (C) | alla soglia globale il modello segnala quasi tutti i diabetici | **confermata** | quota di allerta fra i diabetici 0,977–1,000 |
+| (D) | utilità clinica alle soglie 7% e 10% | **confermata** | tutti e 4 i modelli sopra "testare tutti" e "nessuno" a entrambe le soglie |
+| (E) | alla soglia 0,5 il bilanciamento sembra migliorare il recall | **confermata** | recall medio: nessuna correzione 0,044, tecniche 0,403–0,646 |
+
+### Domande 1–4 sul test (modelli della Fase A, soglie e fasce out-of-fold)
+
+| modello | AUROC (IC 95%) | PR-AUC | recall alla soglia fissata | specificità | esaminati | casi gravi riconosciuti | kappa |
+|---|---|---|---|---|---|---|---|
+| logistica SCORED | 0,723 (0,677–0,769) | 0,266 | 0,937 | 0,200 | 81,3% | 20 su 23 | 0,190 |
+| logistica penalizzata | 0,714 (0,668–0,760) | 0,239 | 0,894 | 0,307 | 71,3% | 21 su 23 | 0,204 |
+| Random Forest | 0,743 (0,699–0,786) | 0,249 | 0,894 | 0,322 | 70,0% | 22 su 23 | 0,225 |
+| XGBoost | 0,725 (0,680–0,771) | 0,254 | 0,887 | 0,283 | 73,4% | 22 su 23 | 0,205 |
+
+- **discriminazione**: sul test l'AUROC è **più alta** che out-of-fold (+0,02 / +0,05), la PR-AUC è 2,4–2,7 volte la prevalenza. Non va letta come un miglioramento: gli intervalli sono larghi (±0,045) e comprendono la stima out-of-fold per 3 modelli su 4; inoltre i modelli finali sono addestrati sul 100% del training, i modelli dei fold sull'80% (la curva di apprendimento della Fase D prevedeva però un guadagno di appena 0,006–0,008, quindi il resto è variabilità di campionamento). **Nessuna differenza fra modelli emerge nemmeno qui**
+- **soglia**: le soglie stimate out-of-fold per sensibilità 0,90 danno sul test recall 0,887–0,937: la soglia si trasferisce bene
+- **tendenza** (domanda 2): concordanza di Jonckheere-Terpstra 0,713–0,741; la probabilità media cresce da "basso" (0,088–0,095) a "moderato" (0,153–0,171) e "alto" (0,203–0,271). "Molto alto" (6 soggetti) non è sempre sopra "alto": con 6 casi è atteso
+- **casi gravi** (domanda 3): 20–22 su 23 alla soglia fissata; "molto alto" 5 o 6 su 6. Come out-of-fold, non riconosciuti meglio dei moderati (104–113 su 119)
+- **fasce** (domanda 4): kappa pesato 0,190–0,225, come out-of-fold (0,197–0,228)
+
+### Domanda 5 e miglioramento apparente
+- (B) a parità di soglia fissata nessuna tecnica guadagna casi gravi: su 24 confronti, 15 identici, gli altri entro ±2 casi su 23 (p di Holm 1,00)
+- (E) alla soglia 0,5 lo stesso inganno della Fase B: recall 4,4% senza correzione contro 40–65% con le tecniche. Il risultato centrale della tesi **si riproduce su soggetti mai visti**
+
+### Domanda 6 e decision curve
+- **diabetici** (88, 23 positivi): AUROC 0,639–0,702, intervalli larghissimi (circa 0,51–0,83), contro 0,690–0,726 fra i non diabetici; alla soglia globale il modello segnala il 97,7–100% dei diabetici (specificità 0,000–0,031)
+- **decision curve su tutto il test**, esami inutili evitati ogni 100 persone rispetto a "testare tutti":
+
+| soglia | test | out-of-fold (blocco qualità) |
+|---|---|---|
+| 5% | da +4,6 a +11,3 | da +0,1 a +2,3 |
+| 7% | da +12,8 a +19,2 | da +9,2 a +13,1 |
+| 10% | da +29,5 a +33,1 | da +24,9 a +27,8 |
+| 20% | da +54,3 a +58,0 | da +54,9 a +56,8 |
+
+- sul test il vantaggio è **uguale o più grande** che out-of-fold, coerente con l'AUROC più alta; fra i diabetici fino al 7% il modello evita al massimo 4,5 esami ogni 100 (0 per la logistica SCORED e la Random Forest), cioè resta vicino a "testare tutti"
+
+### Calibrazione sul test (descrittiva, IC da bootstrap semplice)
+| modello | intercetta | pendenza grezza (IC) | O:E | pendenza dopo Platt (IC) |
+|---|---|---|---|---|
+| logistica SCORED | −0,05 | 1,11 (0,90–1,35) | 0,96 | 1,15 (0,92–1,39) |
+| logistica penalizzata | −0,07 | **0,79 (0,62–0,98)** | 0,95 | 1,01 (0,79–1,27) |
+| Random Forest | −0,05 | **1,27 (1,02–1,56)** | 0,96 | 1,07 (0,86–1,31) |
+| XGBoost | −0,03 | 0,95 (0,74–1,17) | 0,97 | 1,03 (0,81–1,27) |
+
+- **calibrazione in media confermata**: intercetta vicina a 0 e O:E 0,95–0,97 con intervalli che comprendono 1
+- **pendenza della Random Forest confermata**: 1,27 sul test contro 1,31 out-of-fold, probabilità troppo schiacciate
+- **non confermate** due letture out-of-fold: XGBoost, troppo estremo out-of-fold (0,86), sul test è calibrato (0,95); **la logistica penalizzata, calibrata out-of-fold (0,94), sul test ha pendenza 0,79**, cioè probabilità troppo estreme. La ricalibrazione di Platt riporta tutte le pendenze vicino a 1 (1,01–1,15)
+- fra i diabetici la sottostima della Random Forest vista out-of-fold (O:E 1,26) non si ripete (1,08, IC 0,73–1,47): con 23 eventi non si può dire nulla in nessuna direzione
+
+### Sintesi per la tesi
+1. **le conclusioni della cross-validation reggono su 1.451 soggetti mai visti**: nessuna delle cinque affermazioni fissate prima è contraddetta
+2. discriminazione modesta confermata, anzi leggermente più alta sul test (AUROC 0,71–0,74), senza differenze fra modelli; la logistica SCORED a 5 predittori resta vicina ai modelli con 74 variabili
+3. **il bilanciamento non fa riconoscere più casi gravi, ma alla soglia 0,5 sembra farlo**: il risultato centrale si riproduce identico
+4. sui diabetici il modello equivale a testare tutti; nella popolazione del dataset evita 13–19 esami inutili ogni 100 persone al 7% e 30–33 al 10%
+5. la calibrazione va letta per modello: solida in media, instabile nella pendenza fra un campione e l'altro. Il dettaglio che resta: la Random Forest comprime le probabilità in entrambi i campioni; per la logistica penalizzata la buona calibrazione out-of-fold non si conferma
+
+### Limiti
+Quelli dichiarati nel protocollo: 23 casi gravi, 88 diabetici con 23 positivi (intervalli larghissimi); stessa coorte ospedaliera e stessa finestra temporale del training, quindi conferma interna, non validazione esterna.
 
 ---
 
