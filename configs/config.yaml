@@ -242,3 +242,77 @@ phase_c:
   subgroup: diabetici
   evaluation:
     output: analytics/phase_c/evaluation
+
+# fase D: ricerca del tetto di prestazione. Analisi POST-HOC, decise il 21/09/2026 dopo aver visto i
+# risultati delle fasi A, B e C, da riportare come esplorative. Stessi fold esterni della Fase A (le
+# partizioni ripetute usano seed diversi), test set mai letto. Regola di decisione fissata qui prima
+# di qualsiasi calcolo della fase D.
+phase_d:
+  output: analytics/phase_d
+  # riferimenti: i modelli della Fase A; per XGBoost l'analisi con max_depth 1-12
+  references: [lr_penalized, random_forest, xgboost]
+  reference_overrides: {xgboost: analytics/phase_a/sensitivity/depth_1_12}
+  # metriche principali concordate il 21/09/2026: AUROC, PR-AUC, specificità a sensibilità 0,90
+  target_sensitivity: 0.90
+  # un candidato "migliora" se, contro il riferimento con AUROC media sui fold più alta: differenza di
+  # AUROC >= 0,01, limite inferiore dell'IC 95% di Nadeau-Bengio > 0 sui 5 fold esterni e p di Holm
+  # < 0,05 fra i candidati. Chi supera la regola viene ripetuto su 3 partizioni diverse (repeat_seeds)
+  # prima di essere adottato
+  min_difference: 0.01
+  repeat_seeds: [43, 44, 45]
+  # Optuna come nella Fase B (TPE + MedianPruner, PR-AUC sui fold interni); nessun modello finale
+  # sull'intero training finché un candidato non supera la regola
+  n_trials: 30
+  # diagnostiche: non sono candidati, servono a capire dove sta il limite
+  diagnostics:
+    # controllo positivo: XGBoost con gli iperparametri della Fase A (max_depth 1-12) e l'albumina
+    # urinaria fra le feature. Serve solo a verificare che la pipeline impari quando l'informazione
+    # c'è: non è mai un modello della tesi
+    positive_control: {model: xgboost, extra: [UmALB]}
+    # curva di apprendimento: quote del training di ogni fold esterno (stratificate sul target, 3
+    # estrazioni per quota), iperparametri della Fase A del fold, validazione esterna intera
+    learning_curve: {models: [lr_penalized, xgboost], fractions: [0.2, 0.4, 0.6, 0.8, 1.0], draws: 3}
+    # qualità del target: AUROC out-of-fold dei riferimenti nelle giornate di raccolta con mediana di
+    # UCRE nel quartile più basso delle giornate contro le altre, e per componente del target
+    label_quality: {day: Data, urine_creatinine: UCRE, low_quantile: 0.25}
+  candidates:
+    # media delle probabilità out-of-fold dei tre riferimenti (nessun nuovo addestramento)
+    ensemble_mean: {kind: ensemble}
+    # XGBoost sui dati non imputati e non scalati: i NaN li gestisce l'algoritmo
+    xgboost_native_nan: {kind: xgboost, data: raw}
+    # XGBoost con lo spazio della Fase B più min_child_weight e gamma, 100 tentativi
+    xgboost_extended: {kind: xgboost, data: imputed, n_trials: 100,
+                       space: {min_child_weight: {type: float, low: 1.0, high: 50.0, log: true},
+                               gamma: {type: float, low: 0.0, high: 5.0}}}
+    # un XGBoost per componente del target (albuminuria; eGFR < 60), ciascuno ottimizzato sulla sua
+    # componente; probabilità combinata p = 1 - (1 - p_A)(1 - p_G)
+    target_decomposition: {kind: decomposition, data: imputed}
+    # famiglie non provate nelle fasi A-C (richiedono pacchetti da installare)
+    catboost: {kind: catboost, data: imputed}
+    lightgbm: {kind: lightgbm, data: imputed}
+    # Explainable Boosting Machine con iperparametri di default
+    ebm: {kind: ebm, data: imputed}
+    # TabPFN senza ottimizzazione
+    tabpfn: {kind: tabpfn, data: imputed}
+    # aggiunti il 21/09/2026 dopo la revisione del codice, prima di calcolarli:
+    # MedianPruner di default interrompe già dopo il primo fold interno e sceglie best_params solo fra
+    # i tentativi completati: stesso XGBoost della Fase B senza pruner
+    xgboost_no_pruner: {kind: xgboost, data: imputed, pruner: none}
+    # logistica penalizzata con anche le categoriche standardizzate (nelle fasi A-C restano 0/1/2 e la
+    # penalizzazione le tratta su una scala diversa dalle numeriche)
+    lr_all_scaled: {kind: lr_penalized, data: imputed_scaled}
+  spaces:
+    catboost:
+      iterations: {type: int, low: 200, high: 1200}
+      learning_rate: {type: float, low: 0.01, high: 0.3, log: true}
+      depth: {type: int, low: 1, high: 8}
+      l2_leaf_reg: {type: float, low: 1.0, high: 10.0, log: true}
+    lightgbm:
+      n_estimators: {type: int, low: 100, high: 1200}
+      learning_rate: {type: float, low: 0.01, high: 0.3, log: true}
+      num_leaves: {type: int, low: 2, high: 64}
+      min_child_samples: {type: int, low: 5, high: 100}
+      subsample: {type: float, low: 0.6, high: 1.0}
+      colsample_bytree: {type: float, low: 0.5, high: 1.0}
+      reg_alpha: {type: float, low: 0.0, high: 5.0}
+      reg_lambda: {type: float, low: 0.0, high: 5.0}

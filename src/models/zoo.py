@@ -35,6 +35,27 @@ def build(name, params=None):
     if name == "xgboost":
         return XGBClassifier(tree_method="hist", eval_metric="logloss", n_jobs=-1,
                              random_state=SEED, **params)
+    # famiglie della Fase D: pacchetti importati solo quando servono
+    if name == "catboost":
+        from catboost import CatBoostClassifier
+        return CatBoostClassifier(random_seed=SEED, verbose=False, allow_writing_files=False, **params)
+    if name == "lightgbm":
+        from lightgbm import LGBMClassifier
+        # subsample_freq = 1: senza, LightGBM ignora subsample
+        return LGBMClassifier(random_state=SEED, subsample_freq=1, verbose=-1, **params)
+    if name == "ebm":
+        from interpret.glassbox import ExplainableBoostingClassifier
+        return ExplainableBoostingClassifier(random_state=SEED, **params)
+    if name == "tabpfn":
+        import os
+
+        from tabpfn import TabPFNClassifier
+        from tabpfn.constants import ModelVersion
+        # pesi v2 (licenza Prior Labs: Apache 2.0 con attribuzione, senza login); su CPU il pacchetto
+        # rifiuta più di 1.000 righe se non lo si autorizza esplicitamente
+        os.environ.setdefault("TABPFN_ALLOW_CPU_LARGE_DATASET", "1")
+        return TabPFNClassifier.create_default_for_version(
+            ModelVersion.V2, random_state=SEED, device="cpu", ignore_pretraining_limits=True, **params)
     raise ValueError(f"modello sconosciuto: {name}")
 
 
