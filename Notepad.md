@@ -1598,7 +1598,57 @@ Il fold `full` della cache è già stimato su tutto il training (`train_idx = ar
 
 ---
 
+## Conferma finale sul test set — protocollo (22/09/2026)
+Fissato **prima di scrivere il codice e prima di leggere il test set**, insieme al blocco `final_test` di `configs/config.yaml`. Il test set (1.451 soggetti, 142 positivi, circa 118 "moderato", 17 "alto", 6 "molto alto", 88 diabetici di cui 23 positivi, numeri noti dallo split) non è mai stato letto da nessuna analisi.
+
+### Che cosa deve dire il test, e che cosa no
+**Non** sceglie modelli, tecniche, soglie o fasce: sono già fissati dalla cross-validation. Cambiarne uno dopo aver visto il test trasformerebbe la conferma in un'altra fase di selezione. Il test deve dire una cosa sola: **le conclusioni raggiunte sulle previsioni out-of-fold reggono su soggetti mai visti?**
+
+### Affermazioni da confermare o smentire, con il criterio fissato ora
+Per "modelli reali" si intendono logistica SCORED, logistica penalizzata, Random Forest e XGBoost.
+- **(A) Discriminazione**: per ogni modello reale della Fase A, l'AUROC out-of-fold (`analytics/phase_a/evaluation/q1_discrimination.csv`, set `main`) cade dentro l'IC 95% di DeLong dell'AUROC sul test. Esito: **non contraddetta** se vale per almeno 3 modelli su 4, **contraddetta** altrimenti, indicando la direzione
+- **(B) Bilanciamento**: nessuna tecnica principale della Fase B riconosce più casi gravi (alto + molto alto) di "nessuna correzione", ciascuna alla propria soglia fissata in cross-validation. Confronto appaiato sugli stessi soggetti: McNemar esatto e IC di Newcombe, Holm sulle 6 tecniche principali per modello, come in Fase B. Esito: **contraddetta** se almeno una tecnica ha p di Holm < 0,05 a favore della tecnica; **non contraddetta** altrimenti. Con 23 casi gravi la potenza è quasi nulla: il test può solo non contraddire
+- **(C) Diabetici**: alla soglia globale fissata ("nessuna correzione", `analytics/phase_b/evaluation/cutpoints.csv`) il modello segnala quasi tutti i diabetici. Esito: **confermata** se la quota di allerta fra i diabetici è ≥ 0,90 per almeno 3 modelli reali su 4
+- **(D) Utilità clinica**: alle soglie 7% e 10% il net benefit del modello supera sia "testare tutti" sia "non testare nessuno", su tutto il test. Esito: **confermata** se vale a entrambe le soglie per almeno 3 modelli reali su 4 ("nessuna correzione"). Solo stime puntuali, senza intervalli (Vickers et al. 2023)
+- **(E) Miglioramento apparente**: alla soglia 0,5, sulle probabilità grezze, ogni tecnica principale della Fase B ha un recall medio sui 4 modelli reali più alto di "nessuna correzione". Esito: **confermata** se vale per tutte e 6 le tecniche
+
+### Modelli portati al test
+Nessun modello nuovo, nessun riaddestramento: si usano i modelli finali già salvati, addestrati sull'intero training con gli iperparametri scelti in cross-validation.
+- **Fase A**, set `main`: i 5 modelli finali (`models/phase_a_<modello>_main.joblib`), con soglia e fasce di `analytics/phase_a/evaluation/cutpoints.csv`. Servono per le domande 1–4 e per l'affermazione (A)
+- **Fase B**: "nessuna correzione" (i modelli della Fase A, con XGBoost profondità 1–12 da `models/sensitivity/depth_1_12/`) e le 8 tecniche (6 principali e 2 CTGAN esplorative), 5 modelli ciascuna (`models/phase_b/<tecnica>/`), con soglia e fasce di `analytics/phase_b/evaluation/cutpoints.csv`. Probabilità grezze per soglie, fasce e affermazioni (B) ed (E); probabilità ricalibrate con i parametri di Platt del modello finale (`analytics/phase_b/<tecnica>/calibration/main/<modello>_full.json`, "nessuna correzione" compresa) per la calibrazione; i bracci CTGAN non sono ricalibrati, come in Fase B
+- **esclusi**: i candidati della Fase D (nessuno ha superato la regola, e la regola vieta di costruire modelli finali in quel caso) e il set `no_consequence` (analisi di sensibilità già chiusa in Fase A)
+
+### Preparazione del test
+1. **controlli prima di trasformare**: nessun identificativo (`NO`) del test compare nel training; numerosità uguali a quelle dello split (1.451 soggetti, 142 positivi, 17 "alto", 6 "molto alto", 88 diabetici). Se un controllo fallisce, l'esecuzione si ferma senza calcolare nessuna metrica
+2. **preprocessore**: ristimato sull'intero training (standardizzazione, moda, MissForest), poi verificato **bit a bit** contro `data/processed/imputed/main/full.npz`, come il 20/09/2026. Solo se coincide si applica una singola `.transform` al test
+3. **previsioni**: per ogni modello, sulle colonne con cui è stato addestrato
+
+### Metriche (con gli stessi metodi delle fasi precedenti, a soglie e fasce fisse)
+- **domande 1–4** per ogni modello e tecnica, in tre gruppi (tutti, diabetici, non diabetici): AUROC (DeLong), PR-AUC (logit di Boyd) accanto alla prevalenza del gruppo, precision, recall, specificità e quota di allerta alla soglia fissata (Wilson); probabilità media per livello e concordanza di Jonckheere-Terpstra (bootstrap stratificato sul livello, 2.000 campioni, seed 42); sensibilità per livello e sui casi gravi (Wilson); fasce contro livelli e kappa pesato. Soglia e fasce **mai ristimate** sul test
+- **esito primario della Fase B** (affermazione B) e **soglia 0,5** (affermazione E)
+- **calibrazione**: intercetta, pendenza, rapporto O:E e Brier, con IC da **bootstrap semplice** (per la calibrazione il bootstrap stratificato sul livello fissa il numero di eventi: lezione del blocco qualità)
+- **decision curve** su tutto il test e nei due sottogruppi, soglie 0,02–0,20, con esami inutili evitati ogni 100 (affermazione D)
+- **controllo di coerenza**: il classificatore di maggioranza deve dare AUROC 0,5 e PR-AUC uguale alla prevalenza del test
+
+### Sicurezza dell'esecuzione
+- il codice legge `data/processed/test.csv` solo se `final_test.authorized` in `configs/config.yaml` è `true`. Resta `false` finché l'utente non autorizza esplicitamente; il cambio va in un commit a parte, che documenta quando il test è stato aperto. **Dopo l'esecuzione torna `false`**, in un altro commit: il test resta chiuso anche dopo
+- **prima di aprire il test**, `run()` fa tutti i controlli che non lo richiedono: albero git pulito (il codice eseguito è quello del commit registrato); preprocessore ristimato identico bit a bit alla cache; i 50 modelli finali e i parametri di Platt caricati, con `n_jobs = 1` (la Random Forest in parallelo non è riproducibile bit a bit); soglie, fasce e AUROC out-of-fold complete. `python -m src.models.final_test --check` esegue gli stessi controlli e una prova completa su righe del training, **senza leggere il test**: va eseguito prima del commit di autorizzazione
+- `analytics/test/RUN.json` si scrive nel momento in cui il test viene aperto e registra data, commit, versioni delle librerie, hash sha256 del file, numerosità ed esito. Se esiste, il codice rifiuta una seconda esecuzione, salvo un'opzione esplicita che obbliga a scrivere il motivo; ogni esecuzione scrive le tabelle in una cartella propria (`analytics/test/run_<k>/`)
+- `test.csv` è letto anche dal report descrittivo dello split (`src/analytics/split_report.py`: numerosità e bilanciamento, già noti e pubblicati nella sezione dello split); nessun codice di valutazione lo legge
+- **regola d'oro**: se dopo l'esecuzione si scopre un errore, si corregge e **si dichiara apertamente che il test è stato usato due volte**. Non si ritoccano soglie, fasce o modelli dopo aver visto il test
+
+### Limiti, dichiarati prima
+- 23 casi gravi (17 alto, 6 molto alto), 88 diabetici con 23 positivi: intervalli amplissimi, per livello e per sottogruppo solo descrittivi. Con 142 eventi le stime complessive sono accettabili ma non strette (Riley et al. 2024 indicano almeno 100 eventi)
+- stessa coorte ospedaliera e stessa finestra temporale del training: è una conferma interna, non una validazione esterna
+
+### Codice
+Modulo nuovo `src/models/final_test.py` più `tests/test_final_test.py` (dati sintetici; nessun test legge `test.csv`), revisione indipendente in sola lettura **prima** dell'esecuzione. Tabelle in `analytics/test/`. Riusa gli helper esistenti: `phase_c` (tabelle a soglia e fasce fisse per gruppo), `evaluation_b` (McNemar, Newcombe), `phase_b` (applicazione di Platt), `clinical_utility` (decision curve con i suoi controlli di coerenza, calibrazione con bootstrap semplice).
+
+---
+
 ## Da fare per concludere il progetto (scritto il 20/09/2026)
+**Superata il 22/09/2026**: Fase C, Fase D, blocco qualità e conclusioni delle domande 1–6 sono conclusi; il protocollo del test finale è nella sezione "Conferma finale sul test set — protocollo". Il testo che segue resta come traccia storica.
+
 Restano due blocchi: la **Fase C** (sottogruppo diabetico e conclusioni) e la **conferma finale sul test set**. Qui c'è esattamente cosa fare, nell'ordine consigliato.
 
 ### Fase C — sottogruppo diabetico (domanda 6) e conclusioni
