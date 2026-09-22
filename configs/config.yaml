@@ -364,7 +364,7 @@ final_test:
   output: analytics/test
   # il codice legge data/processed/test.csv solo se authorized è true. Si cambia a mano, in un commit
   # a parte, dopo l'autorizzazione esplicita dell'utente
-  authorized: false
+  authorized: true
   feature_set: main
   # numerosità attese, note dallo split: se non coincidono l'esecuzione si ferma prima delle metriche
   expected: {n: 1451, positives: 142, alto: 17, molto alto: 6, diabetici: 88}
