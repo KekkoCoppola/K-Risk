@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="docs/K-Risk_Logo.svg" alt="K-Risk Logo" width="130" />
+
 # K-Risk
 
 ### Screening dei marcatori di malattia renale cronica senza esami renali
@@ -11,9 +13,9 @@
 [![Tests: pytest](https://img.shields.io/badge/tests-pytest-0A9EDC.svg)](tests/)
 [![Code: MIT](https://img.shields.io/badge/code-MIT-yellow.svg)](LICENSE)
 [![Data: CC BY 4.0](https://img.shields.io/badge/data-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
-[![Status](https://img.shields.io/badge/stato-in%20sviluppo-orange.svg)](#-stato-di-avanzamento)
+[![Status](https://img.shields.io/badge/stato-completato-brightgreen.svg)](#-stato-di-avanzamento)
 
-Progetto di tesi di laurea triennale · Francesco Coppola
+Francesco Coppola
 
 </div>
 

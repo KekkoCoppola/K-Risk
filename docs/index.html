@@ -4,91 +4,170 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>K-Risk — Piattaforma Scientifica di Screening Non-Invasivo della Malattia Renale Cronica</title>
-  <meta name="description" content="Piattaforma scientifica K-Risk: triage clinico di primo livello per la stima dei marcatori di malattia renale cronica senza esami specialistici. Decision Curve Analysis e diagnostica del tetto informativo.">
+  <meta name="description" content="Piattaforma scientifica K-Risk: triage clinico di primo livello per la stima dei marcatori di malattia renale cronica senza esami specialistici. Decision Curve Analysis e diagnostica del tetto informativo." data-i18n-meta="page_description">
   
-  <!-- Typography from Google Fonts -->
+  <!-- Typography from Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <!-- CSS Design System -->
-  <link rel="stylesheet" href="app.css">
+  <link rel="stylesheet" href="app.css?v=3">
+  <link rel="icon" type="image/svg+xml" href="K-Risk_Logo.svg">
 </head>
-<body>
+<body class="light-mode">
 
-  <!-- Top Navigation Bar -->
-  <header class="topbar">
-    <div class="container topbar-content">
-      <div class="brand">
-        <span class="brand-badge">K-RISK</span>
-        <div class="brand-titles">
-          <h1>K-Risk: Pre-screening Opportunistico della Malattia Renale Cronica</h1>
-          <p>Triage di Primo Livello, Valutazione Clinica Decisionale e Diagnostica Metodologica</p>
+  <!-- Outer Viewport Container (soft slate background) -->
+  <div class="dashboard-viewport">
+    
+    <!-- Central Rounded Dashboard Canvas (with warm sunlight aura) -->
+    <div class="dashboard-canvas">
+
+      <!-- Topbar: Brand Logo, Navigation Bar, Meta & Theme Toggle -->
+      <header class="neo-topbar">
+        <div class="brand-block">
+          <img src="K-Risk_Logo.svg" alt="K-Risk Logo" class="brand-logo">
+        </div>
+
+        <!-- Pill Navigation Bar with Step Numbers Above Buttons -->
+        <nav class="pill-nav-bar" role="tablist">
+          <div class="nav-step-col active" data-tab="tab-scope">
+            <span class="nav-step-index">00</span>
+            <button class="pill-nav-item active pipeline-step-btn" data-tab="tab-scope" role="tab" id="nav-scope" data-i18n="nav_scope">Scope</button>
+          </div>
+          <div class="nav-step-col" data-tab="tab-cohort">
+            <span class="nav-step-index">01</span>
+            <button class="pill-nav-item pipeline-step-btn" data-tab="tab-cohort" role="tab" id="nav-cohort" data-i18n="nav_cohort">Coorte</button>
+          </div>
+          <div class="nav-step-col" data-tab="tab-phase-a">
+            <span class="nav-step-index">02</span>
+            <button class="pill-nav-item pipeline-step-btn" data-tab="tab-phase-a" role="tab" id="nav-phase-a" data-i18n="nav_phase_a">Fase A</button>
+          </div>
+          <div class="nav-step-col" data-tab="tab-phase-b">
+            <span class="nav-step-index">03</span>
+            <button class="pill-nav-item pipeline-step-btn" data-tab="tab-phase-b" role="tab" id="nav-phase-b" data-i18n="nav_phase_b">Fase B</button>
+          </div>
+          <div class="nav-step-col" data-tab="tab-phase-d">
+            <span class="nav-step-index">04</span>
+            <button class="pill-nav-item pipeline-step-btn" data-tab="tab-phase-d" role="tab" id="nav-phase-d" data-i18n="nav_phase_d">Fase D</button>
+          </div>
+          <div class="nav-step-col" data-tab="tab-final-test">
+            <span class="nav-step-index">05</span>
+            <button class="pill-nav-item pipeline-step-btn" data-tab="tab-final-test" role="tab" id="nav-final-test" data-i18n="nav_final_test">Lockbox & DCA</button>
+          </div>
+          <div class="nav-step-col" data-tab="tab-results-positioning">
+            <span class="nav-step-index">06</span>
+            <button class="pill-nav-item pipeline-step-btn" data-tab="tab-results-positioning" role="tab" id="nav-results-positioning" data-i18n="nav_results">Risultati</button>
+          </div>
+        </nav>
+
+        <div class="topbar-actions">
+          <span class="meta-pill-chip" title="Commit hash registrato al congelamento del protocollo" data-i18n-title="git_chip_title">
+            git:b7d5f61
+          </span>
+          <button id="btn-lang-toggle" class="lang-pill-btn" aria-label="Cambia lingua" title="Translate to English">
+            <span class="lang-flag" id="lang-flag-target">
+              <svg class="flag-icon" width="20" height="14" viewBox="0 0 60 40">
+                <clipPath id="uk-flag-clip"><rect width="60" height="40" rx="3"/></clipPath>
+                <g clip-path="url(#uk-flag-clip)">
+                  <path d="M0 0v40h60V0z" fill="#012169"/>
+                  <path d="M0 0l60 40m0-40L0 40" stroke="#fff" stroke-width="8"/>
+                  <path d="M0 0l60 40m0-40L0 40" stroke="#c8102e" stroke-width="4"/>
+                  <path d="M30 0v40M0 20h60" stroke="#fff" stroke-width="12"/>
+                  <path d="M30 0v40M0 20h60" stroke="#c8102e" stroke-width="8"/>
+                </g>
+              </svg>
+            </span>
+            <span class="lang-label" id="lang-label-target">EN</span>
+          </button>
+          <button id="btn-theme-toggle" class="circle-icon-btn" aria-label="Cambia tema chiaro/scuro" title="Cambia tema (Chiaro / Scuro)" data-i18n-title="theme_btn_title">
+            <svg class="theme-icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+            <svg class="theme-icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Hero Bento Header: Big Greeting, Segmented Prevalence Bar & Stats -->
+      <div class="hero-bento-header">
+        <div class="hero-left-col">
+          <div class="hero-title-group">
+            <h1 data-i18n="hero_title">Welcome in, K-Risk</h1>
+            <p data-i18n="hero_subtitle">Screening Non-Invasivo della Malattia Renale Cronica · Triage di 1° Livello & Decision Curve Analysis</p>
+          </div>
+
+          <!-- Segmented Prevalence Progress Bar (Homage to reference UI) -->
+          <div class="prevalence-progress-widget">
+            <div class="progress-labels">
+              <span class="label-item" data-i18n="prev_label_1">KDIGO Basso (90.2%)</span>
+              <span class="label-item" data-i18n="prev_label_2">Moderato (8.2%)</span>
+              <span class="label-item" data-i18n="prev_label_3">Alto (1.2%)</span>
+              <span class="label-item" data-i18n="prev_label_4">Molto Alto (0.5%)</span>
+            </div>
+            <div class="segmented-track">
+              <div class="segment-block seg-dark" style="flex: 90.2;" title="KDIGO Basso: 5.234 soggetti (90.2%)">
+                <span>90.2%</span>
+              </div>
+              <div class="segment-block seg-yellow" style="flex: 8.2;" title="KDIGO Moderato: 473 soggetti (8.2%)">
+                <span>8.2%</span>
+              </div>
+              <div class="segment-block seg-hatched" style="flex: 1.2;" title="KDIGO Alto: 67 soggetti (1.2%)">
+                <span>1.2%</span>
+              </div>
+              <div class="segment-block seg-outline" style="flex: 0.5;" title="KDIGO Molto Alto: 27 soggetti (0.5%)">
+                <span>0.5%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hero Stats Cards (Matching the reference 78 / 56 / 203) -->
+        <div class="hero-right-stats">
+          <div class="stat-pill-card">
+            <span class="stat-number">5.801</span>
+            <span class="stat-caption">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              <span data-i18n="stat_cohort_label">Coorte Totale</span>
+            </span>
+          </div>
+          <div class="stat-pill-card">
+            <span class="stat-number">567</span>
+            <span class="stat-caption">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+              <span data-i18n="stat_positives_label">Positivi KDIGO</span>
+            </span>
+          </div>
+          <div class="stat-pill-card highlight-card">
+            <span class="stat-number">0</span>
+            <span class="stat-caption">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
+              <span data-i18n="stat_renal_exams_label">Esami Renali</span>
+            </span>
+          </div>
+          <div class="stat-pill-card">
+            <span class="stat-number">0.743</span>
+            <span class="stat-caption">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+              <span data-i18n="stat_auroc_label">AUROC Test</span>
+            </span>
+          </div>
         </div>
       </div>
-      <div class="topbar-actions">
-        <span class="meta-chip commit" title="Commit hash registrato al congelamento del protocollo sperimentale">
-          git:b7d5f61
-        </span>
-        <span class="meta-chip" title="Coorte clinica analizzata (standard CKD-EPI 2021)">
-          N=5.801 (Train 4.350 / Test 1.451)
-        </span>
-        <button id="btn-toggle-theme" class="btn btn-default" title="Alterna tra tema dark e modalità carta ad alto contrasto per documentazione">
-          <span>☀️</span> Modo Carta
-        </button>
-        <button id="btn-screenshot-mode" class="btn btn-screenshot" title="Attiva la modalità di cattura figura per documenti scientifici (premi ESC per uscire)">
-          <span>📸</span> Modalità Cattura Figura
-        </button>
-      </div>
-    </div>
-  </header>
 
-  <!-- Interactive Pipeline Storyline Navigator -->
-  <nav class="pipeline-nav-bar">
-    <div class="container">
-      <ul class="pipeline-steps" role="tablist">
-        <li>
-          <button class="pipeline-step-btn active" data-tab="tab-scope" role="tab" id="nav-scope">
-            <span class="step-number">00</span> Scope di Progetto
-          </button>
-        </li>
-        <li>
-          <button class="pipeline-step-btn" data-tab="tab-cohort" role="tab" id="nav-cohort">
-            <span class="step-number">01</span> Coorte & Integrità Dati
-          </button>
-        </li>
-        <li>
-          <button class="pipeline-step-btn" data-tab="tab-phase-a" role="tab" id="nav-phase-a">
-            <span class="step-number">02</span> Fase A: Modelli di Screening
-          </button>
-        </li>
-        <li>
-          <button class="pipeline-step-btn" data-tab="tab-phase-b" role="tab" id="nav-phase-b">
-            <span class="step-number">03</span> Fase B: Il Mito del Bilanciamento
-          </button>
-        </li>
-        <li>
-          <button class="pipeline-step-btn" data-tab="tab-phase-d" role="tab" id="nav-phase-d">
-            <span class="step-number">04</span> Fase D: Diagnostica del Tetto
-          </button>
-        </li>
-        <li>
-          <button class="pipeline-step-btn" data-tab="tab-final-test" role="tab" id="nav-final-test">
-            <span class="step-number">05</span> Test Lockbox & Utilità Clinica (DCA)
-          </button>
-        </li>
-        <li>
-          <button class="pipeline-step-btn" data-tab="tab-results-positioning" role="tab" id="nav-results-positioning">
-            <span class="step-number">06</span> Risultati & Posizionamento K-Risk
-          </button>
-        </li>
-      </ul>
-    </div>
-  </nav>
-
-  <!-- Main Content Area -->
-  <main class="main-content">
-    <div class="container">
+      <!-- Main Content Tabs -->
+      <main class="main-content">
+        <div class="content-container">
 
       <!-- ===================================================================
            TAB 00: PROJECT SCOPE
@@ -96,20 +175,20 @@
       <section id="tab-scope" class="tab-pane active" role="tabpanel">
         <div class="section-header">
           <div class="section-titles">
-            <h2>00. Scope Formale del Progetto K-Risk</h2>
-            <p>Definizione degli obiettivi clinici, perimetro operativo, popolazione di riferimento, vincoli architetturali e presupposti scientifici.</p>
+            <h2 data-i18n="scope_h2">00. Scope Formale del Progetto K-Risk</h2>
+            <p data-i18n="scope_p">Definizione degli obiettivi clinici, perimetro operativo, popolazione di riferimento, vincoli architetturali e presupposti scientifici.</p>
           </div>
-          <span class="badge badge-success">Protocollo Registrato</span>
+          <span class="badge badge-success" data-i18n="scope_badge">Protocollo Registrato</span>
         </div>
 
-        <div class="callout">
-          <strong>In sintesi:</strong> K-Risk allena e valida modelli di classificazione che, <strong>senza alcun esame renale</strong>, stimano chi presenta marcatori di malattia renale cronica (CKD), confrontano le stime con la stratificazione clinica <strong>KDIGO</strong> e misurano rigorosamente quanto le tecniche di bilanciamento migliorano il riconoscimento dei casi più gravi.
+        <div class="callout" data-i18n="scope_callout">
+          <strong>Sintesi clinica ed operativa:</strong> K-Risk allena e valida modelli di classificazione che, <strong>senza alcun esame renale</strong>, stimano chi presenta marcatori di malattia renale cronica (CKD), confrontano le stime con la stratificazione clinica <strong>KDIGO</strong> e misurano rigorosamente quanto le tecniche di bilanciamento migliorano il riconoscimento dei casi più gravi.
         </div>
 
         <!-- Scope Cards Grid -->
         <div class="scope-banner-box">
           <h3 style="font-size: 1.1rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem;">
-            <span>🎯</span> Scheda di Definizione dello Scope Clinico
+            <span>🎯</span> <span data-i18n="scope_sheet_title">Scheda di Definizione dello Scope Clinico</span>
           </h3>
           <div id="scope-details-target">
             <!-- Rendered dynamically via JavaScript -->
@@ -119,26 +198,26 @@
         <div class="grid-2" style="margin-top: 1.5rem;">
           <div class="card">
             <div class="card-header">
-              <h3 class="card-title">Le 6 Domande Scientifiche Fondamentali</h3>
+              <h3 class="card-title" data-i18n="scope_q_title">Le 6 Domande Scientifiche Fondamentali</h3>
             </div>
             <ol style="padding-left: 1.2rem; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.7;">
-              <li><strong>Discriminazione:</strong> Il modello distingue chi presenta marcatori di malattia renale? (AUROC, PR-AUC, operating point).</li>
-              <li><strong>Gradiente di Rischio:</strong> Il rischio predetto cresce monotonicamente con la gravità KDIGO? (Test di tendenza di Jonckheere-Terpstra).</li>
-              <li><strong>Casi Gravi:</strong> Quanti casi ad alto e molto alto rischio riconosce? Mancare un "molto alto" è l'errore clinico più grave.</li>
-              <li><strong>Calibrazione Clinica:</strong> Le fasce di rischio corrispondono alla reale stratificazione di popolazione? (Indice Kappa pesato).</li>
-              <li><strong>Imbalance Fallacy:</strong> Il bilanciamento sintetico (SMOTE/CTGAN) migliora i casi gravi o solo le metriche medie a soglia fissa?</li>
-              <li><strong>Sottogruppo Diabetico:</strong> Come si comporta il modello su soggetti con diabete rispetto alla popolazione generale?</li>
+              <li data-i18n="scope_q1"><strong>Discriminazione:</strong> Il modello distingue chi presenta marcatori di malattia renale? (AUROC, PR-AUC, operating point).</li>
+              <li data-i18n="scope_q2"><strong>Gradiente di Rischio:</strong> Il rischio predetto cresce monotonicamente con la gravità KDIGO? (Test di tendenza di Jonckheere-Terpstra).</li>
+              <li data-i18n="scope_q3"><strong>Casi Gravi:</strong> Quanti casi ad alto e molto alto rischio riconosce? Mancare un "molto alto" è l'errore clinico più grave.</li>
+              <li data-i18n="scope_q4"><strong>Calibrazione Clinica:</strong> Le fasce di rischio corrispondono alla reale stratificazione di popolazione? (Indice Kappa pesato).</li>
+              <li data-i18n="scope_q5"><strong>Imbalance Fallacy:</strong> Il bilanciamento sintetico (SMOTE/CTGAN) migliora i casi gravi o solo le metriche medie a soglia fissa?</li>
+              <li data-i18n="scope_q6"><strong>Sottogruppo Diabetico:</strong> Come si comporta il modello su soggetti con diabete rispetto alla popolazione generale?</li>
             </ol>
           </div>
           <div class="card">
             <div class="card-header">
-              <h3 class="card-title">Regole Metodologiche Tassative</h3>
+              <h3 class="card-title" data-i18n="scope_rules_title">Regole Metodologiche Tassative</h3>
             </div>
             <ul style="padding-left: 1.2rem; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.7;">
-              <li><strong>Data Augmentation solo sul training:</strong> Le tecniche di campionamento operano esclusivamente dentro ogni fold di training interno; nessun dato sintetico tocca mai la validazione o il test.</li>
-              <li><strong>Ricalibrazione di Platt obbligatoria:</strong> Le probabilità distorte dal campionamento artificiale vengono ricalibrate su dati reali prima della valutazione clinica.</li>
-              <li><strong>Confronto KDIGO solo su dati reali:</strong> I soggetti sintetici non possiedono una categoria KDIGO biologica.</li>
-              <li><strong>Test set congelato (Lockbox):</strong> 1.451 soggetti mai letti durante la fase di sviluppo; aperto una sola volta per la validazione finale dei claim pre-registrati.</li>
+              <li data-i18n="scope_r1"><strong>Data Augmentation solo sul training:</strong> Le tecniche di campionamento operano esclusivamente dentro ogni fold di training interno; nessun dato sintetico tocca mai la validazione o il test.</li>
+              <li data-i18n="scope_r2"><strong>Ricalibrazione di Platt obbligatoria:</strong> Le probabilità distorte dal campionamento artificiale vengono ricalibrate su dati reali prima della valutazione clinica.</li>
+              <li data-i18n="scope_r3"><strong>Confronto KDIGO solo su dati reali:</strong> I soggetti sintetici non possiedono una categoria KDIGO biologica.</li>
+              <li data-i18n="scope_r4"><strong>Test set congelato (Lockbox):</strong> 1.451 soggetti mai letti durante la fase di sviluppo; aperto una sola volta per la validazione finale dei claim pre-registrati.</li>
             </ul>
           </div>
         </div>
@@ -151,10 +230,10 @@
       <section id="tab-cohort" class="tab-pane" role="tabpanel">
         <div class="section-header">
           <div class="section-titles">
-            <h2>01. Coorte Clinica, Matrice KDIGO e Zero Data Leakage</h2>
-            <p>Preparazione del dataset: ricalcolo eGFR con formula CKD-EPI 2021, partizione stratificata test al 25% congelata e protocollo di imputazione MissForest vincolato.</p>
+            <h2 data-i18n="t1_h2">01. Coorte Clinica, Matrice KDIGO e Zero Data Leakage</h2>
+            <p data-i18n="t1_p">Preparazione del dataset: ricalcolo eGFR con formula CKD-EPI 2021, partizione stratificata test al 25% congelata e protocollo di imputazione MissForest vincolato.</p>
           </div>
-          <span class="badge badge-success">Protocollo Fissato A Priori</span>
+          <span class="badge badge-success" data-i18n="t1_badge">Protocollo Fissato A Priori</span>
         </div>
 
         <div class="grid-2">
@@ -162,45 +241,44 @@
           <div class="card">
             <div class="card-header">
               <div>
-                <h3 class="card-title">Matrice di Rischio KDIGO 2D (6 × 3)</h3>
-                <span class="card-subtitle">Distribuzione osservata dei 5.801 soggetti nella griglia eGFR × ACR</span>
+                <h3 class="card-title" data-i18n="t1_kdigo_title">Matrice di Rischio KDIGO 2D (6 × 3)</h3>
+                <span class="card-subtitle" data-i18n="t1_kdigo_sub">Distribuzione osservata dei 5.801 soggetti nella griglia eGFR × ACR</span>
               </div>
-              <span class="badge badge-neutral">Interattivo</span>
+              <span class="badge badge-neutral" data-i18n="t5_sim_badge">Interattivo</span>
             </div>
             <div class="kdigo-matrix-wrapper" id="kdigo-grid-target">
               <!-- Rendered via JavaScript -->
             </div>
             <div style="display: flex; gap: 0.8rem; margin-top: 1rem; font-size: 0.76rem; color: var(--text-muted); flex-wrap: wrap;">
-              <span style="display: flex; align-items: center; gap: 0.3rem;"><span style="width: 10px; height: 10px; background: #0284c7; border-radius: 2px;"></span> Basso Rischio (5.234 - 90.2%)</span>
-              <span style="display: flex; align-items: center; gap: 0.3rem;"><span style="width: 10px; height: 10px; background: #d97706; border-radius: 2px;"></span> Moderato (473 - 8.2%)</span>
-              <span style="display: flex; align-items: center; gap: 0.3rem;"><span style="width: 10px; height: 10px; background: #ea580c; border-radius: 2px;"></span> Alto (67 - 1.2%)</span>
-              <span style="display: flex; align-items: center; gap: 0.3rem;"><span style="width: 10px; height: 10px; background: #dc2626; border-radius: 2px;"></span> Molto Alto (27 - 0.5%)</span>
+              <span style="display: flex; align-items: center; gap: 0.3rem;" data-i18n="t1_leg_low"><span style="width: 10px; height: 10px; background: #0284c7; border-radius: 2px;"></span> Basso Rischio (5.234 - 90.2%)</span>
+              <span style="display: flex; align-items: center; gap: 0.3rem;" data-i18n="t1_leg_mod"><span style="width: 10px; height: 10px; background: #d97706; border-radius: 2px;"></span> Moderato (473 - 8.2%)</span>
+              <span style="display: flex; align-items: center; gap: 0.3rem;" data-i18n="t1_leg_high"><span style="width: 10px; height: 10px; background: #ea580c; border-radius: 2px;"></span> Alto (67 - 1.2%)</span>
+              <span style="display: flex; align-items: center; gap: 0.3rem;" data-i18n="t1_leg_vhigh"><span style="width: 10px; height: 10px; background: #dc2626; border-radius: 2px;"></span> Molto Alto (27 - 0.5%)</span>
             </div>
-            <div class="figure-caption">Figura 1.1: Mappatura della coorte clinica nella griglia bidimensionale KDIGO (eGFR CKD-EPI 2021 × albuminuria ACR).</div>
           </div>
 
           <!-- Partitioning & Imputation Card -->
           <div class="card">
             <div class="card-header">
               <div>
-                <h3 class="card-title">Confronto dei Metodi di Imputazione (Solo Training)</h3>
-                <span class="card-subtitle">Cross-Validation a 5 fold con maschera del 10% sui valori osservati</span>
+                <h3 class="card-title" data-i18n="t1_imp_title">Confronto dei Metodi di Imputazione (Solo Training)</h3>
+                <span class="card-subtitle" data-i18n="t1_imp_sub">Cross-Validation a 5 fold con maschera del 10% sui valori osservati</span>
               </div>
-              <span class="badge badge-neutral">5-Fold CV</span>
+              <span class="badge badge-neutral" data-i18n="t1_imp_badge">5-Fold CV</span>
             </div>
-            <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 0.8rem;">
+            <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 0.8rem;" data-i18n="t1_imp_p">
               Le prestazioni a valle (PR-AUC ~0.257) risultano invarianti al metodo, ma <strong>MissForest vincolato</strong> (50 alberi, min_samples_leaf=5, max_iter=5) riduce l'errore di ricostruzione quadratico (RMSE 0.7337) del <strong>29.3%</strong> rispetto alla mediana.
             </p>
             <div class="table-container">
               <table class="data-table">
                 <thead>
                   <tr>
-                    <th>Metodo</th>
-                    <th class="num">RMSE (10% mask)</th>
-                    <th class="num">MAE</th>
-                    <th class="num">PR-AUC</th>
-                    <th class="num">AUROC</th>
-                    <th class="num">Tempo</th>
+                    <th data-i18n="t1_th_imp_method">Metodo</th>
+                    <th class="num" data-i18n="t1_th_imp_rmse">RMSE (10% mask)</th>
+                    <th class="num" data-i18n="t1_th_imp_mae">MAE</th>
+                    <th class="num" data-i18n="t1_th_imp_prauc">PR-AUC</th>
+                    <th class="num" data-i18n="t1_th_imp_auroc">AUROC</th>
+                    <th class="num" data-i18n="t1_th_imp_time">Tempo</th>
                   </tr>
                 </thead>
                 <tbody id="imputation-table-target">
@@ -208,7 +286,6 @@
                 </tbody>
               </table>
             </div>
-            <div class="figure-caption">Tabella 1.1: Valutazione empirica dei meccanismi di imputazione missing su variabili numeriche standardizzate.</div>
           </div>
         </div>
 
@@ -216,19 +293,19 @@
         <div class="card" style="margin-top: 1.5rem;">
           <div class="card-header">
             <div>
-              <h3 class="card-title">Protocollo Rigido di Esclusione Variabili (Anti-Leakage Guard)</h3>
-              <span class="card-subtitle">85 colonne escluse analiticamente per garantire la validità scientifica</span>
+              <h3 class="card-title" data-i18n="t1_leak_title">Protocollo Rigido di Esclusione Variabili (Anti-Leakage Guard)</h3>
+              <span class="card-subtitle" data-i18n="t1_leak_sub">85 colonne escluse analiticamente per garantire la validità scientifica</span>
             </div>
-            <span class="badge badge-warning">Zero Leakage</span>
+            <span class="badge badge-warning" data-i18n="t1_leak_badge">Zero Leakage</span>
           </div>
           <div class="table-container">
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>Famiglia di Esclusione</th>
-                  <th class="num">Variabili</th>
-                  <th>Esempi di Variabili Escluse</th>
-                  <th>Motivazione Metodologica Formale</th>
+                  <th data-i18n="t1_th_fam">Famiglia di Esclusione</th>
+                  <th class="num" data-i18n="t1_th_vars">Variabili</th>
+                  <th data-i18n="t1_th_ex">Esempi di Variabili Escluse</th>
+                  <th data-i18n="t1_th_reas">Motivazione Metodologica Formale</th>
                 </tr>
               </thead>
               <tbody id="leakage-exclusions-target">
@@ -236,7 +313,6 @@
               </tbody>
             </table>
           </div>
-          <div class="figure-caption">Tabella 1.2: Classificazione esaustiva delle feature escluse a tutela dell'integrità del modello di screening.</div>
         </div>
       </section>
 
@@ -247,11 +323,11 @@
       <section id="tab-phase-a" class="tab-pane" role="tabpanel">
         <div class="section-header">
           <div class="section-titles">
-            <h2>02. Fase A: Modelli di Screening & Spiegabilità (SHAP)</h2>
-            <p>Valutazione dei cinque modelli candidati addestrati in Cross-Validation Annidata con tuning Optuna su PR-AUC. Analisi di sensibilità no_consequence e importanza esatta TreeSHAP.</p>
+            <h2 data-i18n="t2_h2">02. Fase A: Modelli di Screening & Spiegabilità (SHAP)</h2>
+            <p data-i18n="t2_p">Valutazione dei cinque modelli candidati addestrati in Cross-Validation Annidata con tuning Optuna su PR-AUC. Analisi di sensibilità no_consequence e importanza esatta TreeSHAP.</p>
           </div>
           <button class="btn btn-default" onclick="downloadSvg('roc-chart-svg', 'krisk_roc_curves')">
-            <span>📥</span> Esporta SVG
+            <span data-i18n="t2_btn_export"><span>📥</span> Esporta SVG</span>
           </button>
         </div>
 
@@ -260,40 +336,39 @@
           <div class="chart-box">
             <div class="chart-header">
               <div class="chart-titles">
-                <h3>Curve ROC di Discriminazione sul Test Set</h3>
-                <span>Confronto diretto tra modelli reali e Controllo Positivo (con UmALB)</span>
+                <h3 data-i18n="t2_roc_title">Curve ROC di Discriminazione sul Test Set</h3>
+                <span data-i18n="t2_roc_sub">Confronto diretto tra modelli reali e Controllo Positivo (con UmALB)</span>
               </div>
             </div>
             <div class="chart-svg-container" id="roc-chart-svg">
               <!-- Rendered via JavaScript -->
             </div>
             <div class="chart-legend">
-              <div class="legend-item"><span class="legend-line" style="background: #10b981;"></span> Controllo Positivo (AUC 0.933)</div>
-              <div class="legend-item"><span class="legend-line" style="background: #2563eb;"></span> Random Forest (AUC 0.743)</div>
-              <div class="legend-item"><span class="legend-line" style="background: #06b6d4;"></span> XGBoost (AUC 0.725)</div>
-              <div class="legend-item"><span class="legend-line" style="background: #f59e0b;"></span> LR SCORED (AUC 0.723)</div>
-              <div class="legend-item"><span class="legend-line" style="background: #64748b; border-style: dashed;"></span> Caso Casuale (AUC 0.500)</div>
+              <div class="legend-item" data-i18n="t2_leg_pos"><span class="legend-line" style="background: #10b981;"></span> Controllo Positivo (AUC 0.933)</div>
+              <div class="legend-item" data-i18n="t2_leg_rf"><span class="legend-line" style="background: #2563eb;"></span> Random Forest (AUC 0.743)</div>
+              <div class="legend-item" data-i18n="t2_leg_xgb"><span class="legend-line" style="background: #06b6d4;"></span> XGBoost (AUC 0.725)</div>
+              <div class="legend-item" data-i18n="t2_leg_scored"><span class="legend-line" style="background: #f59e0b;"></span> LR SCORED (AUC 0.723)</div>
+              <div class="legend-item" data-i18n="t2_leg_chance"><span class="legend-line" style="background: #64748b; border-style: dashed;"></span> Caso Casuale (AUC 0.500)</div>
             </div>
-            <div class="figure-caption">Figura 2.1: Curve ROC validate sul test set (1.451 soggetti). Random Forest ottiene l'AUROC più alta (0.743 [0.699-0.786]).</div>
           </div>
 
           <!-- Feature Importance Ranking -->
           <div class="card">
             <div class="card-header">
               <div>
-                <h3 class="card-title">Top 10 Feature per Importanza Clinica (SHAP / Odds Ratio)</h3>
-                <span class="card-subtitle">Confronto tra coefficienti ElasticNet e valori medi assoluti TreeSHAP</span>
+                <h3 class="card-title" data-i18n="t2_feat_title">Top 10 Feature per Importanza Clinica (SHAP / Odds Ratio)</h3>
+                <span class="card-subtitle" data-i18n="t2_feat_sub">Confronto tra coefficienti ElasticNet e valori medi assoluti TreeSHAP</span>
               </div>
-              <span class="badge badge-neutral">Spiegabilità</span>
+              <span class="badge badge-neutral" data-i18n="t2_feat_badge">Spiegabilità</span>
             </div>
             <div class="table-container">
               <table class="data-table">
                 <thead>
                   <tr>
-                    <th class="num">Rango</th>
-                    <th>LR ElasticNet (|β|)</th>
-                    <th>Random Forest (TreeSHAP)</th>
-                    <th>XGBoost (TreeSHAP)</th>
+                    <th class="num" data-i18n="t2_th_rank">Rango</th>
+                    <th data-i18n="t2_th_lr">LR ElasticNet (|β|)</th>
+                    <th data-i18n="t2_th_rf">Random Forest (TreeSHAP)</th>
+                    <th data-i18n="t2_th_xgb">XGBoost (TreeSHAP)</th>
                   </tr>
                 </thead>
                 <tbody id="top-features-target">
@@ -301,7 +376,6 @@
                 </tbody>
               </table>
             </div>
-            <div class="figure-caption">Tabella 2.1: Le variabili più predittive concordano tra gli alberi: Età, Fosfatasi Alcalina (ALP), Fibrosi Epatica (FIB4) e Peptide C (FCP).</div>
           </div>
         </div>
 
@@ -309,22 +383,36 @@
         <div class="card" style="margin-top: 1.5rem;">
           <div class="card-header">
             <div>
-              <h3 class="card-title">Tabella Completa delle Prestazioni (Fase A)</h3>
-              <span class="card-subtitle">Metriche Out-Of-Fold (5-fold annidata) e Conferma Finale sul Test Set</span>
+              <h3 class="card-title" data-i18n="t2_perf_title">Tabella Completa delle Prestazioni (Fase A)</h3>
+              <span class="card-subtitle" data-i18n="t2_perf_sub">Metriche Out-Of-Fold (5-fold annidata) e Conferma Finale sul Test Set</span>
             </div>
-            <span class="badge badge-success">Soglia Operativa Fissata a Sensibilità 0.90</span>
+            <div class="card-header-actions">
+              <button class="btn-toggle-format mode-decimal" aria-label="Alterna formato decimale o percentuale" title="Alterna visualizzazione decimale o percentuale">
+                <svg class="icon-pct" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="19" y1="5" x2="5" y2="19"></line>
+                  <circle cx="6.5" cy="6.5" r="2.5"></circle>
+                  <circle cx="17.5" cy="17.5" r="2.5"></circle>
+                </svg>
+                <svg class="icon-dec" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="6" width="6" height="12" rx="3"></rect>
+                  <circle cx="12" cy="16" r="1.5" fill="currentColor"></circle>
+                  <rect x="15" y="6" width="6" height="12" rx="3"></rect>
+                </svg>
+              </button>
+              <span class="badge badge-success" data-i18n="t2_perf_badge">Soglia Operativa Fissata a Sensibilità 0.90</span>
+            </div>
           </div>
           <div class="table-container">
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>Modello</th>
-                  <th class="num">OOF AUROC [IC 95%]</th>
-                  <th class="num">OOF PR-AUC</th>
-                  <th class="num highlight">Test Set AUROC [IC 95%]</th>
-                  <th class="num">Specificità (Sens 0.90)</th>
-                  <th class="num">Quota Allerta</th>
-                  <th class="num">Feature Usate</th>
+                  <th data-i18n="t2_th_model">Modello</th>
+                  <th class="num" data-i18n="t2_th_oof_auc">OOF AUROC [IC 95%]</th>
+                  <th class="num" data-i18n="t2_th_oof_prauc">OOF PR-AUC</th>
+                  <th class="num highlight" data-i18n="t2_th_test_auc">Test Set AUROC [IC 95%]</th>
+                  <th class="num" data-i18n="t2_th_spec">Specificità (Sens 0.90)</th>
+                  <th class="num" data-i18n="t2_th_alert">Quota Allerta</th>
+                  <th class="num" data-i18n="t2_th_feats">Feature Usate</th>
                 </tr>
               </thead>
               <tbody id="phase-a-table-target">
@@ -332,7 +420,6 @@
               </tbody>
             </table>
           </div>
-          <div class="figure-caption">Tabella 2.2: Confronto out-of-fold e test set dei modelli primari di screening. Tutte le stime OOF cadono dentro l'IC 95% del test (Claim A).</div>
         </div>
       </section>
 
@@ -343,40 +430,54 @@
       <section id="tab-phase-b" class="tab-pane" role="tabpanel">
         <div class="section-header">
           <div class="section-titles">
-            <h2>03. Fase B: Smascherare l'Illusione del Bilanciamento delle Classi</h2>
-            <p>Confronto metodologico tra valutazione ingenua a soglia fissa 0.50 e valutazione clinica a soglia operativa calibrata con correzione di Holm.</p>
+            <h2 data-i18n="t3_h2">03. Fase B: Smascherare l'Illusione del Bilanciamento delle Classi</h2>
+            <p data-i18n="t3_p">Confronto metodologico tra valutazione ingenua a soglia fissa 0.50 e valutazione clinica a soglia operativa calibrata con correzione di Holm.</p>
           </div>
-          <span class="badge badge-warning">Risultato Metodologico Chiave</span>
+          <span class="badge badge-warning" data-i18n="t3_badge">Risultato Metodologico Chiave</span>
         </div>
 
-        <div class="callout" style="border-left-color: var(--accent-amber);">
-          <strong>L'Illusione del Bilanciamento (*Class Imbalance Fallacy*):</strong> In letteratura si applica spesso SMOTE e si valuta il recall a soglia 0.50, dichiarando aumenti di sensitività (dal 4.4% al 64.6%). Il nostro studio dimostra che ciò è una pura illusione dovuta allo spostamento della distribuzione dei punteggi: non appena si adotta una soglia operativa a sensibilità clinica fissata (0.90) o si ricalibrano le probabilità con Platt scaling, <strong>nessuna tecnica di bilanciamento individua un singolo caso grave in più</strong> (p di Holm = 1.000).
+        <div class="callout" style="border-left-color: var(--accent-amber);" data-i18n="t3_callout">
+          <strong>L'Illusione del Bilanciamento (*Class Imbalance Fallacy*):</strong> In letteratura si applica spesso SMOTE e si valuta il recall a soglia 0.50, dichiarando aumenti di sensitività (dal 4.4% al 64.6%). Questo studio dimostra che ciò è una pura illusione dovuta allo spostamento della distribuzione dei punteggi: non appena si adotta una soglia operativa a sensibilità clinica fissata (0.90) o si ricalibrano le probabilità con Platt scaling, <strong>nessuna tecnica di bilanciamento individua un singolo caso grave in più</strong> (p di Holm = 1.000).
         </div>
 
         <!-- Comparison Table: Naive 0.5 vs Real Operating Point -->
         <div class="card">
           <div class="card-header">
             <div>
-              <h3 class="card-title">Confronto Sperimentale: Valutazione Ingenua (0.50) vs Recupero Casi Gravi Reale</h3>
-              <span class="card-subtitle">Test set da 1.451 soggetti con 23 casi KDIGO gravi (17 ad alto rischio + 6 a rischio molto alto)</span>
+              <h3 class="card-title" data-i18n="t3_comp_title">Confronto Sperimentale: Valutazione Ingenua (0.50) vs Recupero Casi Gravi Reale</h3>
+              <span class="card-subtitle" data-i18n="t3_comp_sub">Test set da 1.451 soggetti con 23 casi KDIGO gravi (17 ad alto rischio + 6 a rischio molto alto)</span>
             </div>
-            <span class="badge badge-neutral">Test di Holm Multiplo</span>
+            <div class="card-header-actions">
+              <button class="btn-toggle-format mode-decimal" aria-label="Alterna formato decimale o percentuale" title="Alterna visualizzazione decimale o percentuale">
+                <svg class="icon-pct" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="19" y1="5" x2="5" y2="19"></line>
+                  <circle cx="6.5" cy="6.5" r="2.5"></circle>
+                  <circle cx="17.5" cy="17.5" r="2.5"></circle>
+                </svg>
+                <svg class="icon-dec" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="6" width="6" height="12" rx="3"></rect>
+                  <circle cx="12" cy="16" r="1.5" fill="currentColor"></circle>
+                  <rect x="15" y="6" width="6" height="12" rx="3"></rect>
+                </svg>
+              </button>
+              <span class="badge badge-neutral" data-i18n="t3_comp_badge">Test di Holm Multiplo</span>
+            </div>
           </div>
           <div class="table-container">
             <table class="data-table">
               <thead>
                 <tr>
-                  <th rowspan="2">Tecnica di Bilanciamento</th>
-                  <th colspan="3" style="text-align: center; border-bottom: 1px solid var(--border-medium); background: var(--bg-surface-hover);">Valutazione Ingenua (Soglia Grezza 0.50)</th>
-                  <th colspan="3" style="text-align: center; border-bottom: 1px solid var(--border-medium); background: var(--bg-surface-elevated);">Soglia Operativa Reale (Sensibilità 0.90)</th>
+                  <th rowspan="2" data-i18n="t3_th_tech">Tecnica di Bilanciamento</th>
+                  <th colspan="3" style="text-align: center; border-bottom: 1px solid var(--border-medium); background: var(--bg-surface-hover);" data-i18n="t3_th_naive_grp">Valutazione Ingenua (Soglia Grezza 0.50)</th>
+                  <th colspan="3" style="text-align: center; border-bottom: 1px solid var(--border-medium); background: var(--bg-surface-elevated);" data-i18n="t3_th_real_grp">Soglia Operativa Reale (Sensibilità 0.90)</th>
                 </tr>
                 <tr>
-                  <th class="num">Recall Apparente</th>
-                  <th class="num">Precisione</th>
-                  <th class="num">Specificità</th>
-                  <th class="num">Casi Gravi Trovati</th>
-                  <th class="num">Delta vs Baseline</th>
-                  <th class="num">p-value di Holm</th>
+                  <th class="num" data-i18n="t3_th_rec">Recall Apparente</th>
+                  <th class="num" data-i18n="t3_th_prec">Precisione</th>
+                  <th class="num" data-i18n="t3_th_spec">Specificità</th>
+                  <th class="num" data-i18n="t3_th_sev">Casi Gravi Trovati</th>
+                  <th class="num" data-i18n="t3_th_diff">Delta vs Baseline</th>
+                  <th class="num" data-i18n="t3_th_holm">p-value di Holm</th>
                 </tr>
               </thead>
               <tbody id="phase-b-comparison-target">
@@ -384,24 +485,23 @@
               </tbody>
             </table>
           </div>
-          <div class="figure-caption">Tabella 3.1: Dimostrazione empirica dell'illusione del bilanciamento: le tecniche aumentano il recall a 0.50 solo perché degradano la specificità (dal 98.9% al 70.7%), ma non forniscono alcun guadagno clinico reale sui casi gravi.</div>
         </div>
 
         <div class="grid-2" style="margin-top: 1.5rem;">
           <div class="card">
             <div class="card-header">
-              <h3 class="card-title">CTGAN & Metodi Generativi Esplorativi</h3>
+              <h3 class="card-title" data-i18n="t3_ctgan_title">CTGAN & Metodi Generativi Esplorativi</h3>
             </div>
-            <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6;">
+            <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6;" data-i18n="t3_ctgan_p">
               L'adozione di reti generative avversarie (CTGAN a 300 epoche) per sintetizzare righe tabulari complete peggiora significativamente la discriminazione rispetto alla baseline (<span style="color: var(--accent-rose); font-family: var(--font-mono); font-weight: 600;">Δ AUROC = -0.117, p = 0.006</span> su LR Penalized). Inoltre, perde 2 casi gravi rispetto al modello naturale.
             </p>
           </div>
           <div class="card">
             <div class="card-header">
-              <h3 class="card-title">Ricalibrazione Annidata di Platt</h3>
+              <h3 class="card-title" data-i18n="t3_platt_title">Ricalibrazione Annidata di Platt</h3>
             </div>
-            <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6;">
-              La ricalibrazione logistica su logit($p$) stimata sui fold interni riallinea le probabilità previste alla prevalenza reale della popolazione. Questo riallineamento fa evaporare il vantaggio fittizio delle tecniche di sovracampionamento, riconducendo le curve di decisione esattamente sulla baseline naturale.
+            <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6;" data-i18n="t3_platt_p">
+              La ricalibrazione logistica su logit(p) stimata sui fold interni riallinea le probabilità previste alla prevalenza reale della popolazione. Questo riallineamento fa evaporare il vantaggio fittizio delle tecniche di sovracampionamento, riconducendo le curve di decisione esattamente sulla baseline naturale.
             </p>
           </div>
         </div>
@@ -414,11 +514,11 @@
       <section id="tab-phase-d" class="tab-pane" role="tabpanel">
         <div class="section-header">
           <div class="section-titles">
-            <h2>04. Fase D: Diagnostica del Tetto di Prestazione (Information Bottleneck)</h2>
-            <p>Esplorazione sistematica di architetture avanzate (TabPFN, CatBoost, LightGBM, EBM, Decomposizione del Target) e identificazione formale del limite biologico rispetto al selection bias.</p>
+            <h2 data-i18n="t4_h2">04. Fase D: Diagnostica del Tetto di Prestazione (Information Bottleneck)</h2>
+            <p data-i18n="t4_p">Esplorazione sistematica di architetture avanzate (TabPFN, CatBoost, LightGBM, EBM, Decomposizione del Target) e identificazione formale del limite biologico rispetto al selection bias.</p>
           </div>
           <button class="btn btn-default" onclick="downloadSvg('forest-plot-svg', 'krisk_nadeau_bengio_forest_plot')">
-            <span>📥</span> Esporta SVG
+            <span data-i18n="t2_btn_export"><span>📥</span> Esporta SVG</span>
           </button>
         </div>
 
@@ -427,33 +527,32 @@
           <div class="chart-box">
             <div class="chart-header">
               <div class="chart-titles">
-                <h3>Forest Plot: Test Corretto di Nadeau-Bengio sui Fold</h3>
-                <span>Differenza di AUROC rispetto al riferimento (Random Forest) con IC 95%</span>
+                <h3 data-i18n="t4_forest_title">Forest Plot: Test Corretto di Nadeau-Bengio sui Fold</h3>
+                <span data-i18n="t4_forest_sub">Differenza di AUROC rispetto al riferimento (Random Forest) con IC 95%</span>
               </div>
             </div>
             <div class="chart-svg-container" id="forest-plot-svg">
               <!-- Rendered via JavaScript -->
             </div>
-            <div class="figure-caption">Figura 4.1: Forest Plot dei candidati della Fase D. Nessun modello supera la soglia di miglioramento concordata a priori (Δ ≥ 0.01 con IC &gt; 0 e correzione di Holm).</div>
           </div>
 
           <!-- Key Scientific Insights Card -->
           <div class="card">
             <div class="card-header">
               <div>
-                <h3 class="card-title">Le Due Diagnostiche Fondamentali</h3>
-                <span class="card-subtitle">Verifica della capacità di apprendimento vs smascheramento del leakage</span>
+                <h3 class="card-title" data-i18n="t4_card_title">Le Due Diagnostiche Fondamentali</h3>
+                <span class="card-subtitle" data-i18n="t4_card_sub">Verifica della capacità di apprendimento vs smascheramento del leakage</span>
               </div>
-              <span class="badge badge-neutral">Evidenze Empiriche</span>
+              <span class="badge badge-neutral" data-i18n="t4_card_badge">Evidenze Empiriche</span>
             </div>
 
             <!-- Insight 1: Positive Control -->
             <div style="background: var(--bg-surface-elevated); padding: 1rem; border-radius: var(--radius-sm); border-left: 3px solid var(--accent-emerald); margin-bottom: 1rem;">
               <div style="display: flex; justify-content: space-between; align-items: center;">
-                <strong style="color: var(--accent-emerald); font-size: 0.9rem;">1. Controllo Positivo (+ UmALB)</strong>
+                <strong style="color: var(--accent-emerald); font-size: 0.9rem;" data-i18n="t4_diag1_title">1. Controllo Positivo (+ UmALB)</strong>
                 <span class="badge badge-success">AUROC 0.9327</span>
               </div>
-              <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.4rem;">
+              <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.4rem;" data-i18n="t4_diag1_p">
                 Aggiungendo la concentrazione di albumina urinaria tra le feature, la pipeline raggiunge istantaneamente un'AUROC di <strong>0.933</strong> (PR-AUC 0.809). Ciò certifica che il plateau a ~0.70 non è dovuto a limitazioni dell'architettura di apprendimento, bensì alla separabilità intrinseca delle sole variabili ematochimiche generali.
               </p>
             </div>
@@ -461,11 +560,11 @@
             <!-- Insight 2: Selection Bias Demonstration -->
             <div style="background: var(--bg-surface-elevated); padding: 1rem; border-radius: var(--radius-sm); border-left: 3px solid var(--accent-amber);">
               <div style="display: flex; justify-content: space-between; align-items: center;">
-                <strong style="color: var(--accent-amber); font-size: 0.9rem;">2. Dimostrazione del Selection Bias (Ambroise & McLachlan)</strong>
+                <strong style="color: var(--accent-amber); font-size: 0.9rem;" data-i18n="t4_diag2_title">2. Dimostrazione del Selection Bias (Ambroise & McLachlan)</strong>
                 <span class="badge badge-warning">0.718 vs 0.703</span>
               </div>
-              <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.4rem;">
-                Un'analisi preliminare informale otteneva AUROC 0.717 su un ensemble a 21 feature. Ricostruendo rigorosamente il codice, abbiamo provato che quel risultato era affetto da <strong>data leakage da feature selection</strong> (le 21 feature erano state scelte guardando l'intero dataset, dando AUROC 0.7155 OOF). Applicando la selezione dentro ciascun fold (Top 21 Nested), l'AUROC scende a <strong>0.7031</strong>, perfettamente in linea con i modelli singoli.
+              <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.4rem;" data-i18n="t4_ins3_p">
+                Un'analisi preliminare informale otteneva AUROC 0.717 su un ensemble a 21 feature. Ricostruendo rigorosamente il codice, è stato provato che quel risultato era affetto da <strong>data leakage da feature selection</strong> (le 21 feature erano state scelte guardando l'intero dataset, dando AUROC 0.7155 OOF). Applicando la selezione dentro ciascun fold (Top 21 Nested), l'AUROC scende a <strong>0.7031</strong>, perfettamente in linea con i modelli singoli.
               </p>
             </div>
           </div>
@@ -475,22 +574,36 @@
         <div class="card" style="margin-top: 1.5rem;">
           <div class="card-header">
             <div>
-              <h3 class="card-title">Candidati Esplorati alla Ricerca del Tetto (Fase D)</h3>
-              <span class="card-subtitle">Regola di decisione: miglioramento se Δ AUROC ≥ 0.01 e limite inferiore IC 95% Nadeau-Bengio &gt; 0</span>
+              <h3 class="card-title" data-i18n="t4_cand_title">Candidati Esplorati alla Ricerca del Tetto (Fase D)</h3>
+              <span class="card-subtitle" data-i18n="t4_cand_sub">Regola di decisione: miglioramento se Δ AUROC ≥ 0.01 e limite inferiore IC 95% Nadeau-Bengio &gt; 0</span>
             </div>
-            <span class="badge badge-neutral">9 Architetture Valutate</span>
+            <div class="card-header-actions">
+              <button class="btn-toggle-format mode-decimal" aria-label="Alterna formato decimale o percentuale" title="Alterna visualizzazione decimale o percentuale">
+                <svg class="icon-pct" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="19" y1="5" x2="5" y2="19"></line>
+                  <circle cx="6.5" cy="6.5" r="2.5"></circle>
+                  <circle cx="17.5" cy="17.5" r="2.5"></circle>
+                </svg>
+                <svg class="icon-dec" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="6" width="6" height="12" rx="3"></rect>
+                  <circle cx="12" cy="16" r="1.5" fill="currentColor"></circle>
+                  <rect x="15" y="6" width="6" height="12" rx="3"></rect>
+                </svg>
+              </button>
+              <span class="badge badge-neutral" data-i18n="t4_cand_badge">9 Architetture Valutate</span>
+            </div>
           </div>
           <div class="table-container">
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>Modello Candidato</th>
-                  <th>Famiglia Algoritmica</th>
-                  <th class="num">AUROC OOF</th>
-                  <th class="num">Differenza vs RF</th>
-                  <th class="num">IC 95% Nadeau-Bengio</th>
-                  <th class="num">p-value Holm</th>
-                  <th style="text-align: center;">Esito Regola</th>
+                  <th data-i18n="t4_th_cand">Modello Candidato</th>
+                  <th data-i18n="t4_th_fam">Famiglia Algoritmica</th>
+                  <th class="num" data-i18n="t4_th_oof">AUROC OOF</th>
+                  <th class="num" data-i18n="t4_th_diff">Differenza vs RF</th>
+                  <th class="num" data-i18n="t4_th_ci">IC 95% Nadeau-Bengio</th>
+                  <th class="num" data-i18n="t4_th_p">p-value Holm</th>
+                  <th style="text-align: center;" data-i18n="t4_th_outcome">Esito Regola</th>
                 </tr>
               </thead>
               <tbody id="phase-d-candidates-target">
@@ -498,7 +611,6 @@
               </tbody>
             </table>
           </div>
-          <div class="figure-caption">Tabella 4.1: Nessun candidato supera la soglia di miglioramento concordata: TabPFN ottiene 0.7095, CatBoost 0.6953, EBM 0.6919. La convergenza di tutti gli algoritmi attesta la presenza di un tetto informativo invalicabile senza biomarcatori specifici.</div>
         </div>
       </section>
 
@@ -509,23 +621,23 @@
       <section id="tab-final-test" class="tab-pane" role="tabpanel">
         <div class="section-header">
           <div class="section-titles">
-            <h2>05. Conferma Finale sul Test Set & Utilità Clinica (DCA)</h2>
-            <p>Esecuzione autorizzata a protocollo congelato (Lockbox) sui 1.451 soggetti di test. Verifica dei 5 Claim scientifici e Decision Curve Analysis di Vickers.</p>
+            <h2 data-i18n="t5_h2">05. Conferma Finale sul Test Set & Utilità Clinica (DCA)</h2>
+            <p data-i18n="t5_p">Esecuzione autorizzata a protocollo congelato (Lockbox) sui 1.451 soggetti di test. Verifica dei 5 Claim scientifici e Decision Curve Analysis di Vickers.</p>
           </div>
           <button class="btn btn-default" onclick="downloadSvg('dca-chart-svg', 'krisk_dca_decision_curves')">
-            <span>📥</span> Esporta SVG
+            <span data-i18n="t2_btn_export"><span>📥</span> Esporta SVG</span>
           </button>
         </div>
 
         <!-- Lockbox Seal Banner -->
         <div class="lockbox-banner">
           <div class="lockbox-info">
-            <h3><span>🔒</span> Test Set Lockbox Ufficiale: Esecuzione Conclusa</h3>
-            <div class="lockbox-hash">
+            <h3 data-i18n="t5_lockbox_title"><span>🔒</span> Test Set Lockbox Ufficiale: Esecuzione Conclusa</h3>
+            <div class="lockbox-hash" data-i18n="t5_lockbox_hash">
               SHA256: 9d3fc900a6e8b621fe8e91e6fa8f7cf0c7b3d277825b948b2c45044cbcbf5a75 | Data: 22/09/2026 | Run ID: 1
             </div>
           </div>
-          <span class="badge badge-success" style="font-size: 0.85rem; padding: 0.4rem 0.8rem;">
+          <span class="badge badge-success" style="font-size: 0.85rem; padding: 0.4rem 0.8rem;" data-i18n="t5_claims_badge">
             Tutti i 5 Claim Convalidati
           </span>
         </div>
@@ -538,8 +650,8 @@
         <!-- Decision Curve Analysis & Dynamic Simulator -->
         <div class="section-header" style="margin-top: 2rem;">
           <div class="section-titles">
-            <h3>Decision Curve Analysis (DCA) & Simulatore di Utilità Economico-Sanitaria</h3>
-            <p>Valutazione del Net Benefit clinico reale (Vickers & Elkin) rispetto all'approccio indiscriminato ('Testare Tutti') e all'inazione ('Nessuno').</p>
+            <h3 data-i18n="t5_dca_title">Decision Curve Analysis (DCA) & Simulatore di Utilità Economico-Sanitaria</h3>
+            <p data-i18n="t5_dca_desc">Valutazione del Net Benefit clinico reale (Vickers & Elkin) rispetto all'approccio indiscriminato ('Testare Tutti') e all'inazione ('Nessuno').</p>
           </div>
         </div>
 
@@ -548,38 +660,37 @@
           <div class="chart-box">
             <div class="chart-header">
               <div class="chart-titles">
-                <h3>Curve di Net Benefit (Decision Curves)</h3>
-                <span>Soglie decisionali cliniche da 0.02 a 0.20 (passo 0.005)</span>
+                <h3 data-i18n="t5_curves_title">Curve di Net Benefit (Decision Curves)</h3>
+                <span data-i18n="t5_curves_sub">Soglie decisionali cliniche da 0.02 a 0.20 (passo 0.005)</span>
               </div>
             </div>
             <div class="chart-svg-container" id="dca-chart-svg">
               <!-- Rendered via JavaScript -->
             </div>
             <div class="chart-legend">
-              <div class="legend-item"><span class="legend-line" style="background: #2563eb;"></span> Random Forest</div>
-              <div class="legend-item"><span class="legend-line" style="background: #06b6d4;"></span> XGBoost</div>
-              <div class="legend-item"><span class="legend-line" style="background: #f59e0b;"></span> LR Penalized</div>
-              <div class="legend-item"><span class="legend-line" style="background: #64748b; border-style: dashed;"></span> Testare Tutti</div>
-              <div class="legend-item"><span class="legend-line" style="background: #94a3b8;"></span> Non Testare Nessuno (Zero)</div>
+              <div class="legend-item" data-i18n="t5_leg_rf"><span class="legend-line" style="background: #2563eb;"></span> Random Forest</div>
+              <div class="legend-item" data-i18n="t5_leg_xgb"><span class="legend-line" style="background: #06b6d4;"></span> XGBoost</div>
+              <div class="legend-item" data-i18n="t5_leg_lr"><span class="legend-line" style="background: #f59e0b;"></span> LR Penalized</div>
+              <div class="legend-item" data-i18n="t5_leg_all"><span class="legend-line" style="background: #64748b; border-style: dashed;"></span> Testare Tutti</div>
+              <div class="legend-item" data-i18n="t5_leg_none"><span class="legend-line" style="background: #94a3b8;"></span> Non Testare Nessuno (Zero)</div>
             </div>
-            <div class="figure-caption">Figura 5.1: Curve di Decisione Clinica (DCA). I modelli di screening superano nettamente la strategia standard "Testare Tutti" a partire dalla soglia del 5% (Pt ≥ 0.05), massimizzando il beneficio netto.</div>
           </div>
 
           <!-- Dynamic Threshold Slider & Realtime Metrics -->
           <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
             <div>
               <div class="card-header">
-                <h4 class="card-title">Simulatore della Soglia di Rischio Clinico</h4>
-                <span class="badge badge-neutral">Interattivo</span>
+                <h4 class="card-title" data-i18n="t5_sim_title">Simulatore della Soglia di Rischio Clinico</h4>
+                <span class="badge badge-neutral" data-i18n="t5_sim_badge">Interattivo</span>
               </div>
-              <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 1rem;">
-                Modifica la probabilità di soglia ($P_t$) per osservare come varia l'accettazione del trade-off tra falsi positivi (esami urinari specialistici inutili) e falsi negativi (casi renali persi).
+              <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 1rem;" data-i18n="t5_sim_p">
+                Modifica la probabilità di soglia (P<sub>t</sub>) per osservare come varia l'accettazione del trade-off tra falsi positivi (esami urinari specialistici inutili) e falsi negativi (casi renali persi).
               </p>
 
               <!-- Interactive Slider -->
               <div class="interactive-slider-box">
                 <div class="slider-controls">
-                  <span class="slider-label">Soglia Decisionale ($P_t$):</span>
+                  <span class="slider-label" data-i18n="t5_sim_slider">Soglia Decisionale (P<sub>t</sub>):</span>
                   <input type="range" min="0.03" max="0.15" step="0.01" value="0.07" class="slider-input" id="dca-slider">
                   <span class="slider-val-display" id="slider-val-display">7.0%</span>
                 </div>
@@ -592,7 +703,7 @@
             </div>
 
             <div style="margin-top: 1rem; padding-top: 0.8rem; border-top: 1px solid var(--border-subtle); font-size: 0.75rem; color: var(--text-muted);">
-              * Costo medio di riferimento per test urinario ACR: <strong>$49.00</strong> (intervallo $36-$64, studio Cusick et al. 2023).
+              <span data-i18n="t5_sim_cost">* Costo medio stimato di riferimento per test urinario ACR: <strong>49 €</strong> (intervallo 36–64 €, studio Cusick et al. 2023).</span>
             </div>
           </div>
         </div>
@@ -605,13 +716,13 @@
       <section id="tab-results-positioning" class="tab-pane" role="tabpanel">
         <div class="section-header">
           <div class="section-titles">
-            <h2>06. Risultati Ottenuti & Posizionamento Scientifico di K-Risk</h2>
-            <p>Mappatura di K-Risk lungo il percorso diagnostico-terapeutico e confronto oggettivo con i principali modelli della letteratura internazionale.</p>
+            <h2 data-i18n="t6_h2">06. Risultati Ottenuti & Posizionamento Scientifico di K-Risk</h2>
+            <p data-i18n="t6_p">Mappatura di K-Risk lungo il percorso diagnostico-terapeutico e confronto oggettivo con i principali modelli della letteratura internazionale.</p>
           </div>
-          <span class="badge badge-success">Valore Scientifico</span>
+          <span class="badge badge-success" data-i18n="t6_badge">Valore Scientifico</span>
         </div>
 
-        <div class="callout">
+        <div class="callout" data-i18n="t6_callout">
           <strong>Dove si colloca K-Risk:</strong> K-Risk non compete con i modelli prognostici a valle (come il celebre KFRE) che richiedono esami specialistici già eseguiti, né sostituisce i test di laboratorio. Si posiziona <strong>a monte</strong>, agendo come filtro intelligente a zero costo diagnostico aggiuntivo per selezionare i pazienti a cui prescrivere l'approfondimento nefrologico.
         </div>
 
@@ -619,37 +730,50 @@
         <div class="card">
           <div class="card-header">
             <div>
-              <h3 class="card-title">Schema del Continuum Clinico: Il Ruolo Esatto di K-Risk</h3>
-              <span class="card-subtitle">Collocazione nel percorso di cura dalla popolazione sana alla nefrologia specialistica</span>
+              <h3 class="card-title" data-i18n="t6_flow_title">Schema del Continuum Clinico: Il Ruolo Esatto di K-Risk</h3>
+              <span class="card-subtitle" data-i18n="t6_flow_sub">Collocazione nel percorso di cura dalla popolazione sana alla nefrologia specialistica</span>
             </div>
-            <span class="badge badge-neutral">Pipeline Clinica</span>
+            <span class="badge badge-neutral" data-i18n="t6_flow_badge">Pipeline Clinica</span>
           </div>
 
           <div class="continuum-wrapper" id="continuum-flow-target">
             <!-- Rendered dynamically via JavaScript -->
           </div>
-          <div class="figure-caption">Figura 6.1: Schema del continuum clinico. K-Risk interviene prima del laboratorio per ottimizzare le prescrizioni.</div>
         </div>
 
         <!-- State of the Art Comparison Table -->
         <div class="card" style="margin-top: 1.5rem;">
           <div class="card-header">
             <div>
-              <h3 class="card-title">Matrice Comparativa sullo Stato dell'Arte Internazionale</h3>
-              <span class="card-subtitle">Confronto metodologico tra K-Risk e i modelli di riferimento per bersaglio, predittori ed esami renali</span>
+              <h3 class="card-title" data-i18n="t6_sota_title">Matrice Comparativa sullo Stato dell'Arte Internazionale</h3>
+              <span class="card-subtitle" data-i18n="t6_sota_sub">Confronto metodologico tra K-Risk e i modelli di riferimento per bersaglio, predittori ed esami renali</span>
             </div>
-            <span class="badge badge-neutral">Benchmark</span>
+            <div class="card-header-actions">
+              <button class="btn-toggle-format mode-decimal" aria-label="Alterna formato decimale o percentuale" title="Alterna visualizzazione decimale o percentuale">
+                <svg class="icon-pct" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="19" y1="5" x2="5" y2="19"></line>
+                  <circle cx="6.5" cy="6.5" r="2.5"></circle>
+                  <circle cx="17.5" cy="17.5" r="2.5"></circle>
+                </svg>
+                <svg class="icon-dec" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="6" width="6" height="12" rx="3"></rect>
+                  <circle cx="12" cy="16" r="1.5" fill="currentColor"></circle>
+                  <rect x="15" y="6" width="6" height="12" rx="3"></rect>
+                </svg>
+              </button>
+              <span class="badge badge-neutral" data-i18n="t6_sota_badge">Benchmark</span>
+            </div>
           </div>
 
           <div class="table-container">
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>Modello / Studio</th>
-                  <th>Bersaglio Clinico</th>
-                  <th>Esami Renali Usati come Input</th>
-                  <th class="num">AUROC Validata</th>
-                  <th>Collocazione & Note Metodologiche</th>
+                  <th data-i18n="t6_th_mod">Modello / Studio</th>
+                  <th data-i18n="t6_th_target">Bersaglio Clinico</th>
+                  <th data-i18n="t6_th_exams">Esami Renali Usati come Input</th>
+                  <th class="num" data-i18n="t6_th_auc">AUROC Validata</th>
+                  <th data-i18n="t6_th_role">Collocazione & Note Metodologiche</th>
                 </tr>
               </thead>
               <tbody id="state-of-art-table-target">
@@ -657,49 +781,59 @@
               </tbody>
             </table>
           </div>
-          <div class="figure-caption">Tabella 6.1: Posizionamento scientifico di K-Risk. A differenza di modelli come Bragg-Gresham o KFRE, K-Risk non richiede creatinina o esami urinari per la previsione.</div>
         </div>
 
-        <!-- The 6 Main Project Accomplishments Grid -->
+        <!-- The 3 Main Project Accomplishments Grid -->
         <div class="grid-3" style="margin-top: 1.5rem;">
           <div class="card">
-            <h4 style="font-size: 0.9rem; font-weight: 700; color: var(--accent-emerald); margin-bottom: 0.5rem;">1. Utilità Decisionale Dimostrata</h4>
-            <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5;">
-              Attraverso la Decision Curve Analysis, alla soglia del 7% K-Risk evita <strong>43.2 esami urinari inutili ogni 100 persone</strong> rispetto a "testare tutti", garantendo un risparmio stimato di <strong>$2.116 per 100 soggetti</strong> senza compromettere la diagnosi dei casi gravi.
+            <h4 style="font-size: 0.9rem; font-weight: 700; color: var(--accent-emerald); margin-bottom: 0.5rem;" data-i18n="t6_acc1_title">1. Utilità Decisionale Dimostrata</h4>
+            <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5;" data-i18n="t6_acc1_p">
+              Attraverso la Decision Curve Analysis, alla soglia del 7% K-Risk evita <strong>43.2 esami urinari inutili ogni 100 persone</strong> rispetto a "testare tutti", garantendo un risparmio stimato di <strong>2.116 € per 100 soggetti</strong> senza compromettere la diagnosi dei casi gravi.
             </p>
           </div>
           <div class="card">
-            <h4 style="font-size: 0.9rem; font-weight: 700; color: var(--accent-blue-light); margin-bottom: 0.5rem;">2. Superiorità sul Benchmark SCORED</h4>
-            <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5;">
+            <h4 style="font-size: 0.9rem; font-weight: 700; color: var(--accent-blue-light); margin-bottom: 0.5rem;" data-i18n="t6_acc2_title">2. Superiorità sul Benchmark SCORED</h4>
+            <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5;" data-i18n="t6_acc2_p">
               K-Risk supera coerentemente il riferimento storico SCORED (Bang et al.) su AUROC (0.743 vs 0.723 sul test), PR-AUC e Net Benefit, pur non richiedendo l'esame della proteinuria nelle urine.
             </p>
           </div>
           <div class="card">
-            <h4 style="font-size: 0.9rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 0.5rem;">3. Tetto Informativo Spiegato con i Dati</h4>
-            <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5;">
+            <h4 style="font-size: 0.9rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 0.5rem;" data-i18n="t6_acc3_title">3. Tetto Informativo Spiegato con i Dati</h4>
+            <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5;" data-i18n="t6_acc3_p">
               Il plateau ad AUROC ~0.70–0.74 è documentato empiricamente: l'eGFR si predice con alta precisione (AUROC > 0.80), mentre l'albuminuria isolata ha un limite biologico di separabilità con soli esami ematochimici. Il controllo positivo (0.933) certifica l'efficacia algoritmica.
             </p>
           </div>
         </div>
       </section>
 
-    </div>
-  </main>
+        </div><!-- /.content-container -->
+      </main>
 
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="container footer-content">
-      <div>
-        <strong>K-Risk</strong> — Piattaforma Scientifica di Screening Non-Invasivo della Malattia Renale Cronica.
-      </div>
-      <div>
-        Hostabile su <code>GitHub Pages</code> | Dati e metriche certificati su repository ufficiale.
-      </div>
-    </div>
-  </footer>
+      <!-- Neo-Bento Footer inside Canvas -->
+      <footer class="neo-footer">
+        <div class="footer-left">
+          <span data-i18n="footer_left"><strong>K-Risk</strong> · Piattaforma Scientifica di Screening Non-Invasivo della Malattia Renale Cronica</span>
+        </div>
+        <div class="footer-center">
+          <a href="https://github.com/KekkoCoppola" target="_blank" rel="noopener noreferrer" class="footer-credit-chip" title="Profilo GitHub di Francesco Coppola">
+            <svg class="footer-gh-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+            </svg>
+            <span class="copy-symbol">&copy;</span>
+            <span class="credit-author">Francesco Coppola 2026</span>
+          </a>
+        </div>
+        <div class="footer-right">
+          <span data-i18n="footer_arch">Architettura Certificata & Protocollo Congelato</span> · <code class="footer-hash">b7d5f61</code>
+        </div>
+      </footer>
+
+    </div><!-- /.dashboard-canvas -->
+  </div><!-- /.dashboard-viewport -->
 
   <!-- Scripts -->
-  <script src="data.js"></script>
-  <script src="app.js"></script>
+  <script src="data.js?v=3"></script>
+  <script src="i18n.js?v=3"></script>
+  <script src="app.js?v=3"></script>
 </body>
 </html>

@@ -2,6 +2,7 @@
  * K-Risk Research Platform — Scientific SPA Engine
  * High-Density, Modular Visualizer & Evidence-Based Verification Engine
  * Powered by pure JavaScript and SVG Vector Graphics
+ * Supports Full Real-Time Internationalization (IT / EN)
  */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -14,7 +15,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- State Management ---
   const state = {
     currentTab: "tab-scope",
-    theme: localStorage.getItem("krisk_theme") || "dark",
+    theme: localStorage.getItem("krisk_theme") || "light",
+    lang: localStorage.getItem("krisk_lang") || "it",
+    metricFormat: localStorage.getItem("krisk_metric_format") || "decimal",
     screenshotMode: false,
     selectedDcaThreshold: 0.07,
     activeModelKey: "random_forest"
@@ -22,77 +25,151 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- Initial Setup ---
   initTheme();
+  initLanguageToggle();
   initNavigation();
-  initScopeView();
-  initPositioningView();
-  initCohortView();
-  initPhaseAView();
-  initPhaseBView();
-  initPhaseDView();
-  initFinalTestView();
-  initKeyboardShortcuts();
+  initTableFormatToggle();
+  applyLanguage(state.lang);
 
   // =========================================================================
-  // Theme & Screenshot Mode Handlers
+  // Theme Toggle (Dark / Light Mode)
   // =========================================================================
   function initTheme() {
-    if (state.theme === "paper") {
-      document.body.classList.add("paper-mode");
-      const btn = document.getElementById("btn-toggle-theme");
-      if (btn) btn.innerHTML = `<span>☀️</span> Modo Carta (Attivo)`;
-    }
+    const isLight = state.theme === "light";
+    document.body.classList.toggle("light-mode", isLight);
   }
 
-  const themeBtn = document.getElementById("btn-toggle-theme");
-  if (themeBtn) {
-    themeBtn.addEventListener("click", () => {
-      document.body.classList.toggle("paper-mode");
-      state.theme = document.body.classList.contains("paper-mode") ? "paper" : "dark";
+  const themeToggle = document.getElementById("btn-theme-toggle");
+  if (themeToggle) {
+    themeToggle.addEventListener("click", () => {
+      const isLight = document.body.classList.toggle("light-mode");
+      state.theme = isLight ? "light" : "dark";
       localStorage.setItem("krisk_theme", state.theme);
-      themeBtn.innerHTML = state.theme === "paper" ? `<span>☀️</span> Modo Carta (Attivo)` : `<span>🌙</span> Tema Dark`;
       renderAllCharts();
     });
   }
 
-  const screenshotBtn = document.getElementById("btn-screenshot-mode");
-  if (screenshotBtn) {
-    screenshotBtn.addEventListener("click", toggleScreenshotMode);
-  }
-
-  function toggleScreenshotMode() {
-    state.screenshotMode = !state.screenshotMode;
-    document.body.classList.toggle("screenshot-mode", state.screenshotMode);
-    
-    if (state.screenshotMode) {
-      alert("Modalità Cattura Figura ATTIVA:\n• Barra di navigazione temporaneamente nascosta\n• Didascalie numerate per pubblicazioni visibili\n• Premi 'ESC' per ripristinare la visualizzazione standard.");
+  // =========================================================================
+  // Language Toggle (Italian / English)
+  // =========================================================================
+  function initLanguageToggle() {
+    const langBtn = document.getElementById("btn-lang-toggle");
+    if (langBtn) {
+      langBtn.addEventListener("click", () => {
+        const nextLang = state.lang === "it" ? "en" : "it";
+        applyLanguage(nextLang);
+      });
     }
   }
 
-  function initKeyboardShortcuts() {
-    window.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && state.screenshotMode) {
-        toggleScreenshotMode();
+  function applyLanguage(lang) {
+    state.lang = lang;
+    localStorage.setItem("krisk_lang", lang);
+    document.documentElement.lang = lang;
+
+    // 1. Update Lang button appearance
+    const flagTarget = document.getElementById("lang-flag-target");
+    const labelTarget = document.getElementById("lang-label-target");
+    const langBtn = document.getElementById("btn-lang-toggle");
+
+    const ukFlagSvg = `<svg class="flag-icon" width="20" height="14" viewBox="0 0 60 40">
+      <clipPath id="uk-flag-clip"><rect width="60" height="40" rx="3"/></clipPath>
+      <g clip-path="url(#uk-flag-clip)">
+        <path d="M0 0v40h60V0z" fill="#012169"/>
+        <path d="M0 0l60 40m0-40L0 40" stroke="#fff" stroke-width="8"/>
+        <path d="M0 0l60 40m0-40L0 40" stroke="#c8102e" stroke-width="4"/>
+        <path d="M30 0v40M0 20h60" stroke="#fff" stroke-width="12"/>
+        <path d="M30 0v40M0 20h60" stroke="#c8102e" stroke-width="8"/>
+      </g>
+    </svg>`;
+
+    const itFlagSvg = `<svg class="flag-icon" width="20" height="14" viewBox="0 0 60 40">
+      <clipPath id="it-flag-clip"><rect width="60" height="40" rx="3"/></clipPath>
+      <g clip-path="url(#it-flag-clip)">
+        <rect width="20" height="40" x="0" fill="#009246"/>
+        <rect width="20" height="40" x="20" fill="#ffffff"/>
+        <rect width="20" height="40" x="40" fill="#ce2b37"/>
+      </g>
+    </svg>`;
+
+    // When viewing in Italian, the toggle shows the UK flag + EN (invitation to translate to English)
+    // When viewing in English, the toggle shows the Italian flag + IT (invitation to return to Italian)
+    if (lang === "it") {
+      if (flagTarget) flagTarget.innerHTML = ukFlagSvg;
+      if (labelTarget) labelTarget.textContent = "EN";
+      if (langBtn) {
+        langBtn.setAttribute("title", "Translate entire platform to English");
+        langBtn.setAttribute("aria-label", "Translate to English");
       }
-    });
+    } else {
+      if (flagTarget) flagTarget.innerHTML = itFlagSvg;
+      if (labelTarget) labelTarget.textContent = "IT";
+      if (langBtn) {
+        langBtn.setAttribute("title", "Traduci l'intera piattaforma in Italiano");
+        langBtn.setAttribute("aria-label", "Traduci in Italiano");
+      }
+    }
+
+    // 2. Translate static DOM elements
+    const dict = window.KRISK_I18N?.translations?.[lang];
+    if (dict) {
+      if (dict.page_title) document.title = dict.page_title;
+      const metaDesc = document.querySelector('meta[data-i18n-meta="page_description"]');
+      if (metaDesc && dict.page_description) {
+        metaDesc.setAttribute('content', dict.page_description);
+      }
+
+      document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.getAttribute("data-i18n");
+        if (dict[key] !== undefined) {
+          el.innerHTML = dict[key];
+        }
+      });
+
+      document.querySelectorAll("[data-i18n-title]").forEach(el => {
+        const key = el.getAttribute("data-i18n-title");
+        if (dict[key] !== undefined) {
+          el.setAttribute("title", dict[key]);
+        }
+      });
+    }
+
+    // 3. Re-render dynamic views
+    initScopeView();
+    initPositioningView();
+    initCohortView();
+    initPhaseAView();
+    initPhaseBView();
+    initPhaseDView();
+    initFinalTestView();
+    updateTableFormatButtons();
+    renderAllCharts();
   }
 
   // =========================================================================
   // Navigation
   // =========================================================================
   function initNavigation() {
-    const navButtons = document.querySelectorAll(".pipeline-step-btn");
+    const navButtons = document.querySelectorAll(".pipeline-step-btn, .pill-nav-item, .nav-step-col");
     navButtons.forEach(btn => {
-      btn.addEventListener("click", () => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
         const targetId = btn.getAttribute("data-tab");
-        switchTab(targetId);
+        if (targetId) switchTab(targetId);
       });
     });
   }
 
   function switchTab(tabId) {
     state.currentTab = tabId;
-    document.querySelectorAll(".pipeline-step-btn").forEach(btn => {
+    document.querySelectorAll(".pipeline-step-btn, .pill-nav-item").forEach(btn => {
       btn.classList.toggle("active", btn.getAttribute("data-tab") === tabId);
+    });
+    document.querySelectorAll(".nav-step-col").forEach(col => {
+      const isActive = col.getAttribute("data-tab") === tabId;
+      col.classList.toggle("active", isActive);
+      if (isActive && window.innerWidth <= 992) {
+        col.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+      }
     });
     document.querySelectorAll(".tab-pane").forEach(pane => {
       pane.classList.toggle("active", pane.id === tabId);
@@ -103,12 +180,64 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // =========================================================================
-  // Scope Section
+  // Table Metric Format Toggle (Decimale / Percentuale)
+  // =========================================================================
+  function initTableFormatToggle() {
+    updateTableFormatButtons();
+    const formatButtons = document.querySelectorAll(".btn-toggle-format");
+    formatButtons.forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        state.metricFormat = state.metricFormat === "percent" ? "decimal" : "percent";
+        localStorage.setItem("krisk_metric_format", state.metricFormat);
+        updateTableFormatButtons();
+        // Re-render all data tables
+        initPhaseAView();
+        initPhaseBView();
+        initPhaseDView();
+        initPositioningView();
+        initCohortView();
+      });
+    });
+  }
+
+  function updateTableFormatButtons() {
+    const isPct = state.metricFormat === "percent";
+    const isEn = state.lang === "en";
+    const decTitle = isEn ? "View values in decimal (0.00)" : "Visualizza valori in decimale (0.00)";
+    const pctTitle = isEn ? "View values in percent (%)" : "Visualizza valori in percentuale (%)";
+
+    document.querySelectorAll(".btn-toggle-format").forEach(btn => {
+      btn.classList.toggle("mode-percent", isPct);
+      btn.classList.toggle("mode-decimal", !isPct);
+      btn.setAttribute("title", isPct ? decTitle : pctTitle);
+      btn.setAttribute("aria-label", isPct ? decTitle : pctTitle);
+    });
+  }
+
+  // =========================================================================
+  // Section 00: Scope
   // =========================================================================
   function initScopeView() {
     const scopeContainer = document.getElementById("scope-details-target");
     if (!scopeContainer) return;
 
+    const langData = window.KRISK_I18N?.data?.[state.lang]?.scope_cards;
+    if (langData) {
+      scopeContainer.innerHTML = `
+        <div class="scope-grid">
+          ${langData.map(c => `
+            <div class="scope-item">
+              <h4>${c.title}</h4>
+              <p>${c.detail}</p>
+            </div>
+          `).join("")}
+        </div>
+      `;
+      return;
+    }
+
+    // Fallback to data.js
     scopeContainer.innerHTML = `
       <div class="scope-grid">
         <div class="scope-item">
@@ -140,16 +269,20 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // =========================================================================
-  // Section: Positioning & State of the Art
+  // Section 06: Positioning & State of the Art
   // =========================================================================
   function initPositioningView() {
-    // Continuum Schema
+    const isEn = state.lang === "en";
+    const posData = window.KRISK_I18N?.data?.[state.lang]?.positioning;
+
+    // Continuum Flow Schema
     const continuumContainer = document.getElementById("continuum-flow-target");
     if (continuumContainer) {
-      continuumContainer.innerHTML = data.positioning.continuum.map(node => `
+      const flow = posData?.continuum_flow || data.positioning.continuum;
+      continuumContainer.innerHTML = flow.map(node => `
         <div class="continuum-node ${node.highlight ? 'highlighted' : ''}">
           <div>
-            <span class="continuum-step-badge">Fase ${node.step}</span>
+            <span class="continuum-step-badge">${isEn ? 'Phase' : 'Fase'} ${node.step}</span>
             <h4>${node.title}</h4>
             <div class="node-context">${node.context}</div>
           </div>
@@ -161,33 +294,40 @@ document.addEventListener("DOMContentLoaded", () => {
     // State of Art Matrix Table
     const tableContainer = document.getElementById("state-of-art-table-target");
     if (tableContainer) {
-      tableContainer.innerHTML = data.positioning.state_of_art_matrix.map(m => `
+      const matrix = posData?.state_of_art_matrix || data.positioning.state_of_art_matrix;
+      const isPct = state.metricFormat === "percent";
+      tableContainer.innerHTML = matrix.map(m => {
+        const aurocNum = parseFloat(m.auroc);
+        const auroc = isPct && !isNaN(aurocNum) ? (aurocNum * 100).toFixed(1) + "%" : m.auroc;
+        return `
         <tr class="${m.status === 'krisk' ? 'highlight' : ''}">
           <td>
             <strong>${m.model}</strong>
-            ${m.status === 'krisk' ? '<span class="badge badge-success">Nostro Lavoro</span>' : ''}
+            ${m.status === 'krisk' ? '<span class="badge badge-success">K-Risk</span>' : ''}
           </td>
           <td style="font-family: var(--font-mono); font-size: 0.8rem;">${m.target}</td>
           <td>${m.renal_exams_used}</td>
-          <td class="num" style="font-weight: 700;">${m.auroc}</td>
+          <td class="num" style="font-weight: 700;">${auroc}</td>
           <td style="font-size: 0.82rem; color: var(--text-secondary);">${m.role}</td>
         </tr>
-      `).join("");
+      `;
+      }).join("");
     }
   }
 
   // =========================================================================
-  // Section 1: Cohort & Data Integrity
+  // Section 01: Cohort & Data Integrity
   // =========================================================================
   function initCohortView() {
     const container = document.getElementById("kdigo-grid-target");
     if (!container) return;
 
+    const isEn = state.lang === "en";
     const gfrHeaders = ["G1 (≥90)", "G2 (60-89)", "G3a (45-59)", "G3b (30-44)", "G4 (15-29)", "G5 (<15)"];
     const acrHeaders = ["A1 (<30)", "A2 (30-300)", "A3 (>300)"];
 
     let html = `<div class="kdigo-grid">`;
-    html += `<div class="kdigo-header-cell">eGFR \\ ACR</div>`;
+    html += `<div class="kdigo-header-cell">eGFR \ ACR</div>`;
     acrHeaders.forEach(acr => {
       html += `<div class="kdigo-header-cell">${acr}</div>`;
     });
@@ -195,18 +335,29 @@ document.addEventListener("DOMContentLoaded", () => {
     const gfrKeys = ["G1", "G2", "G3a", "G3b", "G4", "G5"];
     const acrKeys = ["A1", "A2", "A3"];
 
+    const riskLabels = {
+      it: { basso: "Basso", moderato: "Moderato", alto: "Alto", molto_alto: "Molto Alto" },
+      en: { basso: "Low", moderato: "Moderate", alto: "High", molto_alto: "Very High" }
+    };
+
     gfrKeys.forEach((gKey, idx) => {
       html += `<div class="kdigo-header-cell">${gfrHeaders[idx]}</div>`;
       acrKeys.forEach(aKey => {
         const item = data.cohort.kdigo_matrix.find(m => m.gfr === gKey && m.acr === aKey);
         const count = item ? item.count : 0;
-        const riskClass = item ? `risk-${item.risk.replace(" ", "_")}` : "risk-basso";
-        const riskLabel = item ? item.risk : "basso";
+        const rawRisk = item ? item.risk : "basso";
+        const riskKey = rawRisk.replace(" ", "_");
+        const riskClass = `risk-${riskKey}`;
+        const displayedRisk = riskLabels[state.lang]?.[riskKey] || rawRisk;
+
+        const titleText = isEn
+          ? `${gKey} × ${aKey} | ${displayedRisk.toUpperCase()} | Subjects: ${count}`
+          : `${gKey} × ${aKey} | ${displayedRisk.toUpperCase()} | Soggetti: ${count}`;
 
         html += `
-          <div class="kdigo-cell ${riskClass}" title="${gKey} × ${aKey} | ${riskLabel.toUpperCase()} | Soggetti: ${count}">
+          <div class="kdigo-cell ${riskClass}" title="${titleText}">
             <span class="cell-count">${count}</span>
-            <span class="cell-risk">${riskLabel}</span>
+            <span class="cell-risk">${displayedRisk}</span>
           </div>
         `;
       });
@@ -217,8 +368,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Render exclusions list
     const exclContainer = document.getElementById("leakage-exclusions-target");
-    if (exclContainer) {
-      exclContainer.innerHTML = data.leakage_guard.excluded_categories.map(cat => `
+    const leakCats = window.KRISK_I18N?.data?.[state.lang]?.leakage_guard?.excluded_categories || data.leakage_guard.excluded_categories;
+    if (exclContainer && leakCats) {
+      exclContainer.innerHTML = leakCats.map(cat => `
         <tr>
           <td><strong>${cat.name}</strong></td>
           <td class="num"><span class="badge badge-neutral">${cat.count} var</span></td>
@@ -231,39 +383,62 @@ document.addEventListener("DOMContentLoaded", () => {
     // Render imputation table
     const impContainer = document.getElementById("imputation-table-target");
     if (impContainer) {
-      impContainer.innerHTML = data.imputation.methods.map(m => `
+      const isPct = state.metricFormat === "percent";
+      const adoptedLabel = isEn ? "ADOPTED" : "ADOTTATO";
+      impContainer.innerHTML = data.imputation.methods.map(m => {
+        const prauc = isPct ? (m.prauc * 100).toFixed(2) + "%" : m.prauc.toFixed(4);
+        const auroc = isPct ? (m.auroc * 100).toFixed(2) + "%" : m.auroc.toFixed(4);
+        return `
         <tr class="${m.selected ? 'highlight' : ''}">
-          <td><strong>${m.name}</strong> ${m.selected ? '<span class="badge badge-success">ADOTTATO</span>' : ''}</td>
+          <td><strong>${m.name}</strong> ${m.selected ? `<span class="badge badge-success">${adoptedLabel}</span>` : ''}</td>
           <td class="num">${m.rmse.toFixed(4)} <span style="font-size:0.7rem; color:var(--text-muted);">±${m.rmse_se.toFixed(4)}</span></td>
           <td class="num">${m.mae.toFixed(4)}</td>
-          <td class="num">${m.prauc.toFixed(4)}</td>
-          <td class="num">${m.auroc.toFixed(4)}</td>
+          <td class="num">${prauc}</td>
+          <td class="num">${auroc}</td>
           <td class="num">${m.time_s.toFixed(1)}s</td>
         </tr>
-      `).join("");
+      `;
+      }).join("");
     }
   }
 
   // =========================================================================
-  // Section 2: Phase A (Screening Models & Interpretation)
+  // Section 02: Phase A (Screening Models & Interpretation)
   // =========================================================================
   function initPhaseAView() {
+    const isPct = state.metricFormat === "percent";
+    const phaseADescs = window.KRISK_I18N?.data?.[state.lang]?.phase_a_descriptions || {};
     const tableTarget = document.getElementById("phase-a-table-target");
     if (tableTarget) {
-      tableTarget.innerHTML = data.phase_a.models.map(m => `
+      tableTarget.innerHTML = data.phase_a.models.map(m => {
+        const oofAuc = isPct ? (m.oof_auc * 100).toFixed(1) + "%" : m.oof_auc.toFixed(3);
+        const oofCi = isPct 
+          ? `[${(m.oof_auc_ci[0] * 100).toFixed(1)}%-${(m.oof_auc_ci[1] * 100).toFixed(1)}%]`
+          : `[${m.oof_auc_ci[0].toFixed(3)}-${m.oof_auc_ci[1].toFixed(3)}]`;
+        const oofPrauc = isPct ? (m.oof_prauc * 100).toFixed(1) + "%" : m.oof_prauc.toFixed(3);
+        const testAuc = isPct ? (m.test_auc * 100).toFixed(1) + "%" : m.test_auc.toFixed(3);
+        const testCi = isPct
+          ? `[${(m.test_auc_ci[0] * 100).toFixed(1)}%-${(m.test_auc_ci[1] * 100).toFixed(1)}%]`
+          : `[${m.test_auc_ci[0].toFixed(3)}-${m.test_auc_ci[1].toFixed(3)}]`;
+        const spec = isPct ? (m.spec_at_90sens * 100).toFixed(1) + "%" : m.spec_at_90sens.toFixed(3);
+        const alertRate = isPct ? (m.alert_rate * 100).toFixed(1) + "%" : m.alert_rate.toFixed(3);
+        const desc = phaseADescs[m.name] || m.description;
+
+        return `
         <tr>
           <td>
             <strong>${m.name}</strong>
-            <div style="font-size: 0.75rem; color: var(--text-muted);">${m.description}</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">${desc}</div>
           </td>
-          <td class="num"><strong>${m.oof_auc.toFixed(3)}</strong> <span style="font-size: 0.7rem; color: var(--text-muted);">[${m.oof_auc_ci[0].toFixed(3)}-${m.oof_auc_ci[1].toFixed(3)}]</span></td>
-          <td class="num"><strong>${m.oof_prauc.toFixed(3)}</strong></td>
-          <td class="num highlight"><strong>${m.test_auc.toFixed(3)}</strong> <span style="font-size: 0.7rem; color: var(--text-muted);">[${m.test_auc_ci[0].toFixed(3)}-${m.test_auc_ci[1].toFixed(3)}]</span></td>
-          <td class="num">${(m.spec_at_90sens * 100).toFixed(1)}%</td>
-          <td class="num">${(m.alert_rate * 100).toFixed(1)}%</td>
+          <td class="num"><strong>${oofAuc}</strong> <span style="font-size: 0.7rem; color: var(--text-muted);">${oofCi}</span></td>
+          <td class="num"><strong>${oofPrauc}</strong></td>
+          <td class="num highlight"><strong>${testAuc}</strong> <span style="font-size: 0.7rem; color: var(--text-muted);">${testCi}</span></td>
+          <td class="num">${spec}</td>
+          <td class="num">${alertRate}</td>
           <td class="num"><span class="badge badge-neutral">${m.n_features}</span></td>
         </tr>
-      `).join("");
+      `;
+      }).join("");
     }
 
     const topFeatTarget = document.getElementById("top-features-target");
@@ -280,19 +455,24 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // =========================================================================
-  // Section 3: Phase B (The Imbalance Fallacy)
+  // Section 03: Phase B (The Imbalance Fallacy)
   // =========================================================================
   function initPhaseBView() {
+    const isPct = state.metricFormat === "percent";
     const tableTarget = document.getElementById("phase-b-comparison-target");
     if (tableTarget) {
       tableTarget.innerHTML = data.phase_b.naive_vs_real.map(r => {
         const isBaseline = r.technique.includes("none");
+        const rec = isPct ? (r.naive_recall * 100).toFixed(1) + "%" : r.naive_recall.toFixed(3);
+        const prec = isPct ? (r.naive_prec * 100).toFixed(1) + "%" : r.naive_prec.toFixed(3);
+        const spec = isPct ? (r.naive_spec * 100).toFixed(1) + "%" : r.naive_spec.toFixed(3);
+
         return `
           <tr class="${isBaseline ? 'highlight' : ''}">
             <td><strong>${r.technique}</strong> ${isBaseline ? '<span class="badge badge-neutral">Baseline</span>' : ''}</td>
-            <td class="num" style="color: ${r.naive_recall > 0.3 ? 'var(--accent-cyan)' : 'inherit'}; font-weight: 600;">${(r.naive_recall * 100).toFixed(1)}%</td>
-            <td class="num">${(r.naive_prec * 100).toFixed(1)}%</td>
-            <td class="num">${(r.naive_spec * 100).toFixed(1)}%</td>
+            <td class="num" style="color: ${r.naive_recall > 0.3 ? 'var(--accent-cyan)' : 'inherit'}; font-weight: 600;">${rec}</td>
+            <td class="num">${prec}</td>
+            <td class="num">${spec}</td>
             <td class="num" style="background: var(--bg-surface-elevated); font-weight: 700;">${r.severe_caught} / ${r.severe_total}</td>
             <td class="num" style="background: var(--bg-surface-elevated); font-weight: 600; color: ${r.diff > 0 ? 'var(--accent-emerald)' : r.diff < 0 ? 'var(--accent-rose)' : 'inherit'};">${r.diff}</td>
             <td class="num" style="background: var(--bg-surface-elevated); font-family: var(--font-mono);">${r.p_holm.toFixed(2)} <span class="badge badge-neutral" style="font-size:0.65rem;">n.s.</span></td>
@@ -303,32 +483,50 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // =========================================================================
-  // Section 4: Phase D (Ceiling Diagnostics)
+  // Section 04: Phase D (Ceiling Diagnostics)
   // =========================================================================
   function initPhaseDView() {
+    const isPct = state.metricFormat === "percent";
+    const isEn = state.lang === "en";
+    const outcomeText = isEn ? "SURPASSED: NO" : "SUPERATO: NO";
     const tableTarget = document.getElementById("phase-d-candidates-target");
     if (tableTarget) {
-      tableTarget.innerHTML = data.phase_d.candidates.map(c => `
+      tableTarget.innerHTML = data.phase_d.candidates.map(c => {
+        const auc = isPct ? (c.auc * 100).toFixed(2) + "%" : c.auc.toFixed(4);
+        const diffNum = parseFloat(c.diff);
+        const diff = isPct 
+          ? (diffNum >= 0 ? "+" : "") + (diffNum * 100).toFixed(2) + "%" 
+          : c.diff;
+        const ci = isPct
+          ? `[${(c.ci_low * 100).toFixed(2)}%, ${(c.ci_high * 100).toFixed(2)}%]`
+          : `[${c.ci_low.toFixed(4)}, ${c.ci_high.toFixed(4)}]`;
+
+        return `
         <tr>
           <td><strong>${c.name}</strong></td>
           <td><span class="badge badge-neutral">${c.type}</span></td>
-          <td class="num"><strong>${c.auc.toFixed(4)}</strong></td>
-          <td class="num" style="color: ${c.diff.startsWith('+') ? 'var(--accent-cyan)' : 'var(--accent-rose)'};">${c.diff}</td>
-          <td class="num" style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono);">[${c.ci_low.toFixed(4)}, ${c.ci_high.toFixed(4)}]</td>
+          <td class="num"><strong>${auc}</strong></td>
+          <td class="num" style="color: ${c.diff.startsWith('+') ? 'var(--accent-cyan)' : 'var(--accent-rose)'};">${diff}</td>
+          <td class="num" style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono);">${ci}</td>
           <td class="num" style="font-family: var(--font-mono);">${c.p_holm.toFixed(2)}</td>
-          <td style="text-align: center;"><span class="badge badge-danger">SUPERATO: NO</span></td>
+          <td style="text-align: center;"><span class="badge badge-danger">${outcomeText}</span></td>
         </tr>
-      `).join("");
+      `;
+      }).join("");
     }
   }
 
   // =========================================================================
-  // Section 5: Final Test Lockbox & Clinical Utility
+  // Section 05: Final Test Lockbox & Clinical Utility
   // =========================================================================
   function initFinalTestView() {
     const claimsTarget = document.getElementById("test-claims-target");
-    if (claimsTarget) {
-      claimsTarget.innerHTML = data.final_test.claims.map(c => `
+    const isEn = state.lang === "en";
+    const claims = window.KRISK_I18N?.data?.[state.lang]?.final_test?.claims;
+    const aPrioriText = isEn ? "A priori criterion:" : "Criterio a priori:";
+
+    if (claimsTarget && claims) {
+      claimsTarget.innerHTML = claims.map(c => `
         <div class="claim-card">
           <div class="claim-header">
             <div style="display: flex; align-items: center; gap: 0.6rem;">
@@ -338,7 +536,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <span class="badge badge-success">✓ ${c.verdict}</span>
           </div>
           <div class="claim-detail">${c.detail}</div>
-          <div class="claim-criterion"><strong>Criterio a priori:</strong> ${c.criterion}</div>
+          <div class="claim-criterion"><strong>${aPrioriText}</strong> ${c.criterion}</div>
         </div>
       `).join("");
     }
@@ -347,12 +545,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const slider = document.getElementById("dca-slider");
     const sliderDisplay = document.getElementById("slider-val-display");
     if (slider) {
-      slider.addEventListener("input", (e) => {
+      slider.oninput = (e) => {
         const val = parseFloat(e.target.value);
         state.selectedDcaThreshold = val;
-        sliderDisplay.textContent = `${(val * 100).toFixed(1)}%`;
+        if (sliderDisplay) sliderDisplay.textContent = `${(val * 100).toFixed(1)}%`;
         updateDcaDynamicMetrics(val);
-      });
+      };
       updateDcaDynamicMetrics(state.selectedDcaThreshold);
     }
   }
@@ -365,29 +563,44 @@ document.addEventListener("DOMContentLoaded", () => {
     const container = document.getElementById("dca-dynamic-stats");
     if (!container) return;
 
-    const savings = (closest.cost_savings_per_100).toLocaleString('it-IT', { style: 'currency', currency: 'EUR' }).replace('EUR', '$');
-    const costPerCase = (closest.cost_per_case).toLocaleString('it-IT', { style: 'currency', currency: 'EUR' }).replace('EUR', '$');
+    const isEn = state.lang === "en";
+    const savingsVal = Math.round(closest.cost_savings_per_100).toLocaleString(isEn ? 'en-US' : 'it-IT');
+    const costPerCaseVal = Math.round(closest.cost_per_case).toLocaleString(isEn ? 'en-US' : 'it-IT');
+
+    const clinicalMeaning = isEn
+      ? (threshold <= 0.05 ? "Pre-screening triage focus (High sensitivity)" :
+         threshold <= 0.10 ? "Recommended standard clinical practice" :
+         "Restricted resources / Low tolerance for false alerts")
+      : closest.clinical_meaning;
+
+    const card1Title = isEn ? "Decision Threshold (P<sub>t</sub>)" : "Soglia Decisionale (P<sub>t</sub>)";
+    const card2Title = isEn ? "Urinary Exams Spared / 100 pts" : "Esami Urinari Evitati / 100 sogg.";
+    const card2Sub = isEn ? "Compared to indiscriminate 'Test All' practice" : "Rispetto alla prassi indiscriminata 'Testare Tutti'";
+    const card3Title = isEn ? "Economic Savings / 100 pts" : "Risparmio Economico / 100 sogg.";
+    const card3Sub = isEn ? "Estimate based on 49 € per ACR test (Cusick 2023)" : "Stima basata su 49 € per test ACR (Cusick 2023)";
+    const card4Title = isEn ? "Cost per Confirmed Case" : "Costo per Caso Confermato";
+    const card4Sub = isEn ? `Observed clinical sensitivity: ${(closest.recall * 100).toFixed(1)}%` : `Sensibilità clinica osservata: ${(closest.recall * 100).toFixed(1)}%`;
 
     container.innerHTML = `
       <div class="card" style="border-left: 3px solid var(--accent-cyan);">
-        <div class="card-subtitle">Soglia Decisionale ($P_t$)</div>
+        <div class="card-subtitle">${card1Title}</div>
         <div style="font-size: 1.5rem; font-weight: 700; font-family: var(--font-mono); color: var(--accent-cyan); margin: 0.3rem 0;">${(threshold * 100).toFixed(1)}%</div>
-        <div style="font-size: 0.78rem; color: var(--text-muted);">${closest.clinical_meaning}</div>
+        <div style="font-size: 0.78rem; color: var(--text-muted);">${clinicalMeaning}</div>
       </div>
       <div class="card" style="border-left: 3px solid var(--accent-emerald);">
-        <div class="card-subtitle">Esami Urinari Evitati / 100 sogg.</div>
+        <div class="card-subtitle">${card2Title}</div>
         <div style="font-size: 1.5rem; font-weight: 700; font-family: var(--font-mono); color: var(--accent-emerald); margin: 0.3rem 0;">${closest.tests_avoided_per_100.toFixed(1)}</div>
-        <div style="font-size: 0.78rem; color: var(--text-muted);">Rispetto alla prassi indiscriminata 'Testare Tutti'</div>
+        <div style="font-size: 0.78rem; color: var(--text-muted);">${card2Sub}</div>
       </div>
       <div class="card" style="border-left: 3px solid var(--accent-amber);">
-        <div class="card-subtitle">Risparmio Economico / 100 sogg.</div>
-        <div style="font-size: 1.5rem; font-weight: 700; font-family: var(--font-mono); color: var(--accent-amber); margin: 0.3rem 0;">${savings}</div>
-        <div style="font-size: 0.78rem; color: var(--text-muted);">Stima basata su $49.00 per test ACR (Cusick 2023)</div>
+        <div class="card-subtitle">${card3Title}</div>
+        <div style="font-size: 1.5rem; font-weight: 700; font-family: var(--font-mono); color: var(--accent-amber); margin: 0.3rem 0;">${savingsVal} €</div>
+        <div style="font-size: 0.78rem; color: var(--text-muted);">${card3Sub}</div>
       </div>
       <div class="card" style="border-left: 3px solid var(--accent-blue-light);">
-        <div class="card-subtitle">Costo per Caso Confermato</div>
-        <div style="font-size: 1.5rem; font-weight: 700; font-family: var(--font-mono); color: var(--accent-blue-light); margin: 0.3rem 0;">${costPerCase}</div>
-        <div style="font-size: 0.78rem; color: var(--text-muted);">Sensibilità clinica osservata: ${(closest.recall * 100).toFixed(1)}%</div>
+        <div class="card-subtitle">${card4Title}</div>
+        <div style="font-size: 1.5rem; font-weight: 700; font-family: var(--font-mono); color: var(--accent-blue-light); margin: 0.3rem 0;">${costPerCaseVal} €</div>
+        <div style="font-size: 0.78rem; color: var(--text-muted);">${card4Sub}</div>
       </div>
     `;
   }
@@ -416,11 +629,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const container = document.getElementById("roc-chart-svg");
     if (!container) return;
 
+    const isEn = state.lang === "en";
     const w = 480, h = 300, pad = 45;
-    const isPaper = document.body.classList.contains("paper-mode");
-    const axisColor = isPaper ? "#64748b" : "#475569";
-    const gridColor = isPaper ? "#e2e8f0" : "#1e293b";
-    const textColor = isPaper ? "#0f172a" : "#cbd5e1";
+    const isLight = document.body.classList.contains("light-mode");
+    const axisColor = isLight ? "#64748b" : "#475569";
+    const gridColor = isLight ? "#e2e8f0" : "#1e293b";
+    const textColor = isLight ? "#0f172a" : "#cbd5e1";
 
     let svg = `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">`;
 
@@ -456,8 +670,11 @@ document.addEventListener("DOMContentLoaded", () => {
     svg += `<line x1="${pad}" y1="${h - pad}" x2="${w - 15}" y2="${h - pad}" stroke="${axisColor}" stroke-width="1.5"/>`;
     svg += `<line x1="${pad}" y1="${h - pad}" x2="${pad}" y2="${pad - 10}" stroke="${axisColor}" stroke-width="1.5"/>`;
 
-    svg += `<text x="${w / 2 + 10}" y="${h - 8}" fill="${textColor}" font-size="11" font-weight="600" text-anchor="middle">1 - Specificità (FPR)</text>`;
-    svg += `<text x="-${h / 2 - 10}" y="14" fill="${textColor}" font-size="11" font-weight="600" text-anchor="middle" transform="rotate(-90)">Sensibilità (TPR / Recall)</text>`;
+    const xLabel = isEn ? "1 - Specificity (FPR)" : "1 - Specificità (FPR)";
+    const yLabel = isEn ? "Sensitivity (TPR / Recall)" : "Sensibilità (TPR / Recall)";
+
+    svg += `<text x="${w / 2 + 10}" y="${h - 8}" fill="${textColor}" font-size="11" font-weight="600" text-anchor="middle">${xLabel}</text>`;
+    svg += `<text x="-${h / 2 - 10}" y="14" fill="${textColor}" font-size="11" font-weight="600" text-anchor="middle" transform="rotate(-90)">${yLabel}</text>`;
 
     svg += `</svg>`;
     container.innerHTML = svg;
@@ -468,11 +685,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const container = document.getElementById("dca-chart-svg");
     if (!container) return;
 
+    const isEn = state.lang === "en";
     const w = 520, h = 320, pad = 50;
-    const isPaper = document.body.classList.contains("paper-mode");
-    const axisColor = isPaper ? "#64748b" : "#475569";
-    const gridColor = isPaper ? "#e2e8f0" : "#1e293b";
-    const textColor = isPaper ? "#0f172a" : "#cbd5e1";
+    const isLight = document.body.classList.contains("light-mode");
+    const axisColor = isLight ? "#64748b" : "#475569";
+    const gridColor = isLight ? "#e2e8f0" : "#1e293b";
+    const textColor = isLight ? "#0f172a" : "#cbd5e1";
 
     const samples = data.clinical_utility.dca_curve_samples;
 
@@ -516,8 +734,11 @@ document.addEventListener("DOMContentLoaded", () => {
     svg += `<line x1="${pad}" y1="${h - pad}" x2="${w - 15}" y2="${h - pad}" stroke="${axisColor}" stroke-width="1.5"/>`;
     svg += `<line x1="${pad}" y1="${h - pad}" x2="${pad}" y2="${pad - 10}" stroke="${axisColor}" stroke-width="1.5"/>`;
 
-    svg += `<text x="${w / 2 + 10}" y="${h - 8}" fill="${textColor}" font-size="11" font-weight="600" text-anchor="middle">Soglia Decisionale Clinica (Threshold Probability Pt)</text>`;
-    svg += `<text x="-${h / 2 - 10}" y="14" fill="${textColor}" font-size="11" font-weight="600" text-anchor="middle" transform="rotate(-90)">Net Benefit (Vickers)</text>`;
+    const xLabel = isEn ? "Clinical Decision Threshold (Threshold Probability Pt)" : "Soglia Decisionale Clinica (Threshold Probability Pt)";
+    const yLabel = isEn ? "Standardized Net Benefit (Vickers)" : "Net Benefit (Vickers)";
+
+    svg += `<text x="${w / 2 + 10}" y="${h - 8}" fill="${textColor}" font-size="11" font-weight="600" text-anchor="middle">${xLabel}</text>`;
+    svg += `<text x="-${h / 2 - 10}" y="14" fill="${textColor}" font-size="11" font-weight="600" text-anchor="middle" transform="rotate(-90)">${yLabel}</text>`;
 
     svg += `</svg>`;
     container.innerHTML = svg;
@@ -528,12 +749,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const container = document.getElementById("forest-plot-svg");
     if (!container) return;
 
+    const isEn = state.lang === "en";
     const candidates = data.phase_d.candidates;
     const w = 540, h = 340, padL = 170, padR = 40, padT = 30, padB = 40;
-    const isPaper = document.body.classList.contains("paper-mode");
-    const axisColor = isPaper ? "#64748b" : "#475569";
-    const gridColor = isPaper ? "#e2e8f0" : "#1e293b";
-    const textColor = isPaper ? "#0f172a" : "#cbd5e1";
+    const isLight = document.body.classList.contains("light-mode");
+    const axisColor = isLight ? "#64748b" : "#475569";
+    const gridColor = isLight ? "#e2e8f0" : "#1e293b";
+    const textColor = isLight ? "#0f172a" : "#cbd5e1";
 
     const dMin = -0.035, dMax = 0.035;
     const mapX = (val) => padL + ((val - dMin) / (dMax - dMin)) * (w - padL - padR);
@@ -545,8 +767,9 @@ document.addEventListener("DOMContentLoaded", () => {
     svg += `<text x="${zeroX}" y="${padT - 8}" fill="${textColor}" font-size="9" font-family="monospace" text-anchor="middle">Baseline RF (0.0)</text>`;
 
     const sigX = mapX(0.01);
+    const ruleLabel = isEn ? "+0.01 Rule" : "+0.01 Regola";
     svg += `<line x1="${sigX}" y1="${padT}" x2="${sigX}" y2="${h - padB}" stroke="var(--accent-rose)" stroke-width="1" stroke-dasharray="3,3"/>`;
-    svg += `<text x="${sigX}" y="${padT - 8}" fill="var(--accent-rose)" font-size="8" font-family="monospace" text-anchor="middle">+0.01 Regola</text>`;
+    svg += `<text x="${sigX}" y="${padT - 8}" fill="var(--accent-rose)" font-size="8" font-family="monospace" text-anchor="middle">${ruleLabel}</text>`;
 
     const rowH = (h - padT - padB) / candidates.length;
 
@@ -574,7 +797,10 @@ document.addEventListener("DOMContentLoaded", () => {
       svg += `<text x="${x}" y="${h - padB + 16}" fill="${textColor}" font-size="9" font-family="monospace" text-anchor="middle">${val > 0 ? '+' : ''}${val.toFixed(2)}</text>`;
     });
 
-    svg += `<text x="${padL + (w - padL - padR)/2}" y="${h - 6}" fill="${textColor}" font-size="10" font-weight="600" text-anchor="middle">Differenza AUROC corretta di Nadeau-Bengio (IC 95%)</text>`;
+    const axisTitle = isEn 
+      ? "Nadeau-Bengio Adjusted AUROC Difference (95% CI)" 
+      : "Differenza AUROC corretta di Nadeau-Bengio (IC 95%)";
+    svg += `<text x="${padL + (w - padL - padR)/2}" y="${h - 6}" fill="${textColor}" font-size="10" font-weight="600" text-anchor="middle">${axisTitle}</text>`;
 
     svg += `</svg>`;
     container.innerHTML = svg;
