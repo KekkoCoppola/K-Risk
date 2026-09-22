@@ -110,7 +110,7 @@ window.KRISK_DATA = {
       },
       {
         step: 2,
-        title: "K-Risk (Nostro Modello)",
+        title: "K-Risk (Modello di Triage)",
         context: "Triage Opportunistico di Primo Livello",
         action: "0 esami renali. Seleziona chi inviare al laboratorio",
         highlight: true
@@ -130,7 +130,7 @@ window.KRISK_DATA = {
     ],
     state_of_art_matrix: [
       {
-        model: "K-Risk (Nostro Lavoro)",
+        model: "K-Risk",
         target: "Composito KDIGO (eGFR < 60 ∨ ACR ≥ 30)",
         renal_exams_used: "ZERO (Esclusi per costruzione)",
         auroc: "0.714 – 0.743",
@@ -431,5 +431,80 @@ window.KRISK_DATA = {
       xgboost: 56.3,
       lr_scored: 54.9
     }
+  },
+
+  positioning: {
+    continuum: [
+      {
+        step: "1",
+        title: "Popolazione Asintomatica",
+        context: "Cure primarie, medicina generale, checkup lavorativi e territoriali.",
+        action: "Nessun sintomo renale evidente. Gli esami urinari specialistici (ACR) non vengono prescritti nel 90% dei casi non diabetici.",
+        highlight: false
+      },
+      {
+        step: "2",
+        title: "K-Risk: Pre-screening Non-Invasivo",
+        context: "Algoritmo ML di triage basato esclusivamente su anagrafica, parametri clinici ed ematochimici ordinari.",
+        action: "Stima il rischio KDIGO senza richiedere esami delle urine o creatinina. Stabilisce la priorità di invio al laboratorio, evitando oltre il 43% di test inutili.",
+        highlight: true
+      },
+      {
+        step: "3",
+        title: "Laboratorio di 2° Livello (Conferma)",
+        context: "Prescrizione mirata degli esami specialistici solo ai soggetti ad alto rischio prioritario.",
+        action: "Esecuzione di Creatinina sierica (eGFR CKD-EPI) e dosaggio microalbuminuria su urine del mattino (ACR). Conferma diagnostica KDIGO a 3 mesi.",
+        highlight: false
+      },
+      {
+        step: "4",
+        title: "Prognosi & Gestione Nefrologica",
+        context: "Pazienti con malattia renale cronica accertata (stadi G1–G5, A1–A3).",
+        action: "Applicazione di modelli prognostici specialistici (es. KFRE di Tangri et al. per il rischio dialisi a 2-5 anni) e inizio terapie nefroprotettive (SGLT2i, RAS-bloccanti).",
+        highlight: false
+      }
+    ],
+    state_of_art_matrix: [
+      {
+        model: "K-Risk (Random Forest / Logistic)",
+        target: "eGFR < 60 O ACR ≥ 30 (Composito KDIGO)",
+        renal_exams_used: "Nessuno (Zero esami renali)",
+        auroc: "0.743 (Test) / 0.703 (CV)",
+        role: "Triage di primo livello per la popolazione asintomatica senza richiedere esami urinari specialistici.",
+        status: "krisk"
+      },
+      {
+        model: "SCORED (Bang et al. 2007)",
+        target: "eGFR < 60 ml/min/1.73 m²",
+        renal_exams_used: "Dipstick Proteinuria (Urine)",
+        auroc: "0.723 (Ristimato) / 0.710 (ARIC)",
+        role: "Benchmark storico per lo screening. Include la proteinuria tra i predittori, richiedendo un esame delle urine.",
+        status: "competitor"
+      },
+      {
+        model: "MERWACS (Yoo et al. 2026)",
+        target: "CKD incidente / prevalente",
+        renal_exams_used: "Nessuno (Dati di routine)",
+        auroc: "0.710 – 0.730",
+        role: "Modello su coorte asiatica limitato a soggetti di età ≥ 50 anni. Privo di analisi di utilità clinica formale (DCA).",
+        status: "competitor"
+      },
+      {
+        model: "Bragg-Gresham et al. 2025",
+        target: "Albuminuria persistente",
+        renal_exams_used: "Creatinina sierica & eGFR pregresso",
+        auroc: "0.752 (Coorte NHANES)",
+        role: "Non applicabile come pre-screening non-invasivo: include la creatinina e l'eGFR pregresso tra i predittori.",
+        status: "competitor"
+      },
+      {
+        model: "KFRE (Tangri et al. 2016)",
+        target: "Insufficienza renale terminale (ESKD)",
+        renal_exams_used: "eGFR calcolato + ACR urinario",
+        auroc: "0.850 – 0.900",
+        role: "Modello prognostico specialistico a valle per pazienti con CKD già diagnosticata (stadi 3–5). Non è un modello di screening.",
+        status: "downstream"
+      }
+    ]
   }
 };
