@@ -10,9 +10,9 @@ Documento di sintesi metodologica, clinica e bibliografica ad uso della tesi. De
 
 1. **Serve a qualcosa, e lo dimostra con la misura giusta.** Con la decision curve analysis, alla soglia del 7% il modello evita **9–13 esami inutili ogni 100 persone** rispetto a "testare tutti", a parità di casi trovati; al 10% ne evita 25–28 (sezione 5). Le revisioni recenti segnalano che i modelli di CKD per la comunità quasi mai riportano un'analisi di utilità clinica (Haris et al. 2024).
 2. **Batte SCORED, di poco ma in modo coerente.** È superiore su tutte e quattro le misure (AUROC, PR-AUC, esami necessari a parità di sensibilità, net benefit), senza differenze statisticamente significative. Il tri-ensemble su 21 variabili, con selezione verificata dentro ogni fold, ottiene le stesse prestazioni della Random Forest con meno di un terzo delle variabili ed è il migliore sul piano operativo: 7,8 esami in meno ogni 100 persone rispetto a SCORED per trovare l'85% dei casi (sezione 4).
-3. **Il tetto di prestazione è spiegato con i dati, non ipotizzato.** L'eGFR < 60 si riconosce bene (AUROC 0,81–0,86), l'albuminuria no (0,67–0,69). La letteratura mostra lo stesso schema (sezione 6).
+3. **Il tetto di prestazione è spiegato con i dati, non ipotizzato.** L'eGFR < 60 si riconosce bene (AUROC 0,80–0,86), l'albuminuria no (0,67–0,69). La letteratura mostra lo stesso schema (sezione 6).
 4. **Non c'è leakage, ed è verificato.** Esami renali esclusi per costruzione e bloccati da un controllo automatico; controllo positivo con l'albumina urinaria a AUROC 0,933: la pipeline impara quando l'informazione c'è (sezione 7).
-5. **Rigore metodologico da articolo.** Protocolli scritti prima dei risultati, validazione incrociata annidata, test set mai toccato, 143 test automatici, revisioni indipendenti del codice.
+5. **Rigore metodologico da articolo.** Protocolli scritti prima dei risultati, validazione incrociata annidata, test set mai toccato, 170 test automatici, revisioni indipendenti del codice.
 6. **Quattro "risultati apparenti" smascherati.** La soglia 0,5 che gonfia il recall dal 2% al 61%, la PR-AUC dei diabetici che sembra doppia, la pendenza di calibrazione "media 1,02" che nasconde due errori opposti, e la selezione delle variabili fatta su tutti i dati che porta l'AUROC da 0,703 a 0,716 e rende "significativo" un vantaggio che non lo è (sezione 7).
 
 ---
@@ -178,7 +178,7 @@ Per trovare il 73% dei casi di albuminuria fra i non diabetici servono 12–22 p
 
 La vecchia versione di questo documento attribuiva il tetto di AUROC 0,70–0,75 a ragioni biologiche non documentate. Il progetto ora ha prove dirette.
 
-1. **Il limite è l'albuminuria.** Con le stesse previsioni, i positivi per eGFR < 60 si distinguono dai negativi con AUROC 0,81–0,86; i positivi per sola albuminuria con 0,67–0,69. Il bersaglio è per il 91% albuminuria (362 + 25 casi su 425 nel training). Lo stesso schema compare in letteratura (sezione 2).
+1. **Il limite è l'albuminuria.** Con le stesse previsioni, i positivi per eGFR < 60 si distinguono dai negativi con AUROC 0,80–0,86; i positivi per sola albuminuria con 0,67–0,69. Il bersaglio è per il 91% albuminuria (362 + 25 casi su 425 nel training). Lo stesso schema compare in letteratura (sezione 2).
 2. **Non è la tecnica.** Dieci strategie diverse nella Fase D (ensemble, NaN gestiti dall'algoritmo, spazio degli iperparametri allargato, bersaglio scomposto, CatBoost, LightGBM, EBM, TabPFN…) restano fra 0,692 e 0,710.
 3. **Non sono i dati che mancano.** Dal 60% al 100% del training l'AUROC sale di 0,006–0,008: più soggetti aiuterebbero poco.
 4. **La pipeline funziona.** Aggiungendo l'albumina urinaria l'AUROC sale a 0,933: quando l'informazione c'è, il modello la trova.
@@ -202,7 +202,7 @@ In sintesi: con esami del sangue di routine e un'albuminuria misurata su un solo
 - **Rischio di bias**: nei confronti ad alto rischio di bias il machine learning sembra migliore della logistica, in quelli a basso rischio no (Christodoulou et al. 2019).
 
 ### Metodo
-Validazione incrociata annidata 5 × 5 stratificata; iperparametri scelti solo sui fold interni; soglie, fasce e regole di decisione scritte nel Notepad prima di calcolare; intervalli di confidenza per ogni stima; 143 test automatici; revisioni indipendenti del codice per ogni fase.
+Validazione incrociata annidata 5 × 5 stratificata; iperparametri scelti solo sui fold interni; soglie, fasce e regole di decisione scritte nel Notepad prima di calcolare; intervalli di confidenza per ogni stima; 170 test automatici; revisioni indipendenti del codice per ogni fase.
 
 ### Quattro risultati apparenti, misurati
 1. **Fase B**: alla soglia 0,5 le tecniche di bilanciamento portano il recall dal 2% al 61%, ma a parità di sensibilità non riconoscono un solo caso grave in più.

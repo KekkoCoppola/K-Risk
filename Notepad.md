@@ -1464,6 +1464,51 @@ Quelli dichiarati nel protocollo, più due emersi dai risultati:
 
 ---
 
+## Fase D — ricerca del tetto di prestazione (21/09/2026)
+**Dichiarazione**: analisi post-hoc, decisa dopo aver visto le Fasi A–C per rispondere alla domanda "si poteva fare meglio?"; va letta come esplorativa. Regola di decisione, candidati e diagnostiche sono stati scritti in `configs/config.yaml` (blocco `phase_d`, commit `b51f00a`) **prima di qualsiasi calcolo**. Stessi fold esterni della Fase A; il test set non viene letto. Prima dei candidati è stato fatto un audit riga per riga della pipeline, controllato da un revisore indipendente: nessun leakage, imputazione e bilanciamento stimati solo dentro i fold, test set mai letto dal codice dei modelli.
+
+### Protocollo
+- **riferimenti**: logistica penalizzata, Random Forest e XGBoost con profondità 1–12 (Fase A)
+- **regola**: un candidato migliora se, contro il riferimento con AUROC media sui fold più alta (Random Forest, 0,708), la differenza di AUROC è ≥ 0,01, il limite inferiore dell'IC 95% di Nadeau-Bengio è > 0 e il p di Holm fra i candidati è < 0,05. Chi la supera va ripetuto su 3 partizioni diverse prima di essere adottato
+- **metriche**: AUROC, PR-AUC, specificità a sensibilità 0,90
+- **candidati** (10, più il tri-ensemble aggiunto il 22/09/2026, sezione successiva): media dei tre riferimenti; XGBoost sui dati non imputati (valori mancanti gestiti dall'algoritmo); XGBoost con spazio allargato (`min_child_weight`, `gamma`, 100 tentativi); bersaglio scomposto (un XGBoost per l'albuminuria e uno per l'eGFR < 60, probabilità combinate); CatBoost; LightGBM; EBM; TabPFN v2; XGBoost senza pruner; logistica penalizzata con tutte le colonne standardizzate
+- **diagnostiche**, non candidati: controllo positivo (XGBoost con l'albumina urinaria fra le feature), curva di apprendimento (dal 20% al 100% del training di ogni fold), qualità dell'etichetta (creatinina urinaria per giornata di raccolta; AUROC per componente del bersaglio)
+
+### Risultati (`analytics/phase_d/`, figure 01–04)
+
+| modello | AUROC (IC 95%) | PR-AUC | specificità a sens. 0,90 | Δ AUROC contro RF (IC 95%) |
+|---|---|---|---|---|
+| Random Forest (riferimento) | 0,703 (0,676–0,731) | 0,246 | 0,232 | — |
+| logistica penalizzata (riferimento) | 0,697 (0,669–0,725) | 0,242 | 0,223 | — |
+| XGBoost profondità 1–12 (riferimento) | 0,696 (0,668–0,724) | 0,250 | 0,256 | — |
+| TabPFN v2 | 0,710 (0,682–0,737) | 0,253 | 0,231 | +0,009 (−0,014; +0,032) |
+| ensemble (media dei 3) | 0,708 (0,680–0,735) | 0,258 | 0,253 | +0,002 (−0,009; +0,013) |
+| tri-ensemble, 21 variabili | 0,703 (0,676–0,731) | 0,252 | 0,267 | −0,002 (−0,025; +0,020) |
+| bersaglio scomposto | 0,702 (0,674–0,729) | 0,260 | 0,243 | −0,001 (−0,015; +0,013) |
+| XGBoost, NaN nativi | 0,701 (0,673–0,729) | 0,250 | 0,256 | −0,001 (−0,015; +0,012) |
+| LightGBM | 0,701 (0,674–0,728) | 0,246 | 0,247 | −0,001 (−0,023; +0,022) |
+| logistica, tutto standardizzato | 0,696 (0,669–0,724) | 0,250 | 0,248 | −0,011 (−0,060; +0,039) |
+| CatBoost | 0,695 (0,667–0,723) | 0,240 | 0,240 | −0,008 (−0,030; +0,014) |
+| XGBoost senza pruner | 0,695 (0,667–0,723) | 0,249 | 0,239 | −0,011 (−0,030; +0,009) |
+| XGBoost, spazio allargato | 0,693 (0,665–0,721) | 0,244 | 0,233 | −0,009 (−0,027; +0,010) |
+| EBM | 0,692 (0,664–0,720) | 0,257 | 0,233 | −0,009 (−0,020; +0,002) |
+
+- **nessun candidato supera la regola** (p di Holm fra 0,99 e 1,00): strategie molto diverse restano fra 0,692 e 0,710. TabPFN ha la stima più alta ma resta sotto la soglia di rilevanza, con un intervallo che comprende lo zero
+
+**Diagnostiche**
+- **controllo positivo**: aggiungendo l'albumina urinaria l'AUROC sale a 0,933 (0,917–0,949). La pipeline impara quando l'informazione c'è
+- **curva di apprendimento**: dal 60% al 100% del training l'AUROC sale da 0,694 a 0,700 (logistica) e da 0,690 a 0,698 (XGBoost). Più soggetti aiuterebbero poco
+- **per componente del bersaglio**: i positivi per eGFR < 60 (63 nel training) si distinguono dai negativi con AUROC 0,81–0,84 nei riferimenti (0,80–0,86 su tutti i modelli); i positivi per sola albuminuria (362) con 0,67–0,69. **Il limite è l'albuminuria**, che è presente nel 91% dei positivi
+- **qualità dell'etichetta**: per giornata di raccolta, dove la creatinina urinaria mediana è bassa la quota di ACR ≥ 30 sale (rho di Spearman −0,70, p = 6·10⁻⁷), mentre l'albumina urinaria non segue (rho +0,16): l'ACR sale perché scende il denominatore. Nelle giornate con creatinina urinaria bassa l'AUROC non è peggiore (0,71–0,73 contro 0,69), quindi l'anomalia non spiega le prestazioni; va dichiarata insieme alle unità di `UCRE` e `UmALB`, non documentate
+
+**Letteratura** (verificata il 22/09/2026, dettaglio in `docs/verifica_stato_arte.md`)
+- modelli per la sola albuminuria senza esami: C 0,709–0,714 (Muntner et al. 2011) e 0,728–0,761 (Tanner et al. 2015); con eGFR, HbA1c, HDL e acido urico fra i predittori 0,752 (Bragg-Gresham et al. 2025); nel diabete tipo 2, anche con la creatinina sierica, 0,61–0,67 (Khitan et al. 2021)
+- un ACR su campione singolo è un'etichetta rumorosa: solo il 43,5% degli ACR ≥ 30 su urina casuale viene confermato sulla prima urina del mattino (Saydah et al. 2013); variabilità intra-individuale del 48,8% nel diabete tipo 2 (Rasaratnam et al. 2024); con etichette rumorose l'AUROC misurata si schiaccia verso 0,5 anche per un modello perfetto (Menon et al. 2015)
+
+**Sintesi**: con esami del sangue di routine e un ACR da campione singolo il tetto è intorno a 0,70–0,71. Il limite sta nell'informazione (l'albuminuria), non nel metodo.
+
+---
+
 ## Fase D — candidato aggiunto: tri-ensemble su 21 variabili (22/09/2026)
 **Perché.** `valorizzazione_tesi.md` citava un "tri-ensemble sulle 21 variabili più importanti" con AUROC 0,717 e PR-AUC 0,273, stimato in un'analisi preliminare di cui nel repository non c'erano né codice né tabelle. Su richiesta dell'utente è stato registrato come candidato della Fase D, **in `configs/config.yaml` prima di scrivere il codice e di calcolarlo**, con la stessa regola di decisione degli altri candidati.
 
@@ -1555,7 +1600,7 @@ Tempo stimato: un giorno di lavoro, più qualche minuto di calcolo.
 
 ## Indice delle figure
 
-Rigenerare con `python -m src.analytics.dataset_overview`, `python -m src.analytics.split_report`, (dopo `python -m src.data.imputation`) `python -m src.analytics.preprocessing_report` e (dopo `python -m src.models.evaluation` e `python -m src.models.interpretation`) `python -m src.analytics.phase_a_report`. Le figure della Fase B: `python -m src.analytics.phase_b_report` (dopo `python -m src.models.evaluation_b`). Le figure della Fase C: `python -m src.analytics.phase_c_report` (dopo `python -m src.models.phase_c`). Le figure del blocco qualità e utilità clinica: `python -m src.analytics.quality_report` (dopo `python -m src.models.clinical_utility`).
+Rigenerare con `python -m src.analytics.dataset_overview`, `python -m src.analytics.split_report`, (dopo `python -m src.data.imputation`) `python -m src.analytics.preprocessing_report` e (dopo `python -m src.models.evaluation` e `python -m src.models.interpretation`) `python -m src.analytics.phase_a_report`. Le figure della Fase B: `python -m src.analytics.phase_b_report` (dopo `python -m src.models.evaluation_b`). Le figure della Fase C: `python -m src.analytics.phase_c_report` (dopo `python -m src.models.phase_c`). Le figure della Fase D: `python -m src.analytics.phase_d_report` (dopo `python -m src.models.phase_d --evaluate`). Le figure del blocco qualità e utilità clinica: `python -m src.analytics.quality_report` (dopo `python -m src.models.clinical_utility`).
 
 | file | cosa mostra | sezione |
 |------|-------------|---------|
@@ -1593,6 +1638,10 @@ Rigenerare con `python -m src.analytics.dataset_overview`, `python -m src.analyt
 | `analytics/phase_b/06_kappa.png` | kappa pesato fasce/livelli per tecnica e modello | Fase B — risultati |
 | `analytics/phase_c/01_discrimination_diabetici.png` | AUC e PR-AUC con IC: diabetici, non diabetici e training completo; per la PR-AUC la prevalenza di ciascun gruppo è la linea di riferimento | Fase C — protocollo |
 | `analytics/phase_c/02_severe_cases.png` | casi gravi riconosciuti su 16 fra i diabetici alla soglia globale fissa, per modello e braccio, con IC di Wilson | Fase C — protocollo |
+| `analytics/phase_d/01_candidates.png` | AUROC dei candidati della Fase D con IC di DeLong e differenza contro Random Forest con IC di Nadeau-Bengio e soglia di rilevanza | Fase D — ricerca del tetto |
+| `analytics/phase_d/02_learning_curve.png` | curva di apprendimento di logistica penalizzata e XGBoost (20–100% del training di ogni fold) | Fase D — diagnostiche |
+| `analytics/phase_d/03_urine_creatinine_by_day.png` | per giornata di raccolta: creatinina urinaria mediana contro quota di ACR ≥ 30 e contro albumina urinaria mediana | Fase D — qualità dell'etichetta |
+| `analytics/phase_d/04_label_quality.png` | AUROC per componente del bersaglio (eGFR < 60, sola albuminuria) e per gruppo di giornate | Fase D — diagnostiche |
 | `analytics/quality/01_decision_curve.png` | decision curve su tutto il training (soglie 2–20%) contro "testare tutti" e "non testare nessuno"; a destra esami inutili evitati ogni 100 | Qualità e utilità clinica — risultati, punto 1 |
 | `analytics/quality/02_decision_curve_subgroups.png` | decision curve dentro diabetici e non diabetici, ciascuno contro il proprio "testare tutti" (scale diverse di proposito) | punto 2 |
 | `analytics/quality/03_costs.png` | costo del test ACR per caso trovato e costo di ogni caso in più trovato testando tutti ($49 a test) | punto 7 |
@@ -1788,6 +1837,17 @@ Verificate su Crossref il 20/09/2026 (DOI, titolo, autori, rivista, anno). Testo
 - **Collins et al. 2024 (TRIPOD+AI)** — Collins G.S., Moons K.G.M., Dhiman P., Riley R.D., Beam A.L., Van Calster B., et al. *TRIPOD+AI statement: updated guidance for reporting clinical prediction models that use regression or machine learning methods.* BMJ 385:e078378 (2024). doi:10.1136/bmj-2023-078378. Item 23a: performance nei sottogruppi **con intervalli di confidenza**
 - **Riley et al. 2024 (parte 3)** — Riley R.D., Snell K.I.E., Archer L., Ensor J., Debray T.P.A., Van Calster B., van Smeden M., Collins G.S. *Evaluation of clinical prediction models (part 3): calculating the sample size required for an external validation study.* BMJ 384:e074821 (2024). doi:10.1136/bmj-2023-074821. **Fonte della scelta di non fare test formali**: servono almeno 100 eventi e 100 non-eventi per stimare la c-statistic con precisione accettabile; il sottogruppo ne ha 68
 - **Vickers & Holland 2021** — Vickers A.J., Holland F. *Decision curve analysis to evaluate the clinical benefit of prediction models.* Spine J 21(10):1643–1648 (2021). doi:10.1016/j.spinee.2021.02.024. A supporto: la soglia riflette il compromesso clinico fra danni e benefici, non una quantità stimata dai dati
+
+### Fase D: tetto di prestazione e qualità dell'etichetta
+Verificate il 22/09/2026 (Crossref, PubMed, sito dell'editore; dettaglio in `docs/verifica_stato_arte.md`). Abstract letto per Muntner, Tanner, Saydah, Rasaratnam, Hollmann, Ambroise; testo completo per Khitan; pagina degli atti per Menon.
+- **Muntner et al. 2011** — Muntner P., Woodward M., Carson A.P., et al. *Am J Kidney Dis* 58(2):196–205 (2011). doi:10.1053/j.ajkd.2011.01.027 — albuminuria senza esami, 8 domande, C 0,709–0,714
+- **Tanner et al. 2015** — Tanner R.M., Woodward M., Peralta C., et al. *Ethn Dis* 25(4):427–434 (2015). doi:10.18865/ed.25.4.427 — stesso strumento in MESA, C 0,728–0,761
+- **Khitan et al. 2021** — Khitan Z., Nath T., Santhanam P. *J Clin Hypertens* 23(12):2137–2145 (2021). doi:10.1111/jch.14397 — albuminuria nel diabete tipo 2, con esami del sangue compresa la creatinina, AUC 0,61–0,67
+- **Saydah et al. 2013** — Saydah S.H., Pavkov M.E., Zhang C., et al. *Clin Chem* 59(4):675–683 (2013). doi:10.1373/clinchem.2012.195644 — il 43,5% degli ACR ≥ 30 su urina casuale confermato sulla prima urina del mattino
+- **Rasaratnam et al. 2024** — Rasaratnam N., Salim A., Blackberry I., et al. *Am J Kidney Dis* 84(1):8–17.e1 (2024). doi:10.1053/j.ajkd.2023.12.018 — variabilità intra-individuale dell'ACR 48,8% nel diabete tipo 2
+- **Menon et al. 2015** — Menon A.K., van Rooyen B., Ong C.S., Williamson R.C. *Learning from corrupted binary labels via class-probability estimation.* ICML 2015, PMLR 37:125–134 — etichette rumorose e AUROC
+- **Hollmann et al. 2025** — Hollmann N., Müller S., Purucker L., et al. *Accurate predictions on small data with a tabular foundation model.* Nature 637(8045):319–326 (2025). doi:10.1038/s41586-024-08328-6 — TabPFN
+- **Ambroise & McLachlan 2002** — Ambroise C., McLachlan G.J. *Selection bias in gene extraction on the basis of microarray gene-expression data.* PNAS 99(10):6562–6566 (2002). doi:10.1073/pnas.102102699 — distorsione da selezione delle variabili fuori dalla validazione
 
 ### Utilità clinica e misure di qualità (post-hoc)
 Verificate su Crossref il 22/09/2026 (DOI, titolo, autori, rivista, anno). Testo completo letto: Bragg-Gresham et al. 2024 (PMC), Benitez-Aurioles et al. 2024 (arXiv), Vickers, van Calster & Steyerberg 2019 e Vickers et al. 2023 (PMC, accesso aperto); Cusick et al. 2023 letto nel testo completo il 20/09/2026. Solo metadati: Harrell 2015 (libro). Servono anche Vickers & Elkin 2006, Van Calster et al. 2016 e 2019 (sezioni Fase A e Fase B), Van Calster et al. 2025, Matos et al. 2026 e TRIPOD+AI (sezione Fase C); di Van Calster et al. 2019 il testo completo è stato letto il 22/09/2026 (PMC).
