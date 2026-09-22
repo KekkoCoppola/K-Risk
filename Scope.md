@@ -4,7 +4,7 @@
 Allenare modelli di classificazione che, **senza esami renali**, stimino chi presenta marcatori di malattia renale cronica, confrontare le stime con la stratificazione clinica **KDIGO** e misurare quanto le tecniche di **data augmentation** migliorano il riconoscimento dei casi più gravi.
 
 ## Dati
-- screening metabolico di popolazione, Cina 2012: 5.922 soggetti, 190 variabili (dataset pubblico, CC BY 4.0)
+- dati clinici del reparto di Diabetologia ed Endocrinologia dello Shanghai Sixth People's Hospital, febbraio-aprile 2012: 5.922 soggetti, 190 variabili (dataset pubblico, CC BY 4.0). Gli autori non li descrivono come screening di popolazione (verifica del 22/09/2026 sul testo completo di Li J. et al. 2026; dettaglio in `docs/verifica_stato_arte.md`)
 - soggetti utilizzabili: **5.801**, quelli con creatinina sierica e rapporto albumina/creatinina urinaria (ACR)
 - dati **trasversali**: una sola misurazione per soggetto, nessun follow-up
 
@@ -32,7 +32,7 @@ Incrociando eGFR (asse G) e ACR (asse A) si ottengono 4 livelli. Servono per **v
 | molto alto | 27 | y = 1 |
 
 ## Input e output del modello
-- **input**: solo dati di screening — anagrafica, antropometria, pressione, glicemia, lipidi, altri esami del sangue, anamnesi, stili di vita
+- **input**: solo dati disponibili senza esami renali — anagrafica, antropometria, pressione, glicemia, lipidi, altri esami del sangue, anamnesi, stili di vita
 - **escluse** tutte le variabili renali (`GFR`, `UMAUCR`, `UmALB`, `SCRE`, `BUN`, `DN`, indicatori derivati): con quelle il modello copierebbe la regola KDIGO, senza alcun valore
 - **output**: probabilità, classe 0/1 e fascia di rischio
 
@@ -43,7 +43,7 @@ Perché non una regressione: l'ACR è fortemente asimmetrica, le tecniche di aug
 2. **Preprocessing**: selezione di 74 feature (nessuna variabile renale, nessuna colonna con codice 9, NA ≤ 15%), codifiche senza one-hot, imputazione e scaling stimati solo sul training, dentro ogni fold. Metodo di imputazione scelto con un confronto in cross-validation: **MissForest** (motivazione in Notepad, Passi 9–10).
 3. **Fase A — cinque modelli sui dati originali**, senza augmentation, scelti per famiglia e ruolo (motivazione e bibliografia nel Notepad, sezione "Fase A — modelli e protocollo"):
    - classificatore di maggioranza: soglia minima e controllo di coerenza
-   - regressione logistica con i predittori del punteggio clinico SCORED (Bang et al. 2007) disponibili nello screening, ristimata sui nostri dati
+   - regressione logistica con i predittori del punteggio clinico SCORED (Bang et al. 2007) disponibili nel dataset, ristimata sui nostri dati
    - regressione logistica penalizzata (L1, L2 o elastic net): modello lineare di riferimento
    - Random Forest: ensemble ad albero, bagging
    - XGBoost: ensemble ad albero, gradient boosting
@@ -74,7 +74,7 @@ E infine:
 
 ## Cosa il progetto non è
 - non propone un nuovo algoritmo: il contributo è una pipeline completa, riproducibile e metodologicamente corretta
-- non sostituisce gli esami: nelle persone con diabete le linee guida prescrivono ACR ed eGFR ogni anno. L'utilità del modello è **stabilire la priorità degli esami nella popolazione generale di screening**
+- non sostituisce gli esami: nelle persone con diabete le linee guida prescrivono ACR ed eGFR ogni anno. L'utilità del modello è **stabilire la priorità degli esami nei soggetti senza diabete**; va dimostrata in popolazioni di screening, perché il dataset è ospedaliero
 - non è uno strumento diagnostico: il prototipo è dimostrativo
 
 ## Limiti dichiarati
@@ -84,6 +84,7 @@ E infine:
 - sottogruppo diabetico piccolo (91 positivi) → solo descrittivo
 - dati trasversali: il modello riconosce lo stato presente, non prevede la progressione
 - nessuna validazione esterna: una sola popolazione, una sola finestra temporale
+- dataset ospedaliero, non di screening: tipo di campione urinario per l'ACR e unità di `UCRE` e `UmALB` non documentati dagli autori
 - soggetti raggruppati per giornata di raccolta (prevalenza dal 4,5% al 24,5%): possibile struttura per comunità, non valutata
 
 ## Riferimenti

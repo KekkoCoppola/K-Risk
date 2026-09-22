@@ -103,6 +103,7 @@ KDIGO reale (da GFR e UMAUCR, nascosto al modello) → G2 / A2 → rischio moder
 - sottogruppo diabetico piccolo (91 positivi) → solo descrittivo
 - eGFR ricalcolato da un'unica creatinina, senza cistatina C → possibili errori di classificazione vicino alla soglia 60 (l'equazione combinata creatinina-cistatina C è più accurata: Inker et al. 2021)
 - nessuna validazione esterna: le linee guida raccomandano modelli di rischio validati esternamente sulla popolazione di destinazione (KDIGO 2026a; Steyerberg & Harrell 2016; Collins et al. 2024)
+- **provenienza del dataset (verifica del 22/09/2026 sul testo completo di Li J et al. 2026, *Sci Data* 13:652)**: i dati vengono dal reparto di Diabetologia ed Endocrinologia dello Shanghai Sixth People's Hospital, febbraio-aprile 2012; gli autori non li descrivono come screening di popolazione e non documentano né il tipo di campione urinario per l'ACR né le unità di `UCRE` e `UmALB`. Nelle sezioni scritte prima di questa data, "screening di popolazione" e "popolazione generale di screening" vanno letti come "coorte ospedaliera, in maggioranza senza diabete noto": l'utilità del modello va dimostrata in popolazioni di screening. Dettaglio in `docs/verifica_stato_arte.md`
 
 ### Cosa dicono le linee guida KDIGO (letture in `papers/`)
 Documenti letti:
