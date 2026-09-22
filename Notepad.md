@@ -1644,6 +1644,12 @@ Nessun modello nuovo, nessun riaddestramento: si usano i modelli finali già sal
 ### Codice
 Modulo nuovo `src/models/final_test.py` più `tests/test_final_test.py` (dati sintetici; nessun test legge `test.csv`), revisione indipendente in sola lettura **prima** dell'esecuzione. Tabelle in `analytics/test/`. Riusa gli helper esistenti: `phase_c` (tabelle a soglia e fasce fisse per gruppo), `evaluation_b` (McNemar, Newcombe), `phase_b` (applicazione di Platt), `clinical_utility` (decision curve con i suoi controlli di coerenza, calibrazione con bootstrap semplice).
 
+### Revisione indipendente del codice (22/09/2026, prima dell'esecuzione)
+Agente revisore separato, in sola lettura, con il divieto di aprire `test.csv`. Ha fatto anche una prova completa sulle righe del training con i modelli e i file reali: preprocessore identico bit a bit alla cache, 50 modelli caricati e allineati alle righe, `evaluate()` completo sui `cutpoints.csv` veri. **Nessun difetto critico.** Verificati: bracci, modelli (iperparametri uguali ai record `_full.json`; XGBoost di "nessuna correzione" con profondità 1), soglie mai ristimate, parametri di Platt ricalcolati a 1e-9, criteri delle affermazioni uguali al protocollo, colonne passate a ogni modello.
+- **corretti (maggiori)**: (1) i controlli che non richiedono il test ora avvengono prima di aprirlo, e `--check` li esegue senza aprirlo: un guasto evitabile non costringe più a dichiarare un doppio uso del test; (2) test per ogni ramo delle affermazioni (B)–(E) e un test completo di `run()` su file finti; (3) le affermazioni si fermano con un errore se una tabella ha meno modelli o soglie del previsto, invece di decidere su dati incompleti
+- **corretti (minori)**: RUN.json completo (versioni, hash, esito) e scritto al momento dell'apertura; albero git pulito obbligatorio; una cartella per esecuzione; `n_jobs = 1`; controllo esplicito delle colonne dei modelli; controlli di coerenza della decision curve riusati; ID, esito, livello e diabete nel file delle previsioni; errore anche per probabilità ricalibrate mancanti; aggiunto il test di riproducibilità permanente contro la cache annunciato il 20/09/2026
+- **integrazioni al protocollo nate dalla revisione**, scritte prima dell'esecuzione: riguardano solo la sicurezza dell'esecuzione (sottosezione precedente). Nessun criterio, modello, soglia o metrica è cambiato
+
 ---
 
 ## Da fare per concludere il progetto (scritto il 20/09/2026)
