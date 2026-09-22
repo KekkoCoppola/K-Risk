@@ -1463,6 +1463,32 @@ Quelli dichiarati nel protocollo, più due emersi dai risultati:
 
 ---
 
+## Fase D — candidato aggiunto: tri-ensemble su 21 variabili (22/09/2026)
+**Perché.** `valorizzazione_tesi.md` citava un "tri-ensemble sulle 21 variabili più importanti" con AUROC 0,717 e PR-AUC 0,273, stimato in un'analisi preliminare di cui nel repository non c'erano né codice né tabelle. Su richiesta dell'utente è stato registrato come candidato della Fase D, **in `configs/config.yaml` prima di scrivere il codice e di calcolarlo**, con la stessa regola di decisione degli altri candidati.
+
+**Definizione (fissata prima).** `tri_ensemble_top21`: media delle probabilità dei tre riferimenti (logistica penalizzata, Random Forest, XGBoost con profondità 1–12) addestrati sulle prime 21 variabili, con gli iperparametri della Fase A di ogni fold (nessuna nuova ottimizzazione, quindi nessuna informazione dal fold esterno). Le 21 variabili si scelgono **dentro ogni fold esterno, sul solo training**, per rango medio fra i tre modelli, col criterio di `interpretation.top_features`: |coefficiente| per la logistica, SHAP medio assoluto per gli alberi (per la Random Forest su 500 righe estratte per classe: TreeSHAP su 954 alberi profondi 25 sarebbe durato ore). Diagnostica `tri_ensemble_leaky`: stessa pipeline con le variabili scelte **sull'intero training** (classifiche dei modelli finali della Fase A), per misurare la distorsione da selezione (Ambroise & McLachlan 2002); non è un candidato.
+
+**Codice.** `src/models/phase_d.py`: `consensus_top`, `ranking`, `fold_rankings`, `full_training_rankings`, `run_tri_ensemble`. Test in `tests/test_phase_d.py`, fra cui `test_nested_tri_ensemble_selects_on_training_rows_only`, che fallirebbe se la classifica vedesse le righe del fold esterno. Esecuzione: 1 minuto e mezzo.
+
+**Risultati** (`analytics/phase_d/discrimination.csv`, `comparison.csv`):
+
+| versione | AUROC (IC 95%) | PR-AUC | specificità a sensibilità 0,90 | contro RF |
+|---|---|---|---|---|
+| selezione nel fold (candidato) | 0,703 (0,676–0,731) | 0,252 | 0,267 | −0,002 (−0,025; +0,020), p di Holm 1,00 |
+| selezione su tutto il training (diagnostica) | 0,716 (0,689–0,742) | 0,264 | 0,272 | — |
+
+- **non supera la regola** (serviva ΔAUROC ≥ +0,01 con IC sopra zero e Holm < 0,05)
+- **lo 0,717 dell'analisi preliminare è distorsione da selezione**: lo riproduce solo la versione con le variabili scelte su tutti i dati (+0,013 di AUROC, +0,012 di PR-AUC). Non va citato come risultato
+- contro SCORED (confronto post-hoc, sui 5 fold, non corretto): selezione nel fold +0,027 (−0,004; +0,057), p = 0,07; selezione su tutto il training +0,039 (+0,007; +0,071), p = 0,03. **La distorsione basta a rendere "significativo" un vantaggio che non lo è**: quarto "risultato apparente" della tesi
+- **valore reale: parsimonia.** Con 21 variabili invece di 74 discrimina come la Random Forest ed è il modello con la specificità più alta a sensibilità 0,90 (0,267). Contro SCORED: 7,8 esami in meno ogni 100 persone per trovare l'85% dei casi (66,0 contro 73,8), 5,2 in meno per il 90% (75,0 contro 80,2), net benefit superiore a 31 soglie su 31 fra 5% e 20%, 5,6 esami inutili evitati in più ogni 100 al 7%
+- **stabilità della selezione**: 34 variabili diverse nei 5 fold; 9 scelte sempre (età, pressione sistolica, glicemia a digiuno e a 2 ore, peptide C a digiuno, acido urico, ALP, FIB-4, LDL), altre 6 in 4 fold su 5
+
+**Effetto sugli altri candidati.** La famiglia di Holm passa da 10 a 11 candidati: cambiano solo i p corretti (EBM da 0,90 a 0,99; gli altri restano 1,00). Nessuna conclusione della Fase D cambia. La figura `analytics/phase_d/01_candidates.png` è rigenerata con il nuovo candidato.
+
+**Limiti.** Iperparametri scelti in Fase A su 74 variabili, non riottimizzati per 21; il numero 21 viene dall'analisi preliminare e non è stato ottimizzato (ottimizzarlo ora sarebbe un'altra scelta dopo i risultati).
+
+---
+
 ## Conferma finale sul test set — preparazione (20/09/2026)
 Il test set **non è ancora stato letto**. Qui si annota solo quanto verificato per prepararne la trasformazione.
 
