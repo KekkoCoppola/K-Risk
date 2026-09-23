@@ -193,6 +193,44 @@ check("T28c", "1,8%", over.mean(), 1, pct=True)
 check("T28d", "5,45", no_dm.FPG.median(), 2)
 check("T28e", "5,5%", no_dm.HbA1c.median(), 1)
 check("T28f", "369", int(no_dm.HbA1c.isna().sum()), 0)
+# T121: tendenza della probabilità con il livello KDIGO, p massimo fra i modelli reali (q2_trend.csv)
+trend = pd.read_csv(A + "phase_a/evaluation/q2_trend.csv")
+pmax = trend[(trend.feature_set == "main") & (trend.model != "dummy")].p_value.max()
+ok = pmax < 1e-32
+print(f"{'ok ' if ok else 'ERR'} T121    p massimo della tendenza {pmax:.2e} < 1e-32: {ok}")
+errors += not ok
+# T122: soggetti "molto alto" nella fascia 1 del modello (q4_bands.csv)
+qb = pd.read_csv(A + "phase_a/evaluation/q4_bands.csv")
+top = qb[(qb.feature_set == "main") & (qb.model != "dummy") & (qb.level == "molto alto")]
+first = top[top.band == 1].set_index("model").n
+share = first / top.groupby("model").n.sum()
+check("T122a", "6", first.min(), 0)
+check("T122b", "10", first.max(), 0)
+check("T122c", "29%", share.min(), 0, pct=True)
+check("T122d", "48%", share.max(), 0, pct=True)
+# T124: la colonna DN nel training
+dn_pos = (train.DN > 0).to_numpy()
+check("T124a", "339", int(dn_pos.sum()), 0)
+check("T124b", "7,8%", dn_pos.mean(), 1, pct=True)
+check("T124c", "338", int((dn_pos & (train.UmALB >= 30).to_numpy()).sum()), 0)
+check("T124d", "81,7%", (dn_pos & (train.DM == 0).to_numpy()).sum() / dn_pos.sum(), 1, pct=True)
+# T125: soglie fisse 30% e 70% sulle previsioni out-of-fold della Fase A (righe in ordine di train.csv)
+oofa = pd.read_csv(A + "phase_a/oof_predictions.csv")
+oofa = oofa[(oofa.feature_set == "main") & (oofa.model != "dummy")]
+over30, over70, pos30, pos70 = {}, {}, {}, {}
+for m, g in oofa.groupby("model"):
+    p = g.sort_values("row").probability.to_numpy()
+    over30[m], over70[m] = (p > 0.30).mean(), (p > 0.70).mean()
+    pos30[m], pos70[m] = int(((p > 0.30) & (y == 1)).sum()), int(((p > 0.70) & (y == 1)).sum())
+check("T125a", "1,0%", min(over30.values()), 1, pct=True)
+check("T125b", "3,0%", max(over30.values()), 1, pct=True)
+check("T125c", "0,2%", max(over70.values()), 1, pct=True)
+check("T125d", "3", sum(v == 0 for v in over70.values()), 0)
+check("T125e", "23", min(pos30.values()), 0)
+check("T125f", "56", max(pos30.values()), 0)
+check("T125g", "5,4%", min(pos30.values()) / y.sum(), 1, pct=True)
+check("T125h", "13,2%", max(pos30.values()) / y.sum(), 1, pct=True)
+check("T125i", "5", max(pos70.values()), 0)
 same = bool(((train.UMAUCR >= 30).astype(int) == train.HighACR).all())
 print(f"{'ok ' if same else 'ERR'} T27     HighACR == (UMAUCR >= 30) su tutte le {len(train)} righe: {same}")
 errors += not same

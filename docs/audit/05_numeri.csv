@@ -314,3 +314,15 @@ T116.01,8,"0,743",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_
 T116.02,8,"0,723",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & model == 'lr_scored' & group == 'tutti',auc,value,3
 T118.01,8,"+0,003",analytics/phase_d/acr_label_sensitivity.csv,scale == 'osservata' & threshold == 53.04 & grey_zone == '' & model == 'random_forest';;scale == 'osservata' & threshold == 30.0 & grey_zone == '' & model == 'random_forest',auc,diff,3
 T118.02,8,"+0,016",analytics/phase_d/acr_label_sensitivity.csv,scale == 'osservata' & threshold == 53.04 & grey_zone == '' & model == 'lr_penalized';;scale == 'osservata' & threshold == 30.0 & grey_zone == '' & model == 'lr_penalized',auc,diff,3
+T121.01,9bis,"0,086",analytics/phase_a/evaluation/q2_levels.csv,feature_set == 'main' & model == 'xgboost' & level == 'basso',mean_probability,value,3
+T121.05,9bis,3.925,analytics/phase_a/evaluation/q2_levels.csv,feature_set == 'main' & model == 'xgboost' & level == 'basso',n,value,0
+T121.02,9bis,"0,142",analytics/phase_a/evaluation/q2_levels.csv,feature_set == 'main' & model == 'xgboost' & level == 'moderato',mean_probability,value,3
+T121.06,9bis,354,analytics/phase_a/evaluation/q2_levels.csv,feature_set == 'main' & model == 'xgboost' & level == 'moderato',n,value,0
+T121.03,9bis,"0,194",analytics/phase_a/evaluation/q2_levels.csv,feature_set == 'main' & model == 'xgboost' & level == 'alto',mean_probability,value,3
+T121.07,9bis,50,analytics/phase_a/evaluation/q2_levels.csv,feature_set == 'main' & model == 'xgboost' & level == 'alto',n,value,0
+T121.04,9bis,"0,284",analytics/phase_a/evaluation/q2_levels.csv,feature_set == 'main' & model == 'xgboost' & level == 'molto alto',mean_probability,value,3
+T121.08,9bis,21,analytics/phase_a/evaluation/q2_levels.csv,feature_set == 'main' & model == 'xgboost' & level == 'molto alto',n,value,0
+T121.09,9bis,"0,674",analytics/phase_a/evaluation/q2_trend.csv,feature_set == 'main' & model != 'dummy',concordance,min,3
+T121.10,9bis,"0,702",analytics/phase_a/evaluation/q2_trend.csv,feature_set == 'main' & model != 'dummy',concordance,max,3
+T122.01,9bis,"0,20",analytics/phase_a/evaluation/q4_kappa.csv,feature_set == 'main' & model != 'dummy',kappa,min,2
+T122.02,9bis,"0,23",analytics/phase_a/evaluation/q4_kappa.csv,feature_set == 'main' & model != 'dummy',kappa,max,2

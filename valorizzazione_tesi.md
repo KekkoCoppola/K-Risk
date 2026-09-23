@@ -334,6 +334,38 @@ Per ogni punto: la formulazione onesta, l'argomento di valore e le prove. Nessun
 
 ---
 
+## 9bis. DA INSERIRE nella tesi (dagli appunti del 23/09/2026)
+
+Materiale nato dagli appunti a mano, da portare nei capitoli indicati. I numeri sono verificati come il resto del documento.
+
+### DA INSERIRE 1 — Il modello ordina la gravità (capitolo dei risultati, subito dopo l'AUROC)
+- La probabilità media cresce a ogni livello KDIGO in tutti i modelli. Per XGBoost: 0,086 nel livello basso (3.925 soggetti), 0,142 nel moderato (354), 0,194 nell'alto (50), 0,284 nel molto alto (21). La concordanza di Jonckheere-Terpstra fra probabilità e livello è 0,674–0,702 (p < 10⁻³²): circa 7 coppie su 10 di soggetti di livelli diversi sono ordinate come KDIGO [T121].
+- L'audit lo conferma dal lato dell'etichetta: per la logistica penalizzata l'AUROC sale da 0,645 (ACR 30–45) a 0,790 (ACR ≥ 300) [T92].
+- Il limite, da dire nella stessa pagina: il modello ordina la gravità ma non la separa. Fra le fasce del modello e i livelli KDIGO il kappa è 0,20–0,23, e dei 21 soggetti "molto alto" da 6 a 10 (dal 29% al 48%) finiscono nella fascia più bassa del modello [T122].
+
+### DA INSERIRE 2 — Dal bersaglio DN al bersaglio KDIGO (capitolo sui dati e sulla scelta del bersaglio)
+- La prima impostazione usava la colonna `DN` del dataset, "Diabetic nephropathy staging", i cui stadi sono definiti sull'albumina nelle urine: 0 = "Urine < 30 mg", 3 = "≥ 30 mg", 4 = "≥ 300 mg", 5 = "uremia" [T123].
+- Nel training `DN` > 0 riguarda 339 soggetti (7,8%): 338 hanno `UmALB` ≥ 30, cioè una concentrazione di albumina e non l'ACR, e il filtrato glomerulare non entra nella definizione. L'81,7% di loro non ha diabete [T124].
+- Tre motivi per abbandonarla: non è la definizione KDIGO; non è "nefropatia diabetica" in una popolazione in gran parte senza diabete (sezione 1); non permette un confronto pulito con KDIGO.
+- KDIGO combina le due dimensioni della malattia renale: quanto bene i reni filtrano il sangue (categoria G, eGFR) e quanta albumina si perde nelle urine (categoria A, ACR). Un paziente può avere eGFR normale e albuminuria elevata, o il contrario, e la definizione vale anche per chi non ha il diabete (KDIGO 2024). È una scelta fatta guardando i dati: va raccontata come tale.
+- Nota sui numeri: gli appunti e il Notepad riportano i conteggi sull'intera coorte, calcolati prima dello split (5.802 soggetti, 456 con `DN` > 0). Nella tesi usare quelli del training, che si possono verificare senza il test set.
+
+### DA INSERIRE 3 — Perché non le fasce "tradizionali" 30/70% (capitolo del metodo: soglia e fasce)
+- Il piano iniziale prevedeva fasce di probabilità fisse: bassa fino al 30%, media dal 30 al 70%, alta oltre il 70%.
+- Sulle previsioni out-of-fold della Fase A solo dall'1,0% al 3,0% dei soggetti supera 0,30 e al massimo lo 0,2% supera 0,70: per 3 modelli su 4 la fascia alta è vuota. Dei 425 positivi superano 0,30 solo da 23 a 56 (dal 5,4% al 13,2%), e 0,70 al massimo 5 [T125].
+- Con una prevalenza del 9,8% le probabilità stanno in basso, e le soglie fisse classificherebbero "a basso rischio" quasi tutti i malati. È lo stesso errore della soglia 0,5 della Fase B (sezione 7), ed è il motivo per cui soglia e fasce sono state ridefinite sui dati: soglia a sensibilità 0,90, fasce con le proporzioni dei livelli KDIGO e decision curve per il beneficio clinico. Era già la soluzione indicata negli appunti iniziali ("ridefinizione tramite curva precision-recall e decision curve").
+- È un calcolo descrittivo fatto il 23/09/2026 sulle previsioni esistenti, dopo aver visto i risultati: va presentato come illustrazione della scelta, non come analisi pianificata.
+
+### DA INSERIRE 4 — I pazienti discordanti (capitolo degli sviluppi futuri)
+- "Grave ma con probabilità bassa": già misurato (DA INSERIRE 1: da 6 a 10 dei 21 "molto alto" nella fascia più bassa).
+- "Probabilità alta ma marcatori ancora normali": in un dataset trasversale non si può sapere se sono falsi allarmi o casi futuri. Servirebbe un follow-up: Wu et al. 2017, nello stesso ospedale, ha seguito una coorte prospettica fino a 72 mesi [T126]. Da presentare solo come sviluppo futuro, non come risultato.
+
+### DA INSERIRE 5 — La tabella delle variabili escluse (capitolo del preprocessing)
+- Il codice esclude dall'input le colonne da cui si calcola il bersaglio o che ne sono una copia: `SCRE`, `UMAUCR`, `UmALB`, `UCRE`, `GFR`, `highCr`, `HighUmALB`, `HighACR`, `ACR3degree`, `GFR5lev`, `GFR6levG5`, `EUGFRabACR012`, `EUGFR90UACR01`, `EUGFR60abACR012`, `UACRGFR`, `DN`. Esclude anche gli esami renali `BUN` e `RF`. Un'asserzione blocca l'addestramento se una di queste colonne entra fra le feature [T127].
+- Nella tesi conviene una tabella con variabile, significato e motivo dell'esclusione: risponde in anticipo alla domanda "come sai di non aver usato informazione renale?".
+
+---
+
 ## 10. Bibliografia verificata
 
 Verifica del 22–23/09/2026 (TC = testo completo, AB = abstract). DOI controllati su Crossref; per i dataset su DataCite.
@@ -529,3 +561,10 @@ Abbreviazioni: `pa/` = `analytics/phase_a/evaluation/`; `pb/` = `analytics/phase
 | T118 | presentazione: unità dell'ACR | T27, T95–T98 |
 | T119 | presentazione: popolazione | T19, T23, T25, T28, T28b, T67, T68 |
 | T120 | limiti | T28–T29, T40, T99–T100; soglie stimate e valutate sulle stesse previsioni: `src/models/evaluation.py`:260-263; soglie lette e non stimate sul test: `src/models/final_test.py`:111-122; tri-ensemble: `cfg`:340-348 |
+| T121 | probabilità media per livello KDIGO; concordanza 0,674–0,702, p < 10⁻³² | `pa/q2_levels.csv` (`mean_probability` e `n`, XGBoost, set main) e `pa/q2_trend.csv` (`concordance` min/max dei modelli reali, set main): 05; p massimo: S18 |
+| T122 | kappa 0,20–0,23; "molto alto" nella fascia 1 da 6 a 10 su 21 | `pa/q4_kappa.csv` (`kappa` min/max, set main): 05; `pa/q4_bands.csv` (livello "molto alto", fascia 1): S18 |
+| T123 | definizione di `DN` | dizionario dei dati del dataset (`data/raw/Supplementary Information.pdf`, p. 6–7: "Diabetic nephropathy staging") |
+| T124 | `DN` > 0 nel training: 339 (7,8%), 338 con `UmALB` ≥ 30, 81,7% senza diabete | `data/processed/train.csv`: S18 |
+| T125 | soglie fisse 30% e 70% | `analytics/phase_a/oof_predictions.csv` (set main, modelli reali) con il bersaglio di `train.csv`: S18 (allineamento delle righe verificato: le AUROC ricalcolate coincidono con `pa/q1_discrimination.csv`) |
+| T126 | coorte prospettica di Wu 2017 fino a 72 mesi | doi:10.18632/oncotarget.21684, abstract (PMID 29254270) |
+| T127 | variabili escluse e asserzione | `cfg`:55-60 (`features.exclude`); `src/data/preprocess.py`:22-25 (`FORBIDDEN` = leakage + esami renali + colonne sconosciute) e :53 (asserzione in `select_features`) |

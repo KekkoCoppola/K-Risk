@@ -1,13 +1,135 @@
-\documentclass{article}
-\usepackage{graphicx} 
+\documentclass[a4paper, 12pt, oneside]{book}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=3cm, bindingoffset=1cm]{geometry}
+\linespread{1.5}
+\usepackage{float}
+\usepackage{csquotes}
+\usepackage{subfig}
+\usepackage{graphicx}
+\usepackage{indentfirst}
+\usepackage{fancyhdr}
+\usepackage{siunitx}
+\usepackage[italian]{babel}
+\setlength{\parindent}{1cm}
 
-\title{Tesi Coppola Francesco}
+\pagestyle{fancy}
+\renewcommand{\chaptermark}[1]{\markboth{\thechapter.\ \uppercase{#1}}{}}
+\fancyhf{}
+\fancyhead[C]{\textbf{\leftmark}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{1pt}
+\renewcommand{\footrulewidth}{1pt}
+\usepackage[Conny]{fncychap}
+
+\title{Tesi Triennale}
 \author{Francesco Coppola}
-\date{September 2026}
+\date{Ottobre 2026}
 
+\newenvironment{dedication}
+  {\clearpage           
+   \thispagestyle{empty}
+   \vspace*{\stretch{1}}
+   \itshape            
+   \raggedleft     
+  }
+  {\par 
+   \vspace{\stretch{3}} 
+   \clearpage           
+  }
+  
 \begin{document}
+%Frontespizio
+\begin{titlepage}
+    \begin{center}
+        \LARGE{\uppercase{Università degli Studi di Salerno}}\\
+        \vspace{5mm}
+        %Dipartimento
+    	\uppercase{\normalsize Dipartimento di Informatica}\\
+    	%Corso di Laurea
+    	\normalsize{ Corso di Laurea Triennale in Informatica}\\
+    	\vspace{15mm}
+    \end{center}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.35\textwidth]{logo_unisa}
+    \end{figure}
+    
+    \begin{center}
+    	%Titolo
+		{\LARGE{\bf TESI DI LAUREA}}\\
+		\vspace{3mm}
+    	%Titolo
+        {\LARGE{\bf Profili Clinici e Metabolici per l'Individuazione del Danno Renale Occulto: Modelli di Apprendimento e Stratificazione KDIGO}}\\
+    	\vspace{3mm}
+    \end{center}
+    
+    \vspace{15mm}
+    \noindent
+    \begin{minipage}[t]{0.47\textwidth}
+        %Relatore
+    	{\large{ Relatori:\\\bf Dott.ssa Fabiola De Marco\\Dott. Domenico Rossi}}
+    	\vspace{12mm}\\
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.4\textwidth}\raggedleft
+        %Candidato
+    	{\large{Candidato: \\ \bf Francesco Coppola\\ Mat. 0512119837}}
+    \end{minipage}
+    
+    \vspace{20mm}
+    
+    %Anno Accademico
+    \centering{\large \uppercase{ Anno Accademico 2026/2027 }}
 
-\maketitle
+\end{titlepage}
+\begin{dedication}
+Dedicata a coloro che\\ ci provano ogni giorno.
+\end{dedication}
+%Corpo della Tesi
+\tableofcontents
+\clearpage
+\sloppy
+\hyphenpenalty=10000
+\exhyphenpenalty=10000
+\chapter{Introduzione}
+La malattia renale cronica è una condizione diffusa e spesso non riconosciuta. Agisce in silenzio e può farlo a lungo senza che la persona sappia di averla. ~\cite{centers_for_disease_and_prevention_chronic_2026,wang_prevalence_2023}.
 
-\section{Introduction}
+Riconoscere tale malattia non richiede esami complessi, richiede delle analisi del sangue e una delle urine ~\cite{stevens_kdigo_2024}. Queste analisi però non sono di routine, vengono di fatto prescritte solo a chi ha un motivo per farle come le persone diabetiche. ~\cite{american_diabetes_association_professional_practice_committee_11_2024}. Per tutti gli altri pazienti resta aperta una domanda: a chi prescriverle?
+
+Questa tesi affronta la domanda con i dati che un ambulatorio raccoglie già durante delle semplici visite di routine: età, misura del corpo, pressione arteriosa ed esami del sangue. Su questi dati sono stati addestrati modelli di machine learning che stimano la probabilità del singolo paziente di avere marcatori di malattia renale. La tesi parla di danno renale occulto, cioè marcatori presenti ma mai cercati e riprende il termine usato dal punteggio SCORED (Screening for Occult Renal Disease) ~\cite{bang_screening_2007}. Questa analisi è stata fatta eliminando volutamente gli esami renali dall'input, questo perché l'obiettivo non è sostituire gli esami che definiscono la malattia, ma indicare a chi farli.
+
+\section{La malattia renale cronica: un problema clinico silenzioso}
+Per capire l'utilità di uno strumento simile occore capire come la malattia renale cronica viene definita e in che modo viene riconosciuta.
+
+Secondo le linee guida KDIGO (Kidney Disease: Improving Global Outcomes), la malattia renale cronica (CKD, Chronic Kidney Disease) è un alterazione della struttura o della funzione dei reni che persiste per almeno tre mesi ~\cite{stevens_kdigo_2024}. Nella pratica si riconosce con due esami. il primo è la creatinina nel sangue, da cui si ottiene la velocità di filtrazione glomerulare (\textbf{eGFR}), cioè quanto plasma i reni riescono a filtrare in un minuto. il secondo esame è il rapporto fra albumina e creatinina nelle urine (\textbf{ACR}), che misura quanta albumina il rene lascia passare. un eGFR $< \SI{60}{\milli\liter\per\minute\per1.73\meter\squared}$ oppure un ACR pari o superiore a $30\text{mg/g}$ \cite{stevens_kdigo_2024}. Incrociando i due valori, KDIGO divide il rischio in quattro livelli: basso, moderato, alto e molto alto ~\cite{stevens_kdigo_2024}.
+
+La malattia è frequente e poco conosciuta da chi ne è affetto. Negli USA riguarda circa il 14\% degli adulti, l'87\% delle persone con CKD non sa di averla ~\cite{centers_for_disease_and_prevention_chronic_2026}. In Cina un'indagine nazionale su 176.874 adulti ha stimato una prevalenza dell'8,2\%, con una consapevolezza della malattia del 10\% ~\cite{wang_prevalence_2023}. Nella stessa indagine il marcatore più frequente era l'albuminuria, presente nel 6,7\% degli adulti, mentre l'eGFR ridotto riguardava il 2,2\% ~\cite{wang_prevalence_2023}. le linee guida indicano di cercare la malattia nelle persone a rischio usando entrambi gli esami. Per i diabetici è prevista la somministrazione annuale di ACR e eGFR, in tutto il diabete di tipo 2 e nel tipo 1 dopo cinque anni dalla diagnosi ~\cite{american_diabetes_association_professional_practice_committee_11_2024}. La malattia renale cronica attribuita al diabete riguarda tra il 20\% e il 40\% dei diabetici~\cite{american_diabetes_association_professional_practice_committee_11_2024}. Per chi non ha il diabete non vi è alcuna raccomandazione, la stessa albuminuria viene esaminata annualmente solo nei diabetici ~\cite{bragg-gresham_using_2025}.
+
+Testare tutti, d'altra parte, non è la soluzione più efficiente. Una revisione di 21 valutazioni economiche ha trovato lo screening più conveniente nei gruppi con punteggi di rischio selezionati e non conveniente nelle popolazioni senza diabete né ipertensione ~\cite{yeo_cost-effectiveness_2024}. Già nel 2003 uno studio di Buolware e colleghi ha mostrato come lo screening sia più conveniente se rivolto ai gruppi a rischio alto~\cite{boulware_screening_2003}.
+
+
+
+
+\chapter{Stato dell'arte}
+
+\chapter{Metodologia}
+
+\chapter{Risultati ottenuti}
+
+\chapter{Conclusioni e sviluppi futuri}
+
+\chapter*{Ringraziamenti}
+\addcontentsline{toc}{chapter}{Ringraziamenti}
+\clearpage
+\cleardoublepage
+\addcontentsline{toc}{chapter}{Bibliografia}
+\bibliographystyle{unsrt} 
+\bibliography{bib}       
+\clearpage
+\listoffigures
+\addcontentsline{toc}{chapter}{\listfigurename}
+\clearpage
+\listoftables
+\addcontentsline{toc}{chapter}{\listtablename}
+\clearpage
 \end{document}
