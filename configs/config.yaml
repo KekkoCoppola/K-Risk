@@ -11,7 +11,9 @@ columns:
   age: Age
   gender: Gender
   creatinine: SCRE   # µmol/l
-  acr: UMAUCR        # mg/g
+  # mg/g secondo la definizione del target del dataset; unità di UmALB e UCRE non documentate e
+  # UMAUCR = 176,8 x UmALB / UCRE su ogni riga del training (audit del 23/09/2026, vedi Notepad)
+  acr: UMAUCR
 
 # marcatori di malattia renale cronica secondo KDIGO:
 # eGFR (CKD-EPI 2021) < 60 ml/min/1.73 m2 oppure ACR >= 30 mg/g

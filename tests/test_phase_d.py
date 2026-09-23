@@ -10,8 +10,10 @@ from src.data.imputed import build_cache, fold_name, load_fold
 from src.data.kidney import target
 from src.data.split import PROCESSED
 from src.models.phase_d import (CANDIDATES, DIAGNOSTICS, INTERPRETATION, REFERENCES, SETTINGS,
-                                components, consensus_top, evaluate, full_training_rankings, loader,
-                                reference_record, save_record, stratified_subsample)
+                                acr_label_sensitivity, acr_labels, components, consensus_top, evaluate,
+                                full_training_rankings, label_noise_auroc, loader, noise_for_auroc, oof,
+                                reference_record, same_day_auc, save_record, semi_synthetic_control,
+                                stratified_subsample)
 
 METHOD = "mediana"
 
@@ -137,3 +139,108 @@ def test_candidate_equal_to_reference_does_not_improve(train, tmp_path):
     assert row["difference"] == pytest.approx(0) and not row["improves"]
     assert json.loads((tmp_path / "ensemble_mean" / "outer0.json").read_text())["rows"]
     assert set(metrics["role"]) == {"riferimento", "candidato"}
+
+
+# --- audit del tetto dei dati (23/09/2026) ---------------------------------------------------
+
+def test_audit_diagnostics_registered_outside_candidates():
+    for name, kind in [("semi_synthetic_control", "semi_synthetic"), ("label_noise_auroc", "label_noise"),
+                       ("acr_label_sensitivity", "label_sensitivity")]:
+        assert DIAGNOSTICS[name]["kind"] == kind and name not in CANDIDATES
+    assert DIAGNOSTICS["semi_synthetic_control"]["target_auroc"] == [0.75, 0.80]
+    assert DIAGNOSTICS["acr_label_sensitivity"]["factor"] == {"observed": 176.8, "alternative": 100}
+
+
+def test_noise_for_auroc_hits_the_target():
+    """Più rumore, AUROC più bassa: la DS trovata deve dare l'AUROC chiesta, e un'AUROC più alta
+    deve richiedere meno rumore."""
+    rng = np.random.default_rng(0)
+    y = np.r_[np.zeros(900, int), np.ones(100, int)]
+    signal = y * 3.0 + rng.standard_normal(1000) * 0.3
+    noise = rng.standard_normal(1000)
+    sd_75 = noise_for_auroc(signal, y, noise, 0.75)
+    sd_80 = noise_for_auroc(signal, y, noise, 0.80)
+    from sklearn.metrics import roc_auc_score
+    assert roc_auc_score(y, signal + sd_75 * noise) == pytest.approx(0.75, abs=0.005)
+    assert roc_auc_score(y, signal + sd_80 * noise) == pytest.approx(0.80, abs=0.005)
+    assert sd_80 < sd_75
+
+
+def test_same_day_auc_by_hand():
+    """Giornata A: positivo 0,9 e negativo 0,8; giornata B: positivo 0,2 e negativo 0,1; giornata C
+    solo negativi (ignorata). Coppie della stessa giornata: 2 concordanti su 2 -> 1,0. AUROC globale:
+    il positivo 0,2 è sotto i negativi 0,8 e 0,5 -> 4/6."""
+    y = np.array([1, 0, 1, 0, 0])
+    p = np.array([0.9, 0.8, 0.2, 0.1, 0.5])
+    day = np.array(["A", "A", "B", "B", "C"])
+    assert same_day_auc(y, p, day) == pytest.approx(1.0)
+    from sklearn.metrics import roc_auc_score
+    assert roc_auc_score(y, p) == pytest.approx(4 / 6)
+    # nessuna giornata con entrambe le classi: non calcolabile
+    assert np.isnan(same_day_auc(np.array([1, 0]), np.array([0.3, 0.2]), np.array(["A", "B"])))
+
+
+def test_acr_labels_by_hand():
+    """eGFR < 60 resta positivo anche sotto la soglia e non viene mai escluso dalla zona grigia."""
+    acr = np.array([10.0, 20.0, 30.0, 40.0, 25.0])
+    low_egfr = np.array([0, 0, 0, 0, 1])
+    y, keep = acr_labels(acr, low_egfr, 30)
+    assert y.tolist() == [0, 0, 1, 1, 1] and keep.all()
+    y, keep = acr_labels(acr, low_egfr, 30, grey=(17.7, 35.4))
+    assert keep.tolist() == [True, False, False, True, True]
+    y, _ = acr_labels(acr, low_egfr, 53.04)
+    assert y.tolist() == [0, 0, 0, 0, 1]
+
+
+def test_acr_label_sensitivity_matches_the_target_at_30(train, tmp_path):
+    """Sulla scala osservata, soglia 30 e nessuna zona grigia: stessa etichetta del progetto, quindi
+    stessi positivi e stessa AUROC delle previsioni out-of-fold del riferimento."""
+    spec = {**DIAGNOSTICS["acr_label_sensitivity"], "models": ["random_forest"]}
+    table = acr_label_sensitivity(train, spec, output=tmp_path)
+    y = target(train).to_numpy()
+    row = table.query("scale == 'osservata' and threshold == 30 and grey_zone == ''").iloc[0]
+    p, _ = oof("random_forest", len(y))
+    from sklearn.metrics import roc_auc_score
+    assert row["positives"] == y.sum() and row["n"] == len(y)
+    assert row["auc"] == pytest.approx(roc_auc_score(y, p))
+    # sulla scala alternativa la soglia 30 vera equivale a UMAUCR >= 30 x 176,8 / 100 = 53,04
+    alt = table.query("scale == 'alternativa' and grey_zone == ''").iloc[0]
+    same = table.query("scale == 'osservata' and threshold == 53.04 and grey_zone == ''").iloc[0]
+    assert alt["positives"] == same["positives"] and alt["auc"] == pytest.approx(same["auc"])
+    assert (tmp_path / "acr_label_sensitivity.csv").exists()
+
+
+def test_label_noise_auroc_rows(train, tmp_path):
+    spec = {**DIAGNOSTICS["label_noise_auroc"], "models": ["random_forest"]}
+    table = label_noise_auroc(train, spec, output=tmp_path)
+    y = target(train).to_numpy()
+    overall = table.query("analysis == 'tutti'").iloc[0]
+    assert overall["positives"] == y.sum()
+    bands = table[table["analysis"].str.startswith("fascia ACR")]
+    assert len(bands) == 4 and (bands["n"] - bands["positives"] == (y == 0).sum()).all()
+    assert table["analysis"].str.startswith("coppie della stessa giornata").any()
+    assert (tmp_path / "label_noise_auroc.csv").exists()
+
+
+def test_semi_synthetic_control_wiring(train, cache, tmp_path, monkeypatch):
+    """Con un "modello" che usa solo la feature semi-sintetica, l'AUROC out-of-fold deve coincidere
+    con quella univariata: verifica che la colonna arrivi con i valori giusti sulle righe giuste."""
+    import src.models.phase_d as phase_d
+
+    class OnlyZ:
+        def fit(self, X, y):
+            return self
+
+        def predict_proba(self, X):
+            # z così com'è (per l'AUROC conta solo l'ordine): una sigmoide creerebbe pareggi a 1,0
+            z = X[phase_d.SEMI_SYNTHETIC_COLUMN].to_numpy()
+            return np.column_stack([-z, z])
+
+    monkeypatch.setattr(phase_d, "fit", lambda name, params, X, y: OnlyZ().fit(X, y))
+    monkeypatch.setattr(phase_d, "loader", lambda df, y, data, extra: loader(df, y, data, extra, cache, METHOD))
+    table = semi_synthetic_control(train, output=tmp_path)
+    assert len(table) == 2
+    for _, row in table.iterrows():
+        assert row["z_auc"] == pytest.approx(row["target_auroc"], abs=0.005)
+        assert row["oof_auc"] == pytest.approx(row["z_auc"], abs=1e-9) and row["passes"]
+    assert (tmp_path / "semi_synthetic_control.csv").exists()
