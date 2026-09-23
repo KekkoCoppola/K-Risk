@@ -259,6 +259,10 @@ phase_d:
   # < 0,05 fra i candidati. Chi supera la regola viene ripetuto su 3 partizioni diverse (repeat_seeds)
   # prima di essere adottato
   min_difference: 0.01
+  # NON ESEGUITO: nessun codice usa repeat_seeds (emerso nell'audit del 23/09/2026) e nessun candidato
+  # ha superato la regola. Decisione del 23/09/2026: niente CV ripetuta (circa 16 ore di calcolo con
+  # esito atteso invariato). Con una sola partizione la regola rileva solo differenze di circa
+  # 0,02 (un confronto) - 0,04 (Holm su 11): va dichiarato nella tesi
   repeat_seeds: [43, 44, 45]
   # Optuna come nella Fase B (TPE + MedianPruner, PR-AUC sui fold interni); nessun modello finale
   # sull'intero training finché un candidato non supera la regola
@@ -280,6 +284,31 @@ phase_d:
     # analytics/phase_a/interpretation/), quindi con una selezione che vede anche i soggetti di
     # validazione. Misura la distorsione da selezione (Ambroise & McLachlan 2002): non è mai un candidato
     tri_ensemble_leaky: {kind: tri_ensemble, data: imputed, top: 21, selection: full_training}
+    # aggiunte il 23/09/2026 (audit del tetto dei dati), prima di calcolarle con il codice del progetto.
+    # controllo positivo a intensità nota (UmALB è quasi il numeratore dell'ACR: controllo tautologico).
+    # Feature semi-sintetica z = log(max(UMAUCR, 1)) + rumore gaussiano (seed 42), con DS del rumore
+    # tarata sull'intero training (dichiarato) perché l'AUROC univariata di z sia target_auroc; XGBoost
+    # con gli iperparametri della Fase A del fold. Il controllo passa se l'AUROC out-of-fold è almeno
+    # l'AUROC univariata di z meno 0,01. Mai un modello della tesi
+    semi_synthetic_control: {kind: semi_synthetic, model: xgboost, target_auroc: [0.75, 0.80],
+                             tolerance: 0.01}
+    # rumore dell'etichetta espresso in AUROC, sulle previsioni out-of-fold esistenti (nessun
+    # addestramento): AUROC per fascia di ACR dei positivi (contro tutti i negativi), casi netti (zona
+    # grigia 2,0-4,0 mg/mmol = 17,7-35,4 esclusa, Rasaratnam 2024), AUROC sulle sole coppie della stessa
+    # giornata. Escludere i casi vicino alla soglia alza l'AUROC anche con etichetta perfetta (effetto
+    # spettro): i guadagni sono LIMITI SUPERIORI del costo del rumore, non stime
+    label_noise_auroc: {kind: label_noise, models: [lr_penalized, random_forest, xgboost, ensemble_mean, tabpfn],
+                        bands: [[30, 45], [45, 100], [100, 300], [300, .inf]], grey_zone: [17.7, 35.4],
+                        day: Data}
+    # sensibilità all'unità dell'ACR: nel training UMAUCR = 176,8 x UmALB/UCRE su ogni riga, unità non
+    # documentate dal dataset. Con creatinina urinaria in mg/dL il fattore sarebbe 100, quindi ACR >= 30
+    # vero equivale a UMAUCR >= 53,04. Previsioni out-of-fold esistenti (modelli addestrati sulla soglia
+    # 30): misura quanto l'ordinamento si trasferisce, non un modello riaddestrato. eGFR < 60 resta
+    # positivo. NB: questi numeri sono stati già esplorati durante l'audit prima della registrazione
+    acr_label_sensitivity: {kind: label_sensitivity, models: [lr_penalized, random_forest, xgboost, ensemble_mean, tabpfn],
+                            thresholds: [20, 30, 45, 53.04, 60, 100, 300],
+                            factor: {observed: 176.8, alternative: 100},
+                            grey_zones: [[17.7, 35.4], [20, 45], [15, 60]]}
   candidates:
     # media delle probabilità out-of-fold dei tre riferimenti (nessun nuovo addestramento)
     ensemble_mean: {kind: ensemble}

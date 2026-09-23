@@ -1722,6 +1722,22 @@ Quelli dichiarati nel protocollo: 23 casi gravi, 88 diabetici con 23 positivi (i
 
 ---
 
+## Audit del tetto dei dati — registrazione (23/09/2026, prima dei calcoli)
+Branch `experimental/tetto-dati`. Domanda: il limite ad AUROC circa 0,70 è davvero dei dati, o esistono scelte che danno risultati nettamente migliori? Audit indipendente a quattro ruoli: esperto di codice (ha letto solo il codice senza commenti), critico, ricercatore (fonti con DOI verificato su Crossref), valorizzatore. Tutto è post-hoc ed esplorativo: il test set è già stato aperto una volta (22/09) e **non** viene letto.
+
+### Cosa è emerso prima di questa registrazione (sul solo training)
+- **Nessun leakage né bug che deprima le prestazioni**: imputazione e scaling sul solo fold di training (cache del fold 0 ricalcolata identica), fold annidati coerenti fra le fasi, CKD-EPI 2021 e mappa KDIGO corretti.
+- **Difetto di metodo**: `phase_d.repeat_seeds` è scritto nella regola ma nessun codice lo esegue. Con una sola partizione a 5 fold la differenza minima che la regola può dichiarare "significativa" (Nadeau-Bengio + Holm su 11) è circa 0,040; con 3 ripetizioni circa 0,020 (DS mediana delle differenze per fold 0,0105). "Nessun candidato migliora" va letto come "nessuno migliora di almeno 0,02–0,04": differenze di 0,01–0,02 non si possono né escludere né dimostrare.
+- **Unità dell'ACR non documentate**: nel training `UMAUCR` = 176,8 × `UmALB`/`UCRE` su tutte le 4.350 righe; `HighACR` degli autori coincide con `UMAUCR` ≥ 30. Il dizionario del dataset lascia le unità vuote. La mediana di `UCRE` (185) è compatibile solo con i mg/dL (Barr et al. 2005, mediana NHANES 118,6 mg/dL), e con i mg/dL il fattore corretto sarebbe 100: in quel caso la soglia 30 corrisponderebbe a un ACR vero di circa 17 mg/g. Non dimostrabile: si dichiara come limite e si misura con un'analisi di sensibilità.
+- **L'idea nuova migliore vale al massimo +0,01/+0,02**: un'esplorazione non registrata (4 varianti, seed 42/43/44) con l'ACR continuo come bersaglio ausiliario ha dato +0,010/+0,020. Sotto la differenza che la regola può rilevare e non "nettamente migliore": **non** diventa un candidato. Nella tesi si cita solo come esplorazione post-hoc.
+
+### Decisioni (23/09/2026)
+- **Nessun nuovo candidato e nessuna CV ripetuta**: circa 16 ore di calcolo (più 7 per una replica) per differenze attese di 0,01–0,02, che la regola non potrebbe comunque dichiarare. Il difetto `repeat_seeds` si dichiara, con la differenza minima rilevabile.
+- **Registrate in `configs/config.yaml` solo tre diagnostiche**, da secondi a pochi minuti: `semi_synthetic_control` (controllo positivo a intensità nota, al posto del tautologico UmALB), `label_noise_auroc` (rumore dell'etichetta in AUROC, con avvertenza sull'effetto spettro), `acr_label_sensitivity` (soglia 53,04 = fattore 100; i suoi numeri erano già stati esplorati prima di questa registrazione).
+- **Test set**: non si riapre. La run 1 del 22/09 resta definitiva.
+
+---
+
 ## Da fare per concludere il progetto (scritto il 20/09/2026)
 **Superata il 22/09/2026**: Fase C, Fase D, blocco qualità e conclusioni delle domande 1–6 sono conclusi; il protocollo del test finale è nella sezione "Conferma finale sul test set — protocollo". Il testo che segue resta come traccia storica.
 
