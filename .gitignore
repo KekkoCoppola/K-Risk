@@ -63,3 +63,7 @@ analytics/phase_a/interpretation/*.npz
 *.snm
 *.vrb
 docs/thesis/*.pdf
+docs/thesis/main.bcf
+docs/thesis/main.lof
+docs/thesis/main.lot
+docs/thesis/main.run.xml
