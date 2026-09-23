@@ -1738,6 +1738,35 @@ Branch `experimental/tetto-dati`. Domanda: il limite ad AUROC circa 0,70 è davv
 
 ---
 
+## Audit del tetto dei dati — risultati (23/09/2026)
+`python -m src.models.phase_d --diagnostics label_noise_auroc acr_label_sensitivity semi_synthetic_control` sulle previsioni out-of-fold del training (test set non letto; i CSV già esistenti della Fase D sono rimasti identici, verificato con sha256). Tabelle in `analytics/phase_d/`: `semi_synthetic_control.csv`, `label_noise_auroc.csv`, `acr_label_sensitivity.csv`. Modelli: i tre riferimenti, `ensemble_mean` e `tabpfn`.
+
+### La pipeline impara quando l'informazione c'è (`semi_synthetic_control.csv`)
+| feature semi-sintetica z | AUROC univariata di z | AUROC out-of-fold con z (IC 95%) | senza z | esito |
+|---|---|---|---|---|
+| rumore 2,58 × DS di log(ACR) | 0,75 | 0,795 (0,771–0,818) | 0,696 | passa |
+| rumore 1,99 × DS di log(ACR) | 0,80 | 0,831 (0,809–0,853) | 0,696 | passa |
+
+Con un segnale di intensità moderata e nota, XGBoost con gli iperparametri della Fase A lo trova e lo somma alle altre variabili. È un controllo più severo di quello con `UmALB` (0,933), che era quasi il numeratore dell'ACR.
+
+### Quanto costa il rumore dell'etichetta (`label_noise_auroc.csv`)
+- per fascia di ACR dei positivi: 30–45 → 0,645–0,682; 45–100 → 0,675–0,684; 100–300 → 0,698–0,718; ≥ 300 → 0,758–0,790. L'albuminuria grave si riconosce meglio, ma resta lontana da una discriminazione alta;
+- casi netti (zona grigia 17,7–35,4 mg/g esclusa, salvo eGFR < 60): 0,701–0,717 contro 0,696–0,710, cioè **+0,005/+0,009**. È un limite superiore (effetto spettro): il rumore vicino alla soglia costa al massimo circa 0,01;
+- solo coppie della stessa giornata: 0,696–0,711. L'effetto giornata sull'etichetta non gonfia né deprime l'AUROC.
+
+### Quanto pesa l'incertezza sull'unità dell'ACR (`acr_label_sensitivity.csv`)
+- etichetta attuale (UMAUCR ≥ 30, 425 positivi): 0,696–0,710;
+- fattore 100 (UMAUCR ≥ 53,04, 293 positivi, prevalenza 6,7%): **0,705–0,720**, cioè da +0,003 a +0,016 a seconda del modello;
+- fattore 100 con zone grigie escluse: 0,722–0,755 (limite superiore, stesso effetto spettro);
+- le previsioni sono quelle dei modelli addestrati sulla soglia 30: misurano quanto l'ordinamento si trasferisce, non un modello riaddestrato.
+
+### Verdetto
+Il tetto è dei dati, e ora è misurato da tre lati: la pipeline estrae segnali moderati quando esistono; il rumore dell'etichetta vicino alla soglia vale al massimo circa 0,01; l'incertezza sull'unità dell'ACR al massimo +0,016. Resta la scarsa informazione sull'albuminuria negli esami di routine (componente "solo albuminuria" 0,67–0,69 contro eGFR < 60 0,80–0,86 in `label_quality.csv`). Con una sola partizione la regola della Fase D rileva solo differenze di 0,02–0,04: differenze di 0,01–0,02 non sono né escluse né dimostrate.
+
+Come si ottiene 0,02–0,04 (ricalcolabile da `analytics/phase_d/folds_auc.csv` con la formula di `evaluation.corrected_ttest`): differenza minima = t critico × √(1/5 + 870/3.480) × DS delle differenze per fold contro la Random Forest. La DS mediana sugli 11 candidati è 0,0105 (da 0,0057 a 0,0266). Un solo confronto: 2,776 × 0,671 × DS ≈ **0,0195**, circa 0,02; primo passo di Holm su 11 (α = 0,05/11): 5,747 × 0,671 × DS ≈ **0,0403**, circa 0,04 (calcolati con la DS mediana non arrotondata).
+
+---
+
 ## Da fare per concludere il progetto (scritto il 20/09/2026)
 **Superata il 22/09/2026**: Fase C, Fase D, blocco qualità e conclusioni delle domande 1–6 sono conclusi; il protocollo del test finale è nella sezione "Conferma finale sul test set — protocollo". Il testo che segue resta come traccia storica.
 
