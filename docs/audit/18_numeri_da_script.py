@@ -184,6 +184,15 @@ check("T95c", "178,9", f.max(), 1)
 check("T95d", "4.350", int(f.notna().sum()), 0)
 check("T96a", "185", train.UCRE.median(), 0)
 check("T96b", "2", 185 / 88.4, 0)
+# T28: fra chi ha DM = 0, soglie diagnostiche ADA 2024 (Tabella 2.1) su glicemia a digiuno, HbA1c e glicemia a 2 ore
+no_dm = train[train.DM == 0]
+over = (no_dm.FPG >= 7.0) | (no_dm.HbA1c >= 6.5) | (no_dm.PG2h >= 11.1)
+check("T28a", "4.087", len(no_dm), 0)
+check("T28b", "75", int(over.sum()), 0)
+check("T28c", "1,8%", over.mean(), 1, pct=True)
+check("T28d", "5,45", no_dm.FPG.median(), 2)
+check("T28e", "5,5%", no_dm.HbA1c.median(), 1)
+check("T28f", "369", int(no_dm.HbA1c.isna().sum()), 0)
 same = bool(((train.UMAUCR >= 30).astype(int) == train.HighACR).all())
 print(f"{'ok ' if same else 'ERR'} T27     HighACR == (UMAUCR >= 30) su tutte le {len(train)} righe: {same}")
 errors += not same
