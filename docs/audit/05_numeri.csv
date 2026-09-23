@@ -1,0 +1,316 @@
+id,sezione,valore_nel_documento,file,filtro,colonna,aggregazione,arrotondamento
+T1.01,regole,4.350,analytics/quality/evaluation/calibration.csv,group == 'tutti' & model == 'lr_penalized',n,value,0
+T1.02,regole,1.451,analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & model == 'lr_scored' & group == 'tutti',n,value,0
+T2.01,0,9,analytics/quality/evaluation/decision_curve.csv,group == 'tutti' & model != 'dummy' & threshold == 0.07,avoided_per_100,min,0
+T2.02,0,13,analytics/quality/evaluation/decision_curve.csv,group == 'tutti' & model != 'dummy' & threshold == 0.07,avoided_per_100,max,0
+T2.03,0,25,analytics/quality/evaluation/decision_curve.csv,group == 'tutti' & model != 'dummy' & threshold == 0.1,avoided_per_100,min,0
+T2.04,0,28,analytics/quality/evaluation/decision_curve.csv,group == 'tutti' & model != 'dummy' & threshold == 0.1,avoided_per_100,max,0
+T3.01,0,13,analytics/test/run_1/decision_curve.csv,group == 'tutti' & model != 'dummy' & threshold == 0.07,avoided_per_100,min,0
+T3.02,0,19,analytics/test/run_1/decision_curve.csv,group == 'tutti' & model != 'dummy' & threshold == 0.07,avoided_per_100,max,0
+T3.03,0,29,analytics/test/run_1/decision_curve.csv,group == 'tutti' & model != 'dummy' & threshold == 0.1,avoided_per_100,min,0
+T3.04,0,33,analytics/test/run_1/decision_curve.csv,group == 'tutti' & model != 'dummy' & threshold == 0.1,avoided_per_100,max,0
+T6.01,0,"0,743",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & model == 'random_forest' & group == 'tutti',auc,value,3
+T6.02,0,"0,723",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & model == 'lr_scored' & group == 'tutti',auc,value,3
+T6.03,0,"0,249",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & model == 'random_forest' & group == 'tutti',pr_auc,value,3
+T6.04,0,"0,266",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & model == 'lr_scored' & group == 'tutti',pr_auc,value,3
+T8.01,0,"0,80",analytics/phase_d/label_quality.csv,analysis == 'componente: eGFR < 60',auc,min,2
+T8.02,0,"0,86",analytics/phase_d/label_quality.csv,analysis == 'componente: eGFR < 60',auc,max,2
+T8.03,0,"0,67",analytics/phase_d/label_quality.csv,analysis == 'componente: solo albuminuria',auc,min,2
+T8.04,0,"0,69",analytics/phase_d/label_quality.csv,analysis == 'componente: solo albuminuria',auc,max,2
+T9.01,0,"0,795",analytics/phase_d/semi_synthetic_control.csv,target_auroc == 0.75,oof_auc,value,3
+T9.02,0,"0,831",analytics/phase_d/semi_synthetic_control.csv,target_auroc == 0.8,oof_auc,value,3
+T9.03,0,"0,75",analytics/phase_d/semi_synthetic_control.csv,target_auroc == 0.75,z_auc,value,2
+T9.04,0,"0,80",analytics/phase_d/semi_synthetic_control.csv,target_auroc == 0.8,z_auc,value,2
+T9.05,0,"+0,009",analytics/phase_d/label_noise_auroc.csv,analysis == 'casi netti (zona grigia 17.7-35.4 esclusa)' & model == 'lr_penalized';;analysis == 'tutti' & model == 'lr_penalized',auc,diff,3
+T9.06,0,"+0,016",analytics/phase_d/acr_label_sensitivity.csv,scale == 'osservata' & threshold == 53.04 & grey_zone == '' & model == 'lr_penalized';;scale == 'osservata' & threshold == 30.0 & grey_zone == '' & model == 'lr_penalized',auc,diff,3
+T10.01,0,"0,933",analytics/phase_d/discrimination.csv,model == 'positive_control',auc,value,3
+T12.01,0,1.451,analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & model == 'lr_scored' & group == 'tutti',n,value,0
+T12.02,0,"0,71",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & group == 'tutti' & model != 'dummy',auc,min,2
+T12.03,0,"0,74",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & group == 'tutti' & model != 'dummy',auc,max,2
+T13.01,0,2%,analytics/phase_b/evaluation/naive.csv,technique == 'none' & model != 'dummy' & threshold == 0.5,recall,mean,0
+T13.02,0,60%,analytics/phase_b/evaluation/naive.csv,technique == 'undersampling' & model != 'dummy' & threshold == 0.5,recall,mean,0
+T13.03,0,"1,02",analytics/quality/evaluation/calibration.csv,group == 'tutti',slope,mean,2
+T13.04,0,"0,703",analytics/phase_d/discrimination.csv,model == 'tri_ensemble_top21',auc,value,3
+T13.05,0,"0,716",analytics/phase_d/discrimination.csv,model == 'tri_ensemble_leaky',auc,value,3
+T22.01,1,"0,95",analytics/test/run_1/calibration.csv,technique == 'none' & probabilities == 'grezza' & group == 'tutti',oe_ratio,min,2
+T22.02,1,"1,01",analytics/quality/evaluation/calibration.csv,group == 'tutti',oe_ratio,max,2
+T22.03,1,"1,01",analytics/test/run_1/calibration.csv,technique == 'none' & probabilities == 'ricalibrata' & group == 'tutti',slope,min,2
+T22.04,1,"1,15",analytics/test/run_1/calibration.csv,technique == 'none' & probabilities == 'ricalibrata' & group == 'tutti',slope,max,2
+T24.01,1,4.350,analytics/quality/evaluation/calibration.csv,group == 'tutti' & model == 'lr_penalized',n,value,0
+T24.02,1,1.451,analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & model == 'lr_scored' & group == 'tutti',n,value,0
+T25.01,1,"9,8%",analytics/quality/evaluation/calibration.csv,group == 'tutti' & model == 'lr_penalized',prevalence,value,1
+T31.01,2,"0,697",analytics/phase_a/evaluation/q1_discrimination.csv,"feature_set == 'main' & model in ['lr_penalized', 'random_forest', 'xgboost']",auc,min,3
+T31.02,2,"0,703",analytics/phase_a/evaluation/q1_discrimination.csv,"feature_set == 'main' & model in ['lr_penalized', 'random_forest', 'xgboost']",auc,max,3
+T31.03,2,"0,708",analytics/phase_d/discrimination.csv,model == 'ensemble_mean',auc,value,3
+T31.04,2,"0,710",analytics/phase_d/discrimination.csv,model == 'tabpfn',auc,value,3
+T31.05,2,"0,714",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & group == 'tutti' & model != 'dummy',auc,min,3
+T31.06,2,"0,743",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & group == 'tutti' & model != 'dummy',auc,max,3
+T34.01,2,"0,70",analytics/phase_a/evaluation/q1_discrimination.csv,feature_set == 'main' & model == 'random_forest',auc,value,2
+T34.02,2,"0,71",analytics/phase_d/discrimination.csv,model == 'tabpfn',auc,value,2
+T34.03,2,"0,71",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & group == 'tutti' & model != 'dummy',auc,min,2
+T34.04,2,"0,74",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & group == 'tutti' & model != 'dummy',auc,max,2
+T38.01,3,"0,70",analytics/phase_a/evaluation/q1_discrimination.csv,feature_set == 'main' & model == 'random_forest',auc,value,2
+T38.02,3,"0,71",analytics/phase_d/discrimination.csv,model == 'tabpfn',auc,value,2
+T38.03,3,"0,71",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & group == 'tutti' & model != 'dummy',auc,min,2
+T38.04,3,"0,74",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & group == 'tutti' & model != 'dummy',auc,max,2
+T41.01,4,"0,675",analytics/phase_a/evaluation/q1_discrimination.csv,feature_set == 'main' & model == 'lr_scored',auc,value,3
+T41.02,4,"0,646",analytics/phase_a/evaluation/q1_discrimination.csv,feature_set == 'main' & model == 'lr_scored',auc_low,value,3
+T41.03,4,"0,704",analytics/phase_a/evaluation/q1_discrimination.csv,feature_set == 'main' & model == 'lr_scored',auc_high,value,3
+T41.04,4,"0,224",analytics/phase_a/evaluation/q1_discrimination.csv,feature_set == 'main' & model == 'lr_scored',pr_auc,value,3
+T41.05,4,"0,697",analytics/phase_a/evaluation/q1_discrimination.csv,feature_set == 'main' & model == 'lr_penalized',auc,value,3
+T41.06,4,"0,669",analytics/phase_a/evaluation/q1_discrimination.csv,feature_set == 'main' & model == 'lr_penalized',auc_low,value,3
+T41.07,4,"0,725",analytics/phase_a/evaluation/q1_discrimination.csv,feature_set == 'main' & model == 'lr_penalized',auc_high,value,3
+T41.08,4,"0,242",analytics/phase_a/evaluation/q1_discrimination.csv,feature_set == 'main' & model == 'lr_penalized',pr_auc,value,3
+T41.09,4,"0,703",analytics/phase_a/evaluation/q1_discrimination.csv,feature_set == 'main' & model == 'random_forest',auc,value,3
+T41.10,4,"0,676",analytics/phase_a/evaluation/q1_discrimination.csv,feature_set == 'main' & model == 'random_forest',auc_low,value,3
+T41.11,4,"0,731",analytics/phase_a/evaluation/q1_discrimination.csv,feature_set == 'main' & model == 'random_forest',auc_high,value,3
+T41.12,4,"0,246",analytics/phase_a/evaluation/q1_discrimination.csv,feature_set == 'main' & model == 'random_forest',pr_auc,value,3
+T41.13,4,"0,699",analytics/phase_a/evaluation/q1_discrimination.csv,feature_set == 'main' & model == 'xgboost',auc,value,3
+T41.14,4,"0,671",analytics/phase_a/evaluation/q1_discrimination.csv,feature_set == 'main' & model == 'xgboost',auc_low,value,3
+T41.15,4,"0,726",analytics/phase_a/evaluation/q1_discrimination.csv,feature_set == 'main' & model == 'xgboost',auc_high,value,3
+T41.16,4,"0,251",analytics/phase_a/evaluation/q1_discrimination.csv,feature_set == 'main' & model == 'xgboost',pr_auc,value,3
+T41.17,4,"+0,021",analytics/phase_a/evaluation/comparison_models.csv,feature_set == 'main' & metric == 'auc' & model_a == 'lr_penalized' & model_b == 'lr_scored',difference,value,3
+T41.18,4,"−0,003",analytics/phase_a/evaluation/comparison_models.csv,feature_set == 'main' & metric == 'auc' & model_a == 'lr_penalized' & model_b == 'lr_scored',low,value,3
+T41.19,4,"+0,046",analytics/phase_a/evaluation/comparison_models.csv,feature_set == 'main' & metric == 'auc' & model_a == 'lr_penalized' & model_b == 'lr_scored',high,value,3
+T41.20,4,"+0,029",analytics/phase_a/evaluation/q1_discrimination.csv,feature_set == 'main' & model == 'random_forest';;feature_set == 'main' & model == 'lr_scored',auc_folds_mean,diff,3
+T41.21,4,"+0,025",analytics/phase_a/evaluation/q1_discrimination.csv,feature_set == 'main' & model == 'xgboost';;feature_set == 'main' & model == 'lr_scored',auc_folds_mean,diff,3
+T41.22,4,"+1,8",analytics/quality/evaluation/decision_curve.csv,group == 'tutti' & model == 'lr_penalized' & threshold == 0.07;;group == 'tutti' & model == 'lr_scored' & threshold == 0.07,avoided_per_100,diff,1
+T41.23,4,"+4,0",analytics/quality/evaluation/decision_curve.csv,group == 'tutti' & model == 'random_forest' & threshold == 0.07;;group == 'tutti' & model == 'lr_scored' & threshold == 0.07,avoided_per_100,diff,1
+T41.24,4,"+3,0",analytics/quality/evaluation/decision_curve.csv,group == 'tutti' & model == 'xgboost' & threshold == 0.07;;group == 'tutti' & model == 'lr_scored' & threshold == 0.07,avoided_per_100,diff,1
+T42.01,4,"0,696",analytics/phase_d/discrimination.csv,role == 'riferimento' & model == 'xgboost',auc,value,3
+T43.01,4,"0,723",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & model == 'lr_scored' & group == 'tutti',auc,value,3
+T43.02,4,"0,677",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & model == 'lr_scored' & group == 'tutti',auc_low,value,3
+T43.03,4,"0,769",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & model == 'lr_scored' & group == 'tutti',auc_high,value,3
+T43.04,4,"0,266",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & model == 'lr_scored' & group == 'tutti',pr_auc,value,3
+T43.05,4,"0,705",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & model == 'lr_scored' & group == 'non diabetici',auc,value,3
+T43.06,4,"0,714",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & model == 'lr_penalized' & group == 'tutti',auc,value,3
+T43.07,4,"0,668",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & model == 'lr_penalized' & group == 'tutti',auc_low,value,3
+T43.08,4,"0,760",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & model == 'lr_penalized' & group == 'tutti',auc_high,value,3
+T43.09,4,"0,239",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & model == 'lr_penalized' & group == 'tutti',pr_auc,value,3
+T43.10,4,"0,690",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & model == 'lr_penalized' & group == 'non diabetici',auc,value,3
+T43.11,4,"0,743",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & model == 'random_forest' & group == 'tutti',auc,value,3
+T43.12,4,"0,699",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & model == 'random_forest' & group == 'tutti',auc_low,value,3
+T43.13,4,"0,786",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & model == 'random_forest' & group == 'tutti',auc_high,value,3
+T43.14,4,"0,249",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & model == 'random_forest' & group == 'tutti',pr_auc,value,3
+T43.15,4,"0,726",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & model == 'random_forest' & group == 'non diabetici',auc,value,3
+T43.16,4,"0,725",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & model == 'xgboost' & group == 'tutti',auc,value,3
+T43.17,4,"0,680",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & model == 'xgboost' & group == 'tutti',auc_low,value,3
+T43.18,4,"0,771",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & model == 'xgboost' & group == 'tutti',auc_high,value,3
+T43.19,4,"0,254",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & model == 'xgboost' & group == 'tutti',pr_auc,value,3
+T43.20,4,"0,705",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & model == 'xgboost' & group == 'non diabetici',auc,value,3
+T43.21,4,"−5,7",analytics/test/run_1/decision_curve.csv,group == 'tutti' & model == 'lr_penalized' & threshold == 0.07;;group == 'tutti' & model == 'lr_scored' & threshold == 0.07,avoided_per_100,diff,1
+T43.22,4,"+0,8",analytics/test/run_1/decision_curve.csv,group == 'tutti' & model == 'random_forest' & threshold == 0.07;;group == 'tutti' & model == 'lr_scored' & threshold == 0.07,avoided_per_100,diff,1
+T43.23,4,"+0,2",analytics/test/run_1/decision_curve.csv,group == 'tutti' & model == 'xgboost' & threshold == 0.07;;group == 'tutti' & model == 'lr_scored' & threshold == 0.07,avoided_per_100,diff,1
+T43.24,4,1.451,analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & model == 'lr_scored' & group == 'tutti',n,value,0
+T44.01,4,"0,44",analytics/phase_a/evaluation/comparison_models.csv,feature_set == 'main' & metric == 'auc' & model_a == 'lr_penalized' & model_b == 'lr_scored',p_holm,value,2
+T44.02,4,"1,00",analytics/phase_a/evaluation/comparison_models.csv,feature_set == 'main' & metric == 'pr_auc' & model_a == 'lr_scored' & model_b == 'random_forest',p_holm,value,2
+T47.01,4,"0,94",analytics/quality/evaluation/calibration.csv,group == 'tutti' & model == 'lr_penalized',slope,value,2
+T47.02,4,"0,80",analytics/quality/evaluation/calibration.csv,group == 'tutti' & model == 'lr_penalized',slope_low_simple,value,2
+T47.03,4,"1,07",analytics/quality/evaluation/calibration.csv,group == 'tutti' & model == 'lr_penalized',slope_high_simple,value,2
+T48.01,4,"0,79",analytics/test/run_1/calibration.csv,technique == 'none' & probabilities == 'grezza' & group == 'tutti' & model == 'lr_penalized',slope,value,2
+T48.02,4,"0,62",analytics/test/run_1/calibration.csv,technique == 'none' & probabilities == 'grezza' & group == 'tutti' & model == 'lr_penalized',slope_low,value,2
+T48.03,4,"0,98",analytics/test/run_1/calibration.csv,technique == 'none' & probabilities == 'grezza' & group == 'tutti' & model == 'lr_penalized',slope_high,value,2
+T48.04,4,"1,01",analytics/test/run_1/calibration.csv,technique == 'none' & probabilities == 'ricalibrata' & group == 'tutti' & model == 'lr_penalized',slope,value,2
+T49.01,4,"1,31",analytics/quality/evaluation/calibration.csv,group == 'tutti' & model == 'random_forest',slope,value,2
+T49.02,4,"1,27",analytics/test/run_1/calibration.csv,technique == 'none' & probabilities == 'grezza' & group == 'tutti' & model == 'random_forest',slope,value,2
+T53.01,4,"0,703",analytics/phase_d/discrimination.csv,model == 'tri_ensemble_top21',auc,value,3
+T53.02,4,"0,676",analytics/phase_d/discrimination.csv,model == 'tri_ensemble_top21',auc_low,value,3
+T53.03,4,"0,731",analytics/phase_d/discrimination.csv,model == 'tri_ensemble_top21',auc_high,value,3
+T53.04,4,"0,252",analytics/phase_d/discrimination.csv,model == 'tri_ensemble_top21',pr_auc,value,3
+T53.05,4,"−0,002",analytics/phase_d/comparison.csv,candidate == 'tri_ensemble_top21',difference,value,3
+T53.06,4,"−0,025",analytics/phase_d/comparison.csv,candidate == 'tri_ensemble_top21',low,value,3
+T53.07,4,"+0,020",analytics/phase_d/comparison.csv,candidate == 'tri_ensemble_top21',high,value,3
+T53.08,4,"1,00",analytics/phase_d/comparison.csv,candidate == 'tri_ensemble_top21',p_holm,value,2
+T53.09,4,"0,716",analytics/phase_d/discrimination.csv,model == 'tri_ensemble_leaky',auc,value,3
+T53.10,4,"0,689",analytics/phase_d/discrimination.csv,model == 'tri_ensemble_leaky',auc_low,value,3
+T53.11,4,"0,742",analytics/phase_d/discrimination.csv,model == 'tri_ensemble_leaky',auc_high,value,3
+T53.12,4,"0,264",analytics/phase_d/discrimination.csv,model == 'tri_ensemble_leaky',pr_auc,value,3
+T54.01,4,"+0,012",analytics/phase_d/discrimination.csv,model == 'tri_ensemble_leaky';;model == 'tri_ensemble_top21',auc,diff,3
+T55.01,4,"0,703",analytics/phase_d/discrimination.csv,role == 'riferimento' & model == 'random_forest',auc,value,3
+T57.01,4,"0,710",analytics/phase_d/discrimination.csv,model == 'tabpfn',auc,value,3
+T57.02,4,"0,682",analytics/phase_d/discrimination.csv,model == 'tabpfn',auc_low,value,3
+T57.03,4,"0,737",analytics/phase_d/discrimination.csv,model == 'tabpfn',auc_high,value,3
+T57.04,4,"0,717",analytics/phase_d/discrimination.csv,model == 'tabpfn',auc_folds_mean,value,3
+T57.05,4,"0,708",analytics/phase_d/discrimination.csv,model == 'ensemble_mean',auc,value,3
+T57.06,4,"0,680",analytics/phase_d/discrimination.csv,model == 'ensemble_mean',auc_low,value,3
+T57.07,4,"0,735",analytics/phase_d/discrimination.csv,model == 'ensemble_mean',auc_high,value,3
+T57.08,4,"0,710",analytics/phase_d/discrimination.csv,model == 'ensemble_mean',auc_folds_mean,value,3
+T57.09,4,"0,703",analytics/phase_d/discrimination.csv,model == 'tri_ensemble_top21',auc,value,3
+T57.10,4,"0,676",analytics/phase_d/discrimination.csv,model == 'tri_ensemble_top21',auc_low,value,3
+T57.11,4,"0,731",analytics/phase_d/discrimination.csv,model == 'tri_ensemble_top21',auc_high,value,3
+T57.12,4,"0,706",analytics/phase_d/discrimination.csv,model == 'tri_ensemble_top21',auc_folds_mean,value,3
+T58.01,4,"+0,009",analytics/phase_d/comparison.csv,candidate == 'tabpfn',difference,value,3
+T58.02,4,"−0,014",analytics/phase_d/comparison.csv,candidate == 'tabpfn',low,value,3
+T58.03,4,"+0,032",analytics/phase_d/comparison.csv,candidate == 'tabpfn',high,value,3
+T63.01,5,"−4,4",analytics/quality/evaluation/decision_curve.csv,group == 'tutti' & model != 'dummy' & threshold <= 0.045,avoided_per_100,min,1
+T63.02,5,"+3,1",analytics/quality/evaluation/decision_curve.csv,group == 'tutti' & model != 'dummy' & threshold <= 0.045,avoided_per_100,max,1
+T63.03,5,"−2,8",analytics/test/run_1/decision_curve.csv,group == 'tutti' & model != 'dummy' & threshold <= 0.045,avoided_per_100,min,1
+T63.04,5,"+8,9",analytics/test/run_1/decision_curve.csv,group == 'tutti' & model != 'dummy' & threshold <= 0.045,avoided_per_100,max,1
+T63.05,5,"+0,1",analytics/quality/evaluation/decision_curve.csv,group == 'tutti' & model != 'dummy' & threshold == 0.05,avoided_per_100,min,1
+T63.06,5,"+2,3",analytics/quality/evaluation/decision_curve.csv,group == 'tutti' & model != 'dummy' & threshold == 0.05,avoided_per_100,max,1
+T63.07,5,"+4,6",analytics/test/run_1/decision_curve.csv,group == 'tutti' & model != 'dummy' & threshold == 0.05,avoided_per_100,min,1
+T63.08,5,"+11,3",analytics/test/run_1/decision_curve.csv,group == 'tutti' & model != 'dummy' & threshold == 0.05,avoided_per_100,max,1
+T63.09,5,"+9,2",analytics/quality/evaluation/decision_curve.csv,group == 'tutti' & model != 'dummy' & threshold == 0.07,avoided_per_100,min,1
+T63.10,5,"+13,1",analytics/quality/evaluation/decision_curve.csv,group == 'tutti' & model != 'dummy' & threshold == 0.07,avoided_per_100,max,1
+T63.11,5,"+12,8",analytics/test/run_1/decision_curve.csv,group == 'tutti' & model != 'dummy' & threshold == 0.07,avoided_per_100,min,1
+T63.12,5,"+19,2",analytics/test/run_1/decision_curve.csv,group == 'tutti' & model != 'dummy' & threshold == 0.07,avoided_per_100,max,1
+T63.13,5,"+24,9",analytics/quality/evaluation/decision_curve.csv,group == 'tutti' & model != 'dummy' & threshold == 0.1,avoided_per_100,min,1
+T63.14,5,"+27,8",analytics/quality/evaluation/decision_curve.csv,group == 'tutti' & model != 'dummy' & threshold == 0.1,avoided_per_100,max,1
+T63.15,5,"+29,5",analytics/test/run_1/decision_curve.csv,group == 'tutti' & model != 'dummy' & threshold == 0.1,avoided_per_100,min,1
+T63.16,5,"+33,1",analytics/test/run_1/decision_curve.csv,group == 'tutti' & model != 'dummy' & threshold == 0.1,avoided_per_100,max,1
+T63.17,5,"+54,9",analytics/quality/evaluation/decision_curve.csv,group == 'tutti' & model != 'dummy' & threshold == 0.2,avoided_per_100,min,1
+T63.18,5,"+56,8",analytics/quality/evaluation/decision_curve.csv,group == 'tutti' & model != 'dummy' & threshold == 0.2,avoided_per_100,max,1
+T63.19,5,"+54,3",analytics/test/run_1/decision_curve.csv,group == 'tutti' & model != 'dummy' & threshold == 0.2,avoided_per_100,min,1
+T63.20,5,"+58,0",analytics/test/run_1/decision_curve.csv,group == 'tutti' & model != 'dummy' & threshold == 0.2,avoided_per_100,max,1
+T63.21,5,"9,8%",analytics/quality/evaluation/calibration.csv,group == 'tutti' & model == 'lr_penalized',prevalence,value,1
+T67.01,5,"25,9%",analytics/quality/evaluation/calibration.csv,group == 'diabetici' & model == 'lr_penalized',prevalence,value,1
+T67.02,5,"3,4",analytics/quality/evaluation/decision_curve.csv,group == 'diabetici' & model != 'dummy' & threshold <= 0.1,avoided_per_100,max,1
+T68.01,5,97%,analytics/phase_c/evaluation/threshold_descriptive.csv,technique == 'none' & group == 'diabetici',alert_rate_global,min,0
+T68.02,5,100%,analytics/phase_c/evaluation/threshold_descriptive.csv,technique == 'none' & group == 'diabetici',alert_rate_global,max,0
+T68.03,5,"97,7%",analytics/test/run_1/q1_operating_points.csv,technique == 'none' & group == 'diabetici' & model != 'dummy',alert_rate,min,1
+T68.04,5,100%,analytics/test/run_1/q1_operating_points.csv,technique == 'none' & group == 'diabetici' & model != 'dummy',alert_rate,max,0
+T69.01,5,502,analytics/quality/evaluation/costs.csv,group == 'tutti' & model == 'lr_penalized' & threshold == 0.07,cost_per_case_all,value,0
+T69.02,5,"10,2",analytics/quality/evaluation/costs.csv,group == 'tutti' & model == 'lr_penalized' & threshold == 0.07,tests_per_case_all,value,1
+T69.03,5,336,analytics/quality/evaluation/costs.csv,group == 'tutti' & model != 'dummy' & threshold == 0.07,cost_per_case,min,0
+T69.04,5,383,analytics/quality/evaluation/costs.csv,group == 'tutti' & model != 'dummy' & threshold == 0.07,cost_per_case,max,0
+T69.05,5,1.800,analytics/quality/evaluation/costs.csv,group == 'tutti' & model != 'dummy' & threshold == 0.07,saving_per_100,min,-2
+T69.06,5,2.600,analytics/quality/evaluation/costs.csv,group == 'tutti' & model != 'dummy' & threshold == 0.07,saving_per_100,max,-2
+T69.07,5,"1,6",analytics/quality/evaluation/costs.csv,group == 'tutti' & model != 'dummy' & threshold == 0.07,missed_per_100,min,1
+T69.08,5,"2,8",analytics/quality/evaluation/costs.csv,group == 'tutti' & model != 'dummy' & threshold == 0.07,missed_per_100,max,1
+T69.09,5,880,analytics/quality/evaluation/costs.csv,group == 'tutti' & model != 'dummy' & threshold == 0.07,incremental_cost_per_case,min,0
+T69.10,5,1.100,analytics/quality/evaluation/costs.csv,group == 'tutti' & model != 'dummy' & threshold == 0.07,incremental_cost_per_case,max,-2
+T72.01,5,"−0,01",analytics/quality/evaluation/calibration.csv,group == 'tutti',intercept,min,2
+T72.02,5,"+0,01",analytics/quality/evaluation/calibration.csv,group == 'tutti',intercept,max,2
+T72.03,5,"0,99",analytics/quality/evaluation/calibration.csv,group == 'tutti',oe_ratio,min,2
+T72.04,5,"1,01",analytics/quality/evaluation/calibration.csv,group == 'tutti',oe_ratio,max,2
+T73.01,5,"0,97",analytics/quality/evaluation/calibration.csv,group == 'tutti' & model == 'lr_scored',slope,value,2
+T73.02,5,"0,94",analytics/quality/evaluation/calibration.csv,group == 'tutti' & model == 'lr_penalized',slope,value,2
+T73.03,5,"0,79",analytics/test/run_1/calibration.csv,technique == 'none' & probabilities == 'grezza' & group == 'tutti' & model == 'lr_penalized',slope,value,2
+T73.04,5,"1,31",analytics/quality/evaluation/calibration.csv,group == 'tutti' & model == 'random_forest',slope,value,2
+T73.05,5,"1,13",analytics/quality/evaluation/calibration.csv,group == 'tutti' & model == 'random_forest',slope_low_simple,value,2
+T73.06,5,"1,48",analytics/quality/evaluation/calibration.csv,group == 'tutti' & model == 'random_forest',slope_high_simple,value,2
+T73.07,5,"0,86",analytics/quality/evaluation/calibration.csv,group == 'tutti' & model == 'xgboost',slope,value,2
+T73.08,5,"0,75",analytics/quality/evaluation/calibration.csv,group == 'tutti' & model == 'xgboost',slope_low_simple,value,2
+T73.09,5,"0,97",analytics/quality/evaluation/calibration.csv,group == 'tutti' & model == 'xgboost',slope_high_simple,value,2
+T74.01,5,"1,26",analytics/quality/evaluation/calibration.csv,group == 'diabetici' & model == 'random_forest',oe_ratio,value,2
+T74.02,5,"1,01",analytics/quality/evaluation/calibration.csv,group == 'diabetici' & model == 'random_forest',oe_ratio_low_simple,value,2
+T74.03,5,"1,51",analytics/quality/evaluation/calibration.csv,group == 'diabetici' & model == 'random_forest',oe_ratio_high_simple,value,2
+T74.04,5,"0,97",analytics/quality/evaluation/calibration.csv,group == 'non diabetici' & model == 'lr_penalized',oe_ratio,value,2
+T74.05,5,"0,96",analytics/quality/evaluation/calibration.csv,group == 'non diabetici' & model == 'random_forest',oe_ratio,value,2
+T77.01,5bis,1.451,analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & model == 'lr_scored' & group == 'tutti',n,value,0
+T78.01,5bis,"0,714",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & group == 'tutti' & model != 'dummy',auc,min,3
+T78.02,5bis,"0,743",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & group == 'tutti' & model != 'dummy',auc,max,3
+T78.03,5bis,23,analytics/test/run_1/primary_comparison.csv,model == 'lr_scored' & technique == 'class_weight',severe_n,value,0
+T78.04,5bis,"1,00",analytics/test/run_1/primary_comparison.csv,severe_n == 23,p_holm,min,2
+T78.05,5bis,"97,7%",analytics/test/run_1/q1_operating_points.csv,technique == 'none' & group == 'diabetici' & model != 'dummy',alert_rate,min,1
+T78.06,5bis,100%,analytics/test/run_1/q1_operating_points.csv,technique == 'none' & group == 'diabetici' & model != 'dummy',alert_rate,max,0
+T78.07,5bis,13,analytics/test/run_1/decision_curve.csv,group == 'tutti' & model != 'dummy' & threshold == 0.07,avoided_per_100,min,0
+T78.08,5bis,19,analytics/test/run_1/decision_curve.csv,group == 'tutti' & model != 'dummy' & threshold == 0.07,avoided_per_100,max,0
+T78.09,5bis,29,analytics/test/run_1/decision_curve.csv,group == 'tutti' & model != 'dummy' & threshold == 0.1,avoided_per_100,min,0
+T78.10,5bis,33,analytics/test/run_1/decision_curve.csv,group == 'tutti' & model != 'dummy' & threshold == 0.1,avoided_per_100,max,0
+T78.11,5bis,"4,4%",analytics/test/run_1/naive.csv,technique == 'none' & model != 'dummy' & threshold == 0.5,recall,mean,1
+T78.12,5bis,40%,analytics/test/run_1/naive.csv,technique == 'smote_nc' & model != 'dummy' & threshold == 0.5,recall,mean,0
+T78.13,5bis,65%,analytics/test/run_1/naive.csv,technique == 'undersampling' & model != 'dummy' & threshold == 0.5,recall,mean,0
+T80.01,5bis,"0,95",analytics/test/run_1/calibration.csv,technique == 'none' & probabilities == 'grezza' & group == 'tutti',oe_ratio,min,2
+T80.02,5bis,"0,97",analytics/test/run_1/calibration.csv,technique == 'none' & probabilities == 'grezza' & group == 'tutti',oe_ratio,max,2
+T80.03,5bis,"1,27",analytics/test/run_1/calibration.csv,technique == 'none' & probabilities == 'grezza' & group == 'tutti' & model == 'random_forest',slope,value,2
+T80.04,5bis,"0,79",analytics/test/run_1/calibration.csv,technique == 'none' & probabilities == 'grezza' & group == 'tutti' & model == 'lr_penalized',slope,value,2
+T81.01,5bis,23,analytics/test/run_1/primary_comparison.csv,model == 'lr_scored' & technique == 'class_weight',severe_n,value,0
+T81.02,5bis,88,analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & model == 'lr_scored' & group == 'diabetici',n,value,0
+T82.01,6,"0,80",analytics/phase_d/label_quality.csv,analysis == 'componente: eGFR < 60',auc,min,2
+T82.02,6,"0,86",analytics/phase_d/label_quality.csv,analysis == 'componente: eGFR < 60',auc,max,2
+T82.03,6,"0,67",analytics/phase_d/label_quality.csv,analysis == 'componente: solo albuminuria',auc,min,2
+T82.04,6,"0,69",analytics/phase_d/label_quality.csv,analysis == 'componente: solo albuminuria',auc,max,2
+T82.05,6,362,analytics/phase_d/label_quality.csv,model == 'lr_penalized' & analysis == 'componente: solo albuminuria',positives,value,0
+T82.06,6,425,analytics/phase_d/label_quality.csv,model == 'lr_penalized' & analysis == 'tutte le giornate',positives,value,0
+T83.01,6,"0,692",analytics/phase_d/discrimination.csv,role == 'candidato',auc,min,3
+T83.02,6,"0,710",analytics/phase_d/discrimination.csv,role == 'candidato',auc,max,3
+T85.01,6,"0,933",analytics/phase_d/discrimination.csv,model == 'positive_control',auc,value,3
+T88.01,6,"0,70",analytics/phase_a/evaluation/q1_discrimination.csv,feature_set == 'main' & model == 'random_forest',auc,value,2
+T88.02,6,"0,71",analytics/phase_d/discrimination.csv,model == 'tabpfn',auc,value,2
+T91.01,6bis,"0,933",analytics/phase_d/discrimination.csv,model == 'positive_control',auc,value,3
+T91.02,6bis,"0,75",analytics/phase_d/semi_synthetic_control.csv,target_auroc == 0.75,z_auc,value,2
+T91.03,6bis,"0,80",analytics/phase_d/semi_synthetic_control.csv,target_auroc == 0.8,z_auc,value,2
+T91.04,6bis,"0,795",analytics/phase_d/semi_synthetic_control.csv,target_auroc == 0.75,oof_auc,value,3
+T91.05,6bis,"0,771",analytics/phase_d/semi_synthetic_control.csv,target_auroc == 0.75,oof_auc_low,value,3
+T91.06,6bis,"0,818",analytics/phase_d/semi_synthetic_control.csv,target_auroc == 0.75,oof_auc_high,value,3
+T91.07,6bis,"0,831",analytics/phase_d/semi_synthetic_control.csv,target_auroc == 0.8,oof_auc,value,3
+T91.08,6bis,"0,809",analytics/phase_d/semi_synthetic_control.csv,target_auroc == 0.8,oof_auc_low,value,3
+T91.09,6bis,"0,853",analytics/phase_d/semi_synthetic_control.csv,target_auroc == 0.8,oof_auc_high,value,3
+T91.10,6bis,"0,696",analytics/phase_d/semi_synthetic_control.csv,target_auroc == 0.75,reference_auc,value,3
+T92.01,6bis,"0,645",analytics/phase_d/label_noise_auroc.csv,analysis == 'fascia ACR 30-45',auc,min,3
+T92.02,6bis,"0,682",analytics/phase_d/label_noise_auroc.csv,analysis == 'fascia ACR 30-45',auc,max,3
+T92.03,6bis,"0,675",analytics/phase_d/label_noise_auroc.csv,analysis == 'fascia ACR 45-100',auc,min,3
+T92.04,6bis,"0,684",analytics/phase_d/label_noise_auroc.csv,analysis == 'fascia ACR 45-100',auc,max,3
+T92.05,6bis,"0,698",analytics/phase_d/label_noise_auroc.csv,analysis == 'fascia ACR 100-300',auc,min,3
+T92.06,6bis,"0,718",analytics/phase_d/label_noise_auroc.csv,analysis == 'fascia ACR 100-300',auc,max,3
+T92.07,6bis,"0,758",analytics/phase_d/label_noise_auroc.csv,analysis == 'fascia ACR 300-inf',auc,min,3
+T92.08,6bis,"0,790",analytics/phase_d/label_noise_auroc.csv,analysis == 'fascia ACR 300-inf',auc,max,3
+T93.01,6bis,"0,696",analytics/phase_d/label_noise_auroc.csv,analysis == 'tutti',auc,min,3
+T93.02,6bis,"0,710",analytics/phase_d/label_noise_auroc.csv,analysis == 'tutti',auc,max,3
+T93.03,6bis,"0,701",analytics/phase_d/label_noise_auroc.csv,analysis == 'casi netti (zona grigia 17.7-35.4 esclusa)',auc,min,3
+T93.04,6bis,"0,717",analytics/phase_d/label_noise_auroc.csv,analysis == 'casi netti (zona grigia 17.7-35.4 esclusa)',auc,max,3
+T93.05,6bis,"+0,005",analytics/phase_d/label_noise_auroc.csv,analysis == 'casi netti (zona grigia 17.7-35.4 esclusa)' & model == 'xgboost';;analysis == 'tutti' & model == 'xgboost',auc,diff,3
+T93.06,6bis,"+0,009",analytics/phase_d/label_noise_auroc.csv,analysis == 'casi netti (zona grigia 17.7-35.4 esclusa)' & model == 'lr_penalized';;analysis == 'tutti' & model == 'lr_penalized',auc,diff,3
+T94.01,6bis,"0,696",analytics/phase_d/label_noise_auroc.csv,analysis == 'coppie della stessa giornata',auc,min,3
+T94.02,6bis,"0,711",analytics/phase_d/label_noise_auroc.csv,analysis == 'coppie della stessa giornata',auc,max,3
+T94.03,6bis,"−0,002",analytics/phase_d/label_noise_auroc.csv,analysis == 'coppie della stessa giornata' & model == 'random_forest';;analysis == 'tutti' & model == 'random_forest',auc,diff,3
+T94.04,6bis,"+0,009",analytics/phase_d/label_noise_auroc.csv,analysis == 'coppie della stessa giornata' & model == 'lr_penalized';;analysis == 'tutti' & model == 'lr_penalized',auc,diff,3
+T97.01,6bis,425,analytics/phase_d/acr_label_sensitivity.csv,scale == 'osservata' & threshold == 30.0 & grey_zone == '' & model == 'lr_penalized',positives,value,0
+T97.02,6bis,293,analytics/phase_d/acr_label_sensitivity.csv,scale == 'osservata' & threshold == 53.04 & grey_zone == '' & model == 'lr_penalized',positives,value,0
+T98.01,6bis,"53,04",analytics/phase_d/acr_label_sensitivity.csv,scale == 'alternativa' & threshold == 53.04 & grey_zone == '' & model == 'lr_penalized',threshold,value,2
+T98.02,6bis,"0,696",analytics/phase_d/acr_label_sensitivity.csv,scale == 'osservata' & threshold == 30.0 & grey_zone == '',auc,min,3
+T98.03,6bis,"0,710",analytics/phase_d/acr_label_sensitivity.csv,scale == 'osservata' & threshold == 30.0 & grey_zone == '',auc,max,3
+T98.04,6bis,"0,705",analytics/phase_d/acr_label_sensitivity.csv,scale == 'osservata' & threshold == 53.04 & grey_zone == '',auc,min,3
+T98.05,6bis,"0,720",analytics/phase_d/acr_label_sensitivity.csv,scale == 'osservata' & threshold == 53.04 & grey_zone == '',auc,max,3
+T98.06,6bis,"+0,003",analytics/phase_d/acr_label_sensitivity.csv,scale == 'osservata' & threshold == 53.04 & grey_zone == '' & model == 'random_forest';;scale == 'osservata' & threshold == 30.0 & grey_zone == '' & model == 'random_forest',auc,diff,3
+T98.07,6bis,"+0,016",analytics/phase_d/acr_label_sensitivity.csv,scale == 'osservata' & threshold == 53.04 & grey_zone == '' & model == 'lr_penalized';;scale == 'osservata' & threshold == 30.0 & grey_zone == '' & model == 'lr_penalized',auc,diff,3
+T98.08,6bis,"0,722",analytics/phase_d/acr_label_sensitivity.csv,scale == 'alternativa' & grey_zone != '',auc,min,3
+T98.09,6bis,"0,755",analytics/phase_d/acr_label_sensitivity.csv,scale == 'alternativa' & grey_zone != '',auc,max,3
+T101.01,6bis,"+0,039",analytics/phase_d/comparison.csv,candidate != '',high,max,3
+T101.02,6bis,"+0,032",analytics/phase_d/comparison.csv,candidate == 'tabpfn',high,value,3
+T105.01,6bis,"0,009",analytics/phase_d/label_noise_auroc.csv,analysis == 'casi netti (zona grigia 17.7-35.4 esclusa)' & model == 'lr_penalized';;analysis == 'tutti' & model == 'lr_penalized',auc,diff,3
+T105.02,6bis,"0,016",analytics/phase_d/acr_label_sensitivity.csv,scale == 'osservata' & threshold == 53.04 & grey_zone == '' & model == 'lr_penalized';;scale == 'osservata' & threshold == 30.0 & grey_zone == '' & model == 'lr_penalized',auc,diff,3
+T105.03,6bis,"0,67",analytics/phase_d/label_quality.csv,analysis == 'componente: solo albuminuria',auc,min,2
+T105.04,6bis,"0,69",analytics/phase_d/label_quality.csv,analysis == 'componente: solo albuminuria',auc,max,2
+T105.05,6bis,"0,80",analytics/phase_d/label_quality.csv,analysis == 'componente: eGFR < 60',auc,min,2
+T105.06,6bis,"0,86",analytics/phase_d/label_quality.csv,analysis == 'componente: eGFR < 60',auc,max,2
+T106.01,7,"0,933",analytics/phase_d/discrimination.csv,model == 'positive_control',auc,value,3
+T106.02,7,"0,795",analytics/phase_d/semi_synthetic_control.csv,target_auroc == 0.75,oof_auc,value,3
+T106.03,7,"0,831",analytics/phase_d/semi_synthetic_control.csv,target_auroc == 0.8,oof_auc,value,3
+T106.04,7,"0,70",analytics/phase_a/evaluation/q1_discrimination.csv,feature_set == 'main' & model == 'random_forest',auc,value,2
+T106.05,7,1.451,analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & model == 'lr_scored' & group == 'tutti',n,value,0
+T110.01,7,"−0,012",analytics/phase_a/evaluation/comparison_sets.csv,metric == 'auc' & model != 'dummy',difference,min,3
+T110.02,7,"+0,001",analytics/phase_a/evaluation/comparison_sets.csv,metric == 'auc' & model != 'dummy',difference,max,3
+T110.03,7,"0,23",analytics/phase_a/evaluation/comparison_sets.csv,metric == 'auc' & model != 'dummy',p_value,min,2
+T111.01,7,2%,analytics/phase_b/evaluation/naive.csv,technique == 'none' & model != 'dummy' & threshold == 0.5,recall,mean,0
+T111.02,7,60%,analytics/phase_b/evaluation/naive.csv,technique == 'undersampling' & model != 'dummy' & threshold == 0.5,recall,mean,0
+T111.03,7,71,analytics/quality/evaluation/operating_points.csv,group == 'tutti' & model == 'lr_penalized' & threshold == 0.07,severe_n,value,0
+T111.04,7,"1,00",analytics/phase_b/evaluation/primary_comparison.csv,confirmatory == True,p_holm,min,2
+T112.01,7,"0,44",analytics/phase_c/evaluation/q1_discrimination.csv,technique == 'none' & model == 'random_forest' & group == 'diabetici',pr_auc,value,2
+T112.02,7,"0,19",analytics/phase_c/evaluation/q1_discrimination.csv,technique == 'none' & model == 'random_forest' & group == 'non diabetici',pr_auc,value,2
+T113.01,7,"1,02",analytics/quality/evaluation/calibration.csv,group == 'tutti',slope,mean,2
+T113.02,7,"1,31",analytics/quality/evaluation/calibration.csv,group == 'tutti' & model == 'random_forest',slope,value,2
+T113.03,7,"0,86",analytics/quality/evaluation/calibration.csv,group == 'tutti' & model == 'xgboost',slope,value,2
+T113.04,7,"0,703",analytics/phase_d/discrimination.csv,model == 'tri_ensemble_top21',auc,value,3
+T113.05,7,"0,716",analytics/phase_d/discrimination.csv,model == 'tri_ensemble_leaky',auc,value,3
+T114.01,8,"0,70",analytics/phase_a/evaluation/q1_discrimination.csv,feature_set == 'main' & model == 'random_forest',auc,value,2
+T114.02,8,"0,71",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & group == 'tutti' & model != 'dummy',auc,min,2
+T114.03,8,"0,74",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & group == 'tutti' & model != 'dummy',auc,max,2
+T114.04,8,"0,80",analytics/phase_d/label_quality.csv,analysis == 'componente: eGFR < 60',auc,min,2
+T114.05,8,"0,86",analytics/phase_d/label_quality.csv,analysis == 'componente: eGFR < 60',auc,max,2
+T114.06,8,"0,67",analytics/phase_d/label_quality.csv,analysis == 'componente: solo albuminuria',auc,min,2
+T114.07,8,"0,69",analytics/phase_d/label_quality.csv,analysis == 'componente: solo albuminuria',auc,max,2
+T114.08,8,"0,692",analytics/phase_d/discrimination.csv,role == 'candidato',auc,min,3
+T114.09,8,"0,710",analytics/phase_d/discrimination.csv,role == 'candidato',auc,max,3
+T114.10,8,"0,795",analytics/phase_d/semi_synthetic_control.csv,target_auroc == 0.75,oof_auc,value,3
+T114.11,8,"0,831",analytics/phase_d/semi_synthetic_control.csv,target_auroc == 0.8,oof_auc,value,3
+T114.12,8,"0,009",analytics/phase_d/label_noise_auroc.csv,analysis == 'casi netti (zona grigia 17.7-35.4 esclusa)' & model == 'lr_penalized';;analysis == 'tutti' & model == 'lr_penalized',auc,diff,3
+T114.13,8,"0,016",analytics/phase_d/acr_label_sensitivity.csv,scale == 'osservata' & threshold == 53.04 & grey_zone == '' & model == 'lr_penalized';;scale == 'osservata' & threshold == 30.0 & grey_zone == '' & model == 'lr_penalized',auc,diff,3
+T115.01,8,142,analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & model == 'lr_scored' & group == 'tutti',positives,value,0
+T115.02,8,23,analytics/test/run_1/primary_comparison.csv,model == 'lr_scored' & technique == 'class_weight',severe_n,value,0
+T115.03,8,88,analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & model == 'lr_scored' & group == 'diabetici',n,value,0
+T116.01,8,"0,743",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & model == 'random_forest' & group == 'tutti',auc,value,3
+T116.02,8,"0,723",analytics/test/run_1/q1_discrimination.csv,technique == 'fase_a' & model == 'lr_scored' & group == 'tutti',auc,value,3
+T118.01,8,"+0,003",analytics/phase_d/acr_label_sensitivity.csv,scale == 'osservata' & threshold == 53.04 & grey_zone == '' & model == 'random_forest';;scale == 'osservata' & threshold == 30.0 & grey_zone == '' & model == 'random_forest',auc,diff,3
+T118.02,8,"+0,016",analytics/phase_d/acr_label_sensitivity.csv,scale == 'osservata' & threshold == 53.04 & grey_zone == '' & model == 'lr_penalized';;scale == 'osservata' & threshold == 30.0 & grey_zone == '' & model == 'lr_penalized',auc,diff,3
