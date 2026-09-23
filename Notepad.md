@@ -1722,6 +1722,51 @@ Quelli dichiarati nel protocollo: 23 casi gravi, 88 diabetici con 23 positivi (i
 
 ---
 
+## Audit del tetto dei dati — registrazione (23/09/2026, prima dei calcoli)
+Branch `experimental/tetto-dati`. Domanda: il limite ad AUROC circa 0,70 è davvero dei dati, o esistono scelte che danno risultati nettamente migliori? Audit indipendente a quattro ruoli: esperto di codice (ha letto solo il codice senza commenti), critico, ricercatore (fonti con DOI verificato su Crossref), valorizzatore. Tutto è post-hoc ed esplorativo: il test set è già stato aperto una volta (22/09) e **non** viene letto.
+
+### Cosa è emerso prima di questa registrazione (sul solo training)
+- **Nessun leakage né bug che deprima le prestazioni**: imputazione e scaling sul solo fold di training (cache del fold 0 ricalcolata identica), fold annidati coerenti fra le fasi, CKD-EPI 2021 e mappa KDIGO corretti.
+- **Difetto di metodo**: `phase_d.repeat_seeds` è scritto nella regola ma nessun codice lo esegue. Con una sola partizione a 5 fold la differenza minima che la regola può dichiarare "significativa" (Nadeau-Bengio + Holm su 11) è circa 0,040; con 3 ripetizioni circa 0,020 (DS mediana delle differenze per fold 0,0105). "Nessun candidato migliora" va letto come "nessuno migliora di almeno 0,02–0,04": differenze di 0,01–0,02 non si possono né escludere né dimostrare.
+- **Unità dell'ACR non documentate**: nel training `UMAUCR` = 176,8 × `UmALB`/`UCRE` su tutte le 4.350 righe; `HighACR` degli autori coincide con `UMAUCR` ≥ 30. Il dizionario del dataset lascia le unità vuote. La mediana di `UCRE` (185) è compatibile solo con i mg/dL (Barr et al. 2005, mediana NHANES 118,6 mg/dL), e con i mg/dL il fattore corretto sarebbe 100: in quel caso la soglia 30 corrisponderebbe a un ACR vero di circa 17 mg/g. Non dimostrabile: si dichiara come limite e si misura con un'analisi di sensibilità.
+- **L'idea nuova migliore vale al massimo +0,01/+0,02**: un'esplorazione non registrata (4 varianti, seed 42/43/44) con l'ACR continuo come bersaglio ausiliario ha dato +0,010/+0,020. Sotto la differenza che la regola può rilevare e non "nettamente migliore": **non** diventa un candidato. Nella tesi si cita solo come esplorazione post-hoc.
+
+### Decisioni (23/09/2026)
+- **Nessun nuovo candidato e nessuna CV ripetuta**: circa 16 ore di calcolo (più 7 per una replica) per differenze attese di 0,01–0,02, che la regola non potrebbe comunque dichiarare. Il difetto `repeat_seeds` si dichiara, con la differenza minima rilevabile.
+- **Registrate in `configs/config.yaml` solo tre diagnostiche**, da secondi a pochi minuti: `semi_synthetic_control` (controllo positivo a intensità nota, al posto del tautologico UmALB), `label_noise_auroc` (rumore dell'etichetta in AUROC, con avvertenza sull'effetto spettro), `acr_label_sensitivity` (soglia 53,04 = fattore 100; i suoi numeri erano già stati esplorati prima di questa registrazione).
+- **Test set**: non si riapre. La run 1 del 22/09 resta definitiva.
+
+---
+
+## Audit del tetto dei dati — risultati (23/09/2026)
+`python -m src.models.phase_d --diagnostics label_noise_auroc acr_label_sensitivity semi_synthetic_control` sulle previsioni out-of-fold del training (test set non letto; i CSV già esistenti della Fase D sono rimasti identici, verificato con sha256). Tabelle in `analytics/phase_d/`: `semi_synthetic_control.csv`, `label_noise_auroc.csv`, `acr_label_sensitivity.csv`. Modelli: i tre riferimenti, `ensemble_mean` e `tabpfn`.
+
+### La pipeline impara quando l'informazione c'è (`semi_synthetic_control.csv`)
+| feature semi-sintetica z | AUROC univariata di z | AUROC out-of-fold con z (IC 95%) | senza z | esito |
+|---|---|---|---|---|
+| rumore 2,58 × DS di log(ACR) | 0,75 | 0,795 (0,771–0,818) | 0,696 | passa |
+| rumore 1,99 × DS di log(ACR) | 0,80 | 0,831 (0,809–0,853) | 0,696 | passa |
+
+Con un segnale di intensità moderata e nota, XGBoost con gli iperparametri della Fase A lo trova e lo somma alle altre variabili. È un controllo più severo di quello con `UmALB` (0,933), che era quasi il numeratore dell'ACR.
+
+### Quanto costa il rumore dell'etichetta (`label_noise_auroc.csv`)
+- per fascia di ACR dei positivi: 30–45 → 0,645–0,682; 45–100 → 0,675–0,684; 100–300 → 0,698–0,718; ≥ 300 → 0,758–0,790. L'albuminuria grave si riconosce meglio, ma resta lontana da una discriminazione alta;
+- casi netti (zona grigia 17,7–35,4 mg/g esclusa, salvo eGFR < 60): 0,701–0,717 contro 0,696–0,710, cioè **+0,005/+0,009**. È un limite superiore (effetto spettro): il rumore vicino alla soglia costa al massimo circa 0,01;
+- solo coppie della stessa giornata: 0,696–0,711. L'effetto giornata sull'etichetta non gonfia né deprime l'AUROC.
+
+### Quanto pesa l'incertezza sull'unità dell'ACR (`acr_label_sensitivity.csv`)
+- etichetta attuale (UMAUCR ≥ 30, 425 positivi): 0,696–0,710;
+- fattore 100 (UMAUCR ≥ 53,04, 293 positivi, prevalenza 6,7%): **0,705–0,720**, cioè da +0,003 a +0,016 a seconda del modello;
+- fattore 100 con zone grigie escluse: 0,722–0,755 (limite superiore, stesso effetto spettro);
+- le previsioni sono quelle dei modelli addestrati sulla soglia 30: misurano quanto l'ordinamento si trasferisce, non un modello riaddestrato.
+
+### Verdetto
+Il tetto è dei dati, e ora è misurato da tre lati: la pipeline estrae segnali moderati quando esistono; il rumore dell'etichetta vicino alla soglia vale al massimo circa 0,01; l'incertezza sull'unità dell'ACR al massimo +0,016. Resta la scarsa informazione sull'albuminuria negli esami di routine (componente "solo albuminuria" 0,67–0,69 contro eGFR < 60 0,80–0,86 in `label_quality.csv`). Con una sola partizione la regola della Fase D rileva solo differenze di 0,02–0,04: differenze di 0,01–0,02 non sono né escluse né dimostrate.
+
+Come si ottiene 0,02–0,04 (ricalcolabile da `analytics/phase_d/folds_auc.csv` con la formula di `evaluation.corrected_ttest`): differenza minima = t critico × √(1/5 + 870/3.480) × DS delle differenze per fold contro la Random Forest. La DS mediana sugli 11 candidati è 0,0105 (da 0,0057 a 0,0266). Un solo confronto: 2,776 × 0,671 × DS ≈ **0,0195**, circa 0,02; primo passo di Holm su 11 (α = 0,05/11): 5,747 × 0,671 × DS ≈ **0,0403**, circa 0,04 (calcolati con la DS mediana non arrotondata).
+
+---
+
 ## Da fare per concludere il progetto (scritto il 20/09/2026)
 **Superata il 22/09/2026**: Fase C, Fase D, blocco qualità e conclusioni delle domande 1–6 sono conclusi; il protocollo del test finale è nella sezione "Conferma finale sul test set — protocollo". Il testo che segue resta come traccia storica.
 

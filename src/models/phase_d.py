@@ -4,6 +4,9 @@ Diagnostiche, per capire dove sta il limite:
   - controllo positivo: la stessa pipeline con l'albumina urinaria fra le feature deve imparare
   - curva di apprendimento: AUROC al crescere della quota di training
   - qualità del target: AUROC per gruppi di giornate di raccolta e per componente del target
+  - audit del 23/09/2026: controllo positivo a intensità nota (feature semi-sintetica), rumore
+    dell'etichetta in AUROC, sensibilità alla soglia e all'unità dell'ACR (le ultime due sulle
+    previsioni out-of-fold esistenti, senza addestramenti)
 Candidati, confrontati con i modelli della Fase A sugli stessi fold esterni:
   ensemble, XGBoost sui NaN nativi, XGBoost con spazio allargato, scomposizione del target,
   altre famiglie di modelli (CatBoost, LightGBM, EBM, TabPFN).
@@ -336,6 +339,159 @@ def label_quality(df, tags, output=OUTPUT):
     return table, sorted(map(str, low_days))
 
 
+# --- audit del tetto dei dati (23/09/2026) ---------------------------------------------------
+
+SEMI_SYNTHETIC_COLUMN = "z_semisintetica"
+
+
+def noise_for_auroc(signal, y, noise, target_auroc, iterations=60):
+    """DS del rumore che, sommato al segnale, porta l'AUROC univariata a target_auroc (bisezione; il
+    rumore è un'estrazione fissa, quindi il risultato è deterministico)."""
+    def auc(sd):
+        return roc_auc_score(y, signal + sd * noise)
+    if auc(0.0) < target_auroc:
+        raise ValueError(f"il segnale da solo ha AUROC {auc(0.0):.3f} < {target_auroc}")
+    low, high = 0.0, 1.0
+    while auc(high) > target_auroc:
+        high *= 2
+        if high > 1e6:
+            raise ValueError("AUROC chiesta non raggiungibile con questo rumore")
+    for _ in range(iterations):
+        middle = (low + high) / 2
+        low, high = (middle, high) if auc(middle) > target_auroc else (low, middle)
+    return (low + high) / 2
+
+
+def semi_synthetic_control(df, spec=None, output=OUTPUT):
+    """Controllo positivo a intensità nota: z = log(max(ACR, 1)) + rumore gaussiano, con la DS del
+    rumore tarata sull'intero training perché l'AUROC univariata di z sia quella fissata; XGBoost con
+    gli iperparametri della Fase A del fold e z fra le feature. Passa se l'AUROC out-of-fold è almeno
+    l'AUROC univariata di z meno la tolleranza. Mai un modello della tesi. reference_auc (AUROC dello
+    stesso modello senza z) è solo contesto e non entra nel criterio."""
+    spec = spec or DIAGNOSTICS["semi_synthetic_control"]
+    y = target(df).to_numpy()
+    signal = np.log(np.maximum(df[COLUMNS["acr"]].to_numpy(dtype=float), 1.0))
+    noise = np.random.default_rng(SEED).standard_normal(len(df))
+    reference = ev.delong(y, oof(spec["model"], len(y), output)[0])[0]
+    rows = []
+    for goal in spec["target_auroc"]:
+        tag = f"semi_synthetic_control/z{round(goal * 100)}"
+        sd = noise_for_auroc(signal, y, noise, goal)
+        z = signal + sd * noise
+        load = loader(df.assign(**{SEMI_SYNTHETIC_COLUMN: z}), y, "imputed", [SEMI_SYNTHETIC_COLUMN])
+        for outer in range(OUTER):
+            params = reference_record(spec["model"], outer)["params"]
+            X_tr, y_tr, X_va, _ = load(outer, None)
+            p = fit(spec["model"], params, X_tr, y_tr).predict_proba(X_va)[:, 1]
+            save_record(tag, outer, {"candidate": tag, "target_auroc": goal, "noise_sd": sd,
+                                     "fold": fold_name(outer), "params": params,
+                                     "rows": X_va.index.tolist(), "probability": p.tolist()}, output)
+        p, _ = oof(tag, len(y), output)
+        auc, auc_low, auc_high = ev.delong(y, p)
+        z_auc = roc_auc_score(y, z)
+        rows.append({"target_auroc": goal, "noise_sd": sd, "noise_sd_over_signal_sd": sd / signal.std(),
+                     "z_auc": z_auc, "oof_auc": auc, "oof_auc_low": auc_low, "oof_auc_high": auc_high,
+                     "reference_auc": reference, "passes": bool(auc >= z_auc - spec["tolerance"])})
+    table = pd.DataFrame(rows)
+    output.mkdir(parents=True, exist_ok=True)
+    table.to_csv(output / "semi_synthetic_control.csv", index=False)
+    return table
+
+
+def acr_labels(acr, low_egfr, threshold, grey=None):
+    """Etichetta con un'altra soglia di ACR (eGFR < 60 resta positivo) e righe da tenere: con
+    grey = (lo, hi) si escludono i soggetti con ACR nella zona grigia, salvo quelli con eGFR < 60."""
+    acr = np.asarray(acr, dtype=float)
+    low_egfr = np.asarray(low_egfr).astype(bool)
+    y = ((acr >= threshold) | low_egfr).astype(int)
+    keep = np.ones(len(acr), bool)
+    if grey is not None:
+        keep = ~((acr >= grey[0]) & (acr <= grey[1]) & ~low_egfr)
+    return y, keep
+
+
+def same_day_auc(y, p, day):
+    """AUROC sulle sole coppie (positivo, negativo) della stessa giornata: media delle AUROC di
+    giornata pesata per il numero di coppie; le giornate con una sola classe non contano."""
+    y, p, day = np.asarray(y), np.asarray(p, dtype=float), np.asarray(day)
+    concordant, pairs = 0.0, 0
+    for d in np.unique(day):
+        mask = day == d
+        n_pos = int(y[mask].sum())
+        n_neg = int(mask.sum()) - n_pos
+        if n_pos and n_neg:
+            concordant += roc_auc_score(y[mask], p[mask]) * n_pos * n_neg
+            pairs += n_pos * n_neg
+    return concordant / pairs if pairs else np.nan
+
+
+def auc_row(tag, analysis, y, p, **extra):
+    auc, low, high = ev.delong(y, p)
+    return {"model": tag, "analysis": analysis, **extra, "n": len(y), "positives": int(np.sum(y)),
+            "prevalence": float(np.mean(y)), "auc": auc, "auc_low": low, "auc_high": high}
+
+
+def label_noise_auroc(df, spec=None, output=OUTPUT):
+    """Rumore dell'etichetta in AUROC, sulle previsioni out-of-fold esistenti: per fascia di ACR dei
+    positivi (contro tutti i negativi), sui casi netti (zona grigia esclusa) e sulle sole coppie della
+    stessa giornata. Togliere i casi vicino alla soglia alza l'AUROC anche con un'etichetta perfetta
+    (effetto spettro): i guadagni sono limiti superiori del costo del rumore."""
+    spec = spec or DIAGNOSTICS["label_noise_auroc"]
+    y = target(df).to_numpy()
+    acr = df[COLUMNS["acr"]].to_numpy(dtype=float)
+    _, low_egfr = components(df)
+    grey = tuple(spec["grey_zone"])
+    _, clean = acr_labels(acr, low_egfr, THRESHOLDS["acr_threshold"], grey)
+    masks = {"tutti": np.ones(len(y), bool)}
+    for low, high in spec["bands"]:
+        masks[f"fascia ACR {low:g}-{high:g}"] = (y == 0) | ((y == 1) & (acr >= low) & (acr < high))
+    masks[f"casi netti (zona grigia {grey[0]:g}-{grey[1]:g} esclusa)"] = clean
+    rows = []
+    for tag in spec["models"]:
+        p, _ = oof(tag, len(y), output)
+        rows += [auc_row(tag, analysis, y[mask], p[mask]) for analysis, mask in masks.items()]
+        rows.append({"model": tag, "analysis": "coppie della stessa giornata", "n": len(y),
+                     "positives": int(y.sum()), "prevalence": float(y.mean()),
+                     "auc": same_day_auc(y, p, df[spec["day"]].to_numpy()), "auc_low": np.nan,
+                     "auc_high": np.nan})
+    table = pd.DataFrame(rows)
+    output.mkdir(parents=True, exist_ok=True)
+    table.to_csv(output / "label_noise_auroc.csv", index=False)
+    return table
+
+
+def acr_label_sensitivity(df, spec=None, output=OUTPUT):
+    """AUROC delle previsioni out-of-fold esistenti (modelli addestrati sulla soglia 30) contro
+    etichette con altre soglie di UMAUCR e con la scala alternativa dell'ACR: con fattore 100 invece
+    di 176,8 la soglia 30 vera equivale a UMAUCR >= 30 x 176,8 / 100. Le zone grigie sono in unità
+    vere (mg/g) e vengono portate sulla scala di UMAUCR. Misura quanto l'ordinamento si trasferisce,
+    non un modello riaddestrato. La riga "alternativa" senza zona grigia coincide con la riga
+    "osservata" a 53,04: è voluto, così ogni scala ha la sua riga di partenza."""
+    spec = spec or DIAGNOSTICS["acr_label_sensitivity"]
+    acr = df[COLUMNS["acr"]].to_numpy(dtype=float)
+    _, low_egfr = components(df)
+    observed, threshold = spec["factor"]["observed"], THRESHOLDS["acr_threshold"]
+    settings = [("osservata", t, None) for t in spec["thresholds"]]
+    for scale, factor in [("osservata", observed), ("alternativa", spec["factor"]["alternative"])]:
+        to_umaucr = observed / factor
+        cut = round(threshold * to_umaucr, 6)
+        if scale == "alternativa":
+            settings.append((scale, cut, None))
+        settings += [(scale, cut, (low, high, low * to_umaucr, high * to_umaucr))
+                     for low, high in spec["grey_zones"]]
+    rows = []
+    for tag in spec["models"]:
+        p, _ = oof(tag, len(acr), output)
+        for scale, cut, grey in settings:
+            y, keep = acr_labels(acr, low_egfr, cut, grey[2:] if grey else None)
+            rows.append(auc_row(tag, "sensibilità della soglia ACR", y[keep], p[keep], scale=scale,
+                                threshold=cut, grey_zone=f"{grey[0]:g}-{grey[1]:g}" if grey else ""))
+    table = pd.DataFrame(rows)
+    output.mkdir(parents=True, exist_ok=True)
+    table.to_csv(output / "acr_label_sensitivity.csv", index=False)
+    return table
+
+
 # --- valutazione --------------------------------------------------------------------------
 
 def metrics_row(tag, y, output=OUTPUT):
@@ -412,6 +568,12 @@ if __name__ == "__main__":
             table, low_days = label_quality(train, [*REFERENCES, *completed(CANDIDATES)])
             print("giornate UCRE basso:", low_days)
             print(table.round(3).to_string(index=False))
+        elif name == "semi_synthetic_control":
+            print(semi_synthetic_control(train).round(3).to_string(index=False))
+        elif name == "label_noise_auroc":
+            print(label_noise_auroc(train).round(3).to_string(index=False))
+        elif name == "acr_label_sensitivity":
+            print(acr_label_sensitivity(train).round(3).to_string(index=False))
     if args.evaluate:
         metrics, comparison = evaluate(train, completed(CANDIDATES), completed(scored_diagnostics))
         print(metrics.round(3).to_string(index=False))
