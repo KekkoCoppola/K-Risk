@@ -107,7 +107,18 @@ La malattia è frequente e poco conosciuta da chi ne è affetto. Negli USA rigua
 
 Testare tutti, d'altra parte, non è la soluzione più efficiente. Una revisione di 21 valutazioni economiche ha trovato lo screening più conveniente nei gruppi con punteggi di rischio selezionati e non conveniente nelle popolazioni senza diabete né ipertensione ~\cite{yeo_cost-effectiveness_2024}. Già nel 2003 uno studio di Buolware e colleghi ha mostrato come lo screening sia più conveniente se rivolto ai gruppi a rischio alto~\cite{boulware_screening_2003}.
 
+\section{Modelli di rischio e machine learning per la malattia renale}
+Per decidere chi sottoporre a un esame serve una stima del rischio della singola persona. in medicina questa stima viene da modelli di predizione clinica, che combinano più caratteristiche di una persona in una probabilità ~\cite{collins_tripodai_2024}.
 
+Negli ultimi anni, grazie alla digitalizzazione, sono stati resi disponibili grandi quantità di dati clinici già strutturati, come parametri vitali ed esami di laboratorio ~\cite{rajkomar_machine_2019}. Il machine learning ha permesso di elaborare questi dati e offrire metodi che imparano relazioni complesse direttamente dagli esempi ~\cite{rajkomar_machine_2019,topol_high-performance_2019}. Anche per la malattia renale esiste un ampia gamma di modelli di machine learning ~\cite{sanmarchi_predict_2023}.
+
+Questi modelli possono essere raggruppati in tre filoni. il primo comprende i punteggi clinici nati per lo screening in medicina generale. SCORED stima la probabilità di un eGFR ridotto a partire da nove informazioni semplici, fra cui età, anemia, diabete e proteinuria ~\cite{bang_screening_2007}. QKidney stima il rischio di sviluppare la malattia nei cinque anni successivi usando i dati delle cure primarie di Inghilterra e Galles ~\cite{hippisley-cox_predicting_2010}.
+
+Il secondo filone riguarda l'albuminuria, il marcatore più difficile da stimare senza un esame delle urine. Bragg-Gresham e colleghi hanno costruito un modello per stabilire quali adulti statunitensi senza diabete sottoporre allo screening dell'albuminuria ~\cite{bragg-gresham_using_2025}. MERWACS usa il machine learning per individuare, fra gli adulti con almeno 50 anni, chi sottoporre a screening per la malattia renale ~\cite{yoo_merwacs_2026}.
+
+Il terzo filone lavora a valle della diagnosi. la \textit{Kidney Failure Risk Equation}, validata su oltre 700.000 pazienti di più di 30 paesi, stima nei pazienti con malattia già accertata il rischio di arrivare alla dialisi o al trapianto, e parte proprio da eGFR e ACR \cite{tangri_multinational_2016}.
+
+Questo strumento si colloca fra il primo e il secondo filone, stima i marcatori presenti oggi prima che gli esami renali vengano eseguiti.
 
 
 \chapter{Stato dell'arte}
