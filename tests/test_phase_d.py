@@ -3,17 +3,19 @@ import json
 import numpy as np
 import pandas as pd
 import pytest
+from scipy.special import expit
 from sklearn.impute import SimpleImputer
 
-from src.data.folds import OUTER
+from src.data.folds import INNER, OUTER
 from src.data.imputed import build_cache, fold_name, load_fold
 from src.data.kidney import target
 from src.data.split import PROCESSED
-from src.models.phase_d import (CANDIDATES, DIAGNOSTICS, INTERPRETATION, REFERENCES, SETTINGS,
-                                acr_label_sensitivity, acr_labels, components, consensus_top, evaluate,
-                                full_training_rankings, label_noise_auroc, loader, noise_for_auroc, oof,
-                                reference_record, same_day_auc, save_record, semi_synthetic_control,
-                                stratified_subsample)
+from src.models.phase_d import (CANDIDATES, COLUMNS, DIAGNOSTICS, INTERPRETATION, REFERENCES, SETTINGS,
+                                THRESHOLDS, acr_label_sensitivity, acr_labels, components, consensus_top,
+                                evaluate, evaluate_continuous_target, full_training_rankings,
+                                label_noise_auroc, loader, log_acr, noise_for_auroc, oof, platt,
+                                read_record, reference_record, same_day_auc, save_record,
+                                semi_synthetic_control, stratified_subsample)
 
 METHOD = "mediana"
 
@@ -244,3 +246,81 @@ def test_semi_synthetic_control_wiring(train, cache, tmp_path, monkeypatch):
         assert row["z_auc"] == pytest.approx(row["target_auroc"], abs=0.005)
         assert row["oof_auc"] == pytest.approx(row["z_auc"], abs=1e-9) and row["passes"]
     assert (tmp_path / "semi_synthetic_control.csv").exists()
+
+
+# --- bersaglio continuo dell'albuminuria (25/09/2026) ---------------------------------------
+
+def test_continuous_target_registered():
+    spec = SETTINGS["continuous_target"]
+    assert spec["matched"] == "target_decomposition" and spec["matched"] in CANDIDATES
+    assert spec["transform"] == "log" and spec["probability"] == "platt_inner_oof"
+    assert spec["min_difference"] == SETTINGS["min_difference"] == 0.01
+    assert "continuous_target" not in CANDIDATES  # la famiglia e le tabelle della Fase D non cambiano
+
+
+def test_log_acr_gives_the_albuminuria_component(train):
+    """log(ACR) >= log(30) deve coincidere con la componente ACR >= 30 su ogni riga del training."""
+    albuminuria, _ = components(train)
+    assert ((log_acr(train) >= np.log(THRESHOLDS["acr_threshold"])).astype(int) == albuminuria).all()
+    with pytest.raises(ValueError):
+        log_acr(train.assign(**{COLUMNS["acr"]: 0.0}))
+
+
+def test_platt_is_increasing_and_monotone():
+    mu = np.array([0.5, 1.0, 2.0, 3.0, 3.5, 4.0, 5.0, 6.0])
+    label = np.array([0, 0, 0, 1, 0, 1, 1, 1])
+    intercept, slope = platt(mu, label)
+    assert slope > 0 and (np.diff(expit(intercept + slope * mu)) > 0).all()
+
+
+def test_continuous_target_trains_on_training_rows_only(train, cache, tmp_path, monkeypatch):
+    """Ogni addestramento di un fold esterno (tuning, previsioni interne per Platt, modello finale) deve
+    vedere solo righe del training di quel fold. Con una componente eGFR nulla la probabilità
+    combinata deve coincidere con p_A, che è la logistica di Platt applicata a mu."""
+    import src.models.phase_d as phase_d
+    seen = []
+
+    class FirstColumn:
+        def fit(self, X, t):
+            seen.append(set(X.index))
+            return self
+
+        def predict(self, X):
+            return X.iloc[:, 0].to_numpy()
+
+    monkeypatch.setattr(phase_d, "regressor", lambda params: FirstColumn())
+    monkeypatch.setattr(phase_d, "loader", lambda df, y, data: loader(df, y, data, directory=cache, method=METHOD))
+    matched = tmp_path / "phase_d"
+    for outer in range(OUTER):
+        _, X_va = load_fold("main", outer, None, cache, METHOD)
+        save_record("target_decomposition/egfr", outer,
+                    {"rows": X_va.index.tolist(), "probability": [0.0] * len(X_va)}, matched)
+    output = tmp_path / "continuous"
+    n_trials = 2  # meno dei 5 tentativi iniziali del MedianPruner: nessun tentativo interrotto
+    phase_d.run_continuous_target(train, output=output, matched_output=matched, n_trials=n_trials)
+    fits = n_trials * INNER + INNER + 1
+    assert len(seen) == OUTER * fits
+    for outer in range(OUTER):
+        a = json.loads((output / "albuminuria" / f"{fold_name(outer)}.json").read_text(encoding="utf-8"))
+        c = json.loads((output / "combinato" / f"{fold_name(outer)}.json").read_text(encoding="utf-8"))
+        assert all(rows.isdisjoint(a["rows"]) for rows in seen[outer * fits:(outer + 1) * fits])
+        platt_p = expit(a["platt"]["intercept"] + a["platt"]["slope"] * np.asarray(a["mu"]))
+        assert np.allclose(a["probability"], platt_p)
+        assert c["rows"] == a["rows"] and np.allclose(c["probability"], a["probability"])
+
+
+def test_evaluate_continuous_target_identical_to_matched(train, tmp_path):
+    """Con le stesse previsioni di target_decomposition il confronto primario e quello secondario
+    hanno differenza 0 e nessuna regola è superata; la famiglia di Holm è di 12 (11 + 1)."""
+    output = tmp_path / "continuous"
+    for outer in range(OUTER):
+        save_record("combinato", outer, read_record("target_decomposition", outer), output)
+        binary = read_record("target_decomposition/albuminuria", outer)
+        save_record("albuminuria", outer, {**binary, "mu": binary["probability"]}, output)
+    metrics, comparison, table = evaluate_continuous_target(train, output=output)
+    primary, rule, secondary = (comparison.iloc[k] for k in range(3))
+    assert primary["difference"] == pytest.approx(0) and not primary["passes"]
+    assert secondary["difference"] == pytest.approx(0)
+    assert rule["reference"] == "random_forest" and rule["family"] == 12 and not rule["passes"]
+    assert set(metrics["model"]) == {"continuous_target", "target_decomposition", *REFERENCES}
+    assert {"componente: solo albuminuria", "fascia ACR 30-45"} <= set(table["analysis"])

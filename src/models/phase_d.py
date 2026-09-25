@@ -10,6 +10,8 @@ Diagnostiche, per capire dove sta il limite:
 Candidati, confrontati con i modelli della Fase A sugli stessi fold esterni:
   ensemble, XGBoost sui NaN nativi, XGBoost con spazio allargato, scomposizione del target,
   altre famiglie di modelli (CatBoost, LightGBM, EBM, TabPFN).
+Bersaglio continuo dell'albuminuria (registrato il 25/09/2026): la scomposizione del target con il
+  logaritmo dell'ACR al posto della soglia ACR >= 30, in una cartella propria.
 Regola di decisione fissata in config (phase_d) prima di qualsiasi calcolo. Nessun modello finale
 sull'intero training finché un candidato non supera la regola. Il test set non viene letto.
 """
@@ -21,7 +23,9 @@ import warnings
 import numpy as np
 import optuna
 import pandas as pd
+from scipy.special import expit
 from sklearn.exceptions import ConvergenceWarning
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import average_precision_score, roc_auc_score
 
 import src.models.evaluation as ev
@@ -34,7 +38,7 @@ from src.data.split import PROCESSED
 from src.models.interpretation import OUTPUT as INTERPRETATION, shap_values
 from src.models.phase_a import fit, objective, tune
 from src.models.phase_b import SPACES_B
-from src.models.zoo import SEED
+from src.models.zoo import SEED, suggest
 
 SETTINGS = CONFIG["phase_d"]
 OUTPUT = resolve(SETTINGS["output"])
@@ -492,6 +496,188 @@ def acr_label_sensitivity(df, spec=None, output=OUTPUT):
     return table
 
 
+# --- bersaglio continuo dell'albuminuria (25/09/2026) ---------------------------------------
+
+CONTINUOUS = SETTINGS["continuous_target"]
+
+
+def log_acr(df):
+    """Bersaglio continuo: logaritmo naturale di UMAUCR, senza troncamento."""
+    acr = df[COLUMNS["acr"]].to_numpy(dtype=float)
+    if np.isnan(acr).any() or (acr <= 0).any():
+        raise ValueError("UMAUCR mancante o non positivo: il logaritmo non è definito")
+    return np.log(acr)
+
+
+def regressor(params):
+    """XGBoost per il bersaglio continuo: stessi argomenti fissi del classificatore di zoo.build,
+    con l'errore quadratico al posto della logloss."""
+    from xgboost import XGBRegressor
+    return XGBRegressor(tree_method="hist", objective="reg:squarederror", n_jobs=-1,
+                        random_state=SEED, **params)
+
+
+def regression_objective(trial, data, space, label):
+    """Come phase_a.objective, ma il modello impara il logaritmo dell'ACR e il punteggio è la PR-AUC
+    della stima contro l'etichetta ACR >= 30 del fold interno di validazione."""
+    params = suggest(trial, space)
+    scores = []
+    for step, (X_tr, t_tr, X_va, _) in enumerate(data):
+        mu = regressor(params).fit(X_tr, t_tr).predict(X_va)
+        scores.append(average_precision_score(label[X_va.index.to_numpy()], mu))
+        trial.report(float(np.mean(scores)), step)
+        if trial.should_prune():
+            raise optuna.TrialPruned()
+    return float(np.mean(scores))
+
+
+def tune_regression(data, space, label, n_trials):
+    """Stesso studio di phase_a.tune: TPE con il seed del progetto e MedianPruner."""
+    study = optuna.create_study(direction="maximize", sampler=optuna.samplers.TPESampler(seed=SEED),
+                                pruner=optuna.pruners.MedianPruner())
+    study.optimize(lambda trial: regression_objective(trial, data, space, label), n_trials=n_trials)
+    return study
+
+
+def platt(mu, label):
+    """Logistica a una variabile di ACR >= 30 sulla stima mu (Platt 1999), senza penalizzazione come
+    la logistica SCORED: (intercetta, pendenza)."""
+    model = LogisticRegression(C=np.inf, max_iter=5000).fit(np.asarray(mu, dtype=float).reshape(-1, 1),
+                                                            np.asarray(label))
+    return float(model.intercept_[0]), float(model.coef_[0, 0])
+
+
+def run_continuous_target(df, spec=None, output=None, matched_output=OUTPUT, n_trials=N_TRIALS,
+                          space=None):
+    """Per ogni fold esterno: Optuna sui 5 fold interni con il bersaglio continuo, previsioni
+    out-of-fold interne con gli iperparametri scelti per stimare la logistica di Platt, riaddestramento
+    sul training esterno. Poi combinazione con la componente eGFR < 60 di target_decomposition, i cui
+    record si riusano senza ricalcolo. Si riprende da dove si è fermato."""
+    spec = spec or CONTINUOUS
+    output = output or resolve(spec["output"])
+    space = SPACES_B["xgboost"] if space is None else space
+    t = log_acr(df)
+    label, _ = components(df)
+    load = loader(df, t, "imputed")
+    for outer in range(OUTER):
+        if record_path("albuminuria", outer, output).exists():
+            continue
+        start = time.perf_counter()
+        data = [load(outer, j) for j in range(INNER)]
+        study = tune_regression(data, space, label, n_trials)
+        params = study.best_params
+        states = [trial.state for trial in study.trials]
+        inner_rows, inner_mu = [], []
+        for X_tr, t_tr, X_va, _ in data:
+            inner_rows += X_va.index.tolist()
+            inner_mu += regressor(params).fit(X_tr, t_tr).predict(X_va).tolist()
+        X_tr, t_tr, X_va, _ = load(outer, None)
+        assert sorted(inner_rows) == sorted(X_tr.index), "i fold interni non coprono il training esterno"
+        inner_rows = np.asarray(inner_rows)
+        intercept, slope = platt(inner_mu, label[inner_rows])
+        mu = regressor(params).fit(X_tr, t_tr).predict(X_va)
+        record = {"candidate": "continuous_target/albuminuria", "model": spec["model"],
+                  "fold": fold_name(outer), "params": params, "inner_pr_auc": study.best_value,
+                  "trials": len(states), "pruned": states.count(optuna.trial.TrialState.PRUNED),
+                  "platt": {"intercept": intercept, "slope": slope},
+                  "inner_residual_sd": float(np.std(t[inner_rows] - np.asarray(inner_mu), ddof=1)),
+                  "rows": X_va.index.tolist(), "mu": mu.tolist(),
+                  "probability": expit(intercept + slope * mu).tolist(),
+                  "seconds": round(time.perf_counter() - start, 1)}
+        save_record("albuminuria", outer, record, output)
+        print(f"continuous_target {record['fold']}: {record['seconds']:.0f} s", flush=True)
+    egfr_tag = f"{spec['matched']}/egfr"
+    for outer in range(OUTER):
+        a = read_record("albuminuria", outer, output)
+        g = read_record(egfr_tag, outer, matched_output)
+        assert a["rows"] == g["rows"], "righe diverse fra le due componenti"
+        p = 1 - (1 - np.asarray(a["probability"])) * (1 - np.asarray(g["probability"]))
+        save_record("combinato", outer, {"candidate": "continuous_target", "egfr": egfr_tag,
+                                         "fold": fold_name(outer), "rows": a["rows"],
+                                         "probability": p.tolist()}, output)
+
+
+def oof_field(tag, n, field, output=OUTPUT):
+    """Un campo dei record (per esempio mu) nell'ordine delle righe di train.csv."""
+    values = np.full(n, np.nan)
+    for outer in range(OUTER):
+        record = read_record(tag, outer, output)
+        values[record["rows"]] = record[field]
+    assert not np.isnan(values).any(), f"{tag}: soggetti senza {field}"
+    return values
+
+
+def evaluate_continuous_target(df, spec=None, output=None, matched_output=OUTPUT):
+    """Metriche del target composito per il bersaglio continuo, target_decomposition e i riferimenti;
+    confronto primario con target_decomposition, regola della Fase D contro il riferimento migliore
+    (Holm sulla famiglia degli 11 candidati più questo), confronto secondario della sola componente
+    albuminuria, AUROC per componente e per fascia di ACR."""
+    spec = spec or CONTINUOUS
+    output = output or resolve(spec["output"])
+    matched = spec["matched"]
+    y = target(df).to_numpy()
+    n = len(y)
+    n_test = n / OUTER
+    sources = {"continuous_target": ("combinato", output), matched: (matched, matched_output),
+               **{name: (name, matched_output) for name in REFERENCES}}
+    rows, per_fold, predictions, folds = [], {}, {}, []
+    for name, (tag, directory) in sources.items():
+        row, auc_folds = metrics_row(tag, y, directory)
+        role = ("bersaglio continuo" if name == "continuous_target" else
+                "stesso modello, bersaglio binario" if name == matched else "riferimento")
+        rows.append({"role": role, **row, "model": name})
+        per_fold[name] = auc_folds.to_numpy()
+        predictions[name], fold = oof(tag, n, directory)
+        folds.append(fold)
+    assert all((f == folds[0]).all() for f in folds), "fold esterni diversi fra i modelli"
+    metrics = pd.DataFrame(rows)
+    references = metrics[metrics["role"] == "riferimento"]
+    best = references.loc[references["auc_folds_mean"].idxmax(), "model"]
+
+    def compare(kind, candidate, reference, differences):
+        return {"comparison": kind, "candidate": candidate, "reference": reference,
+                **ev.corrected_ttest(differences, n - n_test, n_test)}
+
+    minimum = spec["min_difference"]
+    primary = compare("primario", "continuous_target", matched,
+                      per_fold["continuous_target"] - per_fold[matched])
+    primary["passes"] = bool(primary["difference"] >= minimum and primary["low"] > 0
+                             and primary["p_value"] < 0.05)
+    rule = compare("regola della Fase D", "continuous_target", best,
+                   per_fold["continuous_target"] - per_fold[best])
+    phase_d = pd.read_csv(matched_output / "comparison.csv")
+    assert (phase_d["reference"] == best).all(), "riferimento diverso da quello della Fase D"
+    rule["family"] = len(phase_d) + 1
+    rule["p_holm"] = float(ev.holm([*phase_d["p_value"], rule["p_value"]])[-1])
+    rule["passes"] = bool(rule["difference"] >= minimum and rule["low"] > 0 and rule["p_holm"] < 0.05)
+    albuminuria, low_egfr = components(df)
+    fold = folds[0]
+    binary, binary_fold = oof(f"{matched}/albuminuria", n, matched_output)
+    assert (binary_fold == fold).all(), "fold esterni diversi per la componente albuminuria"
+    scores = {"continuous_target": oof_field("albuminuria", n, "mu", output), matched: binary}
+    component_folds = {name: np.array([roc_auc_score(albuminuria[fold == k], s[fold == k])
+                                       for k in range(OUTER)]) for name, s in scores.items()}
+    secondary = compare("secondario: sola componente albuminuria (ACR >= 30)", "continuous_target",
+                        matched, component_folds["continuous_target"] - component_folds[matched])
+    comparison = pd.DataFrame([primary, rule, secondary])
+    acr = df[COLUMNS["acr"]].to_numpy(dtype=float)
+    negatives = y == 0
+    masks = {"componente: solo albuminuria": negatives | ((albuminuria == 1) & (low_egfr == 0)),
+             "componente: eGFR < 60": negatives | (low_egfr == 1)}
+    for low, high in DIAGNOSTICS["label_noise_auroc"]["bands"]:
+        masks[f"fascia ACR {low:g}-{high:g}"] = negatives | ((y == 1) & (acr >= low) & (acr < high))
+    parts = [auc_row(name, "albuminuria (ACR >= 30), tutti i soggetti", albuminuria, s)
+             for name, s in scores.items()]
+    parts += [auc_row(name, analysis, y[mask], p[mask])
+              for name, p in predictions.items() for analysis, mask in masks.items()]
+    table = pd.DataFrame(parts)
+    output.mkdir(parents=True, exist_ok=True)
+    metrics.to_csv(output / "discrimination.csv", index=False)
+    comparison.to_csv(output / "comparison.csv", index=False)
+    table.to_csv(output / "components.csv", index=False)
+    return metrics, comparison, table
+
+
 # --- valutazione --------------------------------------------------------------------------
 
 def metrics_row(tag, y, output=OUTPUT):
@@ -548,6 +734,8 @@ if __name__ == "__main__":
     parser.add_argument("--candidates", nargs="+", default=[], choices=list(CANDIDATES))
     parser.add_argument("--diagnostics", nargs="+", default=[], choices=list(DIAGNOSTICS))
     parser.add_argument("--evaluate", action="store_true", help="valuta tutto ciò che è già calcolato")
+    parser.add_argument("--continuous-target", action="store_true",
+                        help="bersaglio continuo dell'albuminuria (registrato il 25/09/2026): calcolo e valutazione")
     args = parser.parse_args()
     optuna.logging.set_verbosity(optuna.logging.WARNING)
     warnings.filterwarnings("ignore", category=ConvergenceWarning)
@@ -578,3 +766,9 @@ if __name__ == "__main__":
         metrics, comparison = evaluate(train, completed(CANDIDATES), completed(scored_diagnostics))
         print(metrics.round(3).to_string(index=False))
         print(comparison.round(4).to_string(index=False))
+    if args.continuous_target:
+        run_continuous_target(train)
+        metrics, comparison, table = evaluate_continuous_target(train)
+        print(metrics.round(4).to_string(index=False))
+        print(comparison.round(4).to_string(index=False))
+        print(table.round(4).to_string(index=False))
