@@ -1767,6 +1767,31 @@ Come si ottiene 0,02–0,04 (ricalcolabile da `analytics/phase_d/folds_auc.csv` 
 
 ---
 
+## Fase D — bersaglio continuo dell'albuminuria: registrazione (25/09/2026, prima del codice e dei calcoli)
+Branch `experimental/bersaglio-continuo`. Analisi **post-hoc ed esplorativa**, chiesta dall'utente durante la stesura della tesi: il test set non viene letto (la run 1 del 22/09 resta definitiva) e le tabelle della Fase D non cambiano (uscite in `analytics/phase_d/continuous_target/`). Protocollo in `configs/config.yaml`, `phase_d.continuous_target`.
+
+### Perché
+- Il punto debole è l'albuminuria. Componente "solo albuminuria" contro i negativi: AUROC da 0,672 a 0,686 sui 13 modelli di `analytics/phase_d/label_quality.csv` (3 riferimenti e 10 candidati), contro 0,802–0,860 per la componente eGFR < 60 (stessa tabella). Per fascia di ACR dei positivi, la più difficile è 30–45: AUROC da 0,645 a 0,682 sui 5 modelli di `analytics/phase_d/label_noise_auroc.csv`.
+- Tutti i modelli finora hanno imparato solo "ACR ≥ 30 sì/no". Dicotomizzare una variabile continua perde informazione e fa sembrare molto diversi due soggetti vicini ma ai lati opposti della soglia (Altman & Royston 2006, testo completo letto il 25/09/2026, PMC1458573). Addestrare sul logaritmo dell'ACR usa anche la distanza dalla soglia, proprio nella zona in cui il modello sbaglia di più.
+- Sulla scala logaritmica il fattore 176,8 di `UMAUCR` (unità non documentate, audit del 23/09) diventa una costante additiva: l'addestramento non dipende dall'unità.
+
+### Già esplorato, dichiarato
+Durante l'audit del 23/09 un'esplorazione **non registrata** (4 varianti, seed 42/43/44, "ACR continuo come bersaglio ausiliario", sezione precedente) aveva dato +0,010/+0,020. Non ha lasciato codice né tabelle, quindi quel numero non è riproducibile. Questa analisi lo sostituisce con una versione registrata, riproducibile e verificata da test, ma non è cieca rispetto a quell'ordine di grandezza.
+
+### Protocollo (fissato ora)
+- **Confronto appaiato con `target_decomposition`** (AUROC 0,7016, IC 0,6737–0,7295, `analytics/phase_d/discrimination.csv`), da cui differisce **solo** per il bersaglio dell'albuminuria: stessi 5 fold esterni e 5 interni, XGBoost, spazio della Fase B (max_depth 1–12), 30 tentativi Optuna (TPE con il seed del progetto, MedianPruner), stessa metrica di ottimizzazione (PR-AUC sui fold interni contro ACR ≥ 30), stessa componente eGFR < 60 (i record di `target_decomposition/egfr`, riusati senza ricalcolo), stessa combinazione p = 1 − (1 − p_A)(1 − p_G).
+- **Bersaglio**: logaritmo naturale di `UMAUCR`, senza troncamento (nel training tutti i valori sono > 0; minimo 0,18). Modello: `XGBRegressor` (hist, errore quadratico, seed del progetto).
+- **Da stima continua a probabilità**: p_A = logistica a una variabile sulla stima μ (Platt 1999), stimata sulle previsioni out-of-fold dei 5 fold interni del training del fold esterno, con gli iperparametri scelti da Optuna. È monotona: non cambia l'ordinamento di μ; serve solo a combinarla con p_G.
+- **Primario**: AUROC del target composito, `continuous_target` − `target_decomposition`, t corretto di Nadeau-Bengio sui 5 fold esterni. Il bersaglio continuo "aiuta" se la differenza è ≥ 0,01, il limite inferiore dell'IC 95% > 0 e p < 0,05 (confronto unico).
+- **Regola della Fase D**: contro la Random Forest (AUROC media sui fold 0,7078, la più alta fra i riferimenti), differenza ≥ 0,01, limite inferiore > 0, p di Holm < 0,05 sulla famiglia di 12 (gli 11 candidati della Fase D, p da `comparison.csv`, più questo). Se la supera, prima di adottarlo va ripetuto su 3 partizioni: decisione da prendere con l'utente (circa 16 ore).
+- **Secondari, descrittivi**: AUROC della sola componente albuminuria (μ contro ACR ≥ 30, confrontata con la probabilità di `target_decomposition/albuminuria` con lo stesso t corretto); AUROC per componente del target e per fascia di ACR, con le definizioni di `label_quality` e `label_noise_auroc`.
+
+### Limiti, dichiarati prima
+- Con 5 fold e una partizione la differenza minima dimostrabile è circa 0,02 per un confronto (sezione precedente): differenze più piccole non si possono né dimostrare né escludere, e conta l'estremo superiore dell'IC, che dice quale guadagno è escluso.
+- Esplorativa e post-hoc: qualunque esito non cambia le conclusioni confermate sul test set, che non verrà riaperto.
+
+---
+
 ## Da fare per concludere il progetto (scritto il 20/09/2026)
 **Superata il 22/09/2026**: Fase C, Fase D, blocco qualità e conclusioni delle domande 1–6 sono conclusi; il protocollo del test finale è nella sezione "Conferma finale sul test set — protocollo". Il testo che segue resta come traccia storica.
 
