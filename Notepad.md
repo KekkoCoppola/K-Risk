@@ -1729,7 +1729,7 @@ Branch `experimental/tetto-dati`. Domanda: il limite ad AUROC circa 0,70 è davv
 - **Nessun leakage né bug che deprima le prestazioni**: imputazione e scaling sul solo fold di training (cache del fold 0 ricalcolata identica), fold annidati coerenti fra le fasi, CKD-EPI 2021 e mappa KDIGO corretti.
 - **Difetto di metodo**: `phase_d.repeat_seeds` è scritto nella regola ma nessun codice lo esegue. Con una sola partizione a 5 fold la differenza minima che la regola può dichiarare "significativa" (Nadeau-Bengio + Holm su 11) è circa 0,040; con 3 ripetizioni circa 0,020 (DS mediana delle differenze per fold 0,0105). "Nessun candidato migliora" va letto come "nessuno migliora di almeno 0,02–0,04": differenze di 0,01–0,02 non si possono né escludere né dimostrare.
 - **Unità dell'ACR non documentate**: nel training `UMAUCR` = 176,8 × `UmALB`/`UCRE` su tutte le 4.350 righe; `HighACR` degli autori coincide con `UMAUCR` ≥ 30. Il dizionario del dataset lascia le unità vuote. La mediana di `UCRE` (185) è compatibile solo con i mg/dL (Barr et al. 2005, mediana NHANES 118,6 mg/dL), e con i mg/dL il fattore corretto sarebbe 100: in quel caso la soglia 30 corrisponderebbe a un ACR vero di circa 17 mg/g. Non dimostrabile: si dichiara come limite e si misura con un'analisi di sensibilità.
-- **L'idea nuova migliore vale al massimo +0,01/+0,02**: un'esplorazione non registrata (4 varianti, seed 42/43/44) con l'ACR continuo come bersaglio ausiliario ha dato +0,010/+0,020. Sotto la differenza che la regola può rilevare e non "nettamente migliore": **non** diventa un candidato. Nella tesi si cita solo come esplorazione post-hoc.
+- **L'idea nuova migliore vale al massimo +0,01/+0,02**: un'esplorazione non registrata (4 varianti, seed 42/43/44) con l'ACR continuo come bersaglio ausiliario ha dato +0,010/+0,020. Sotto la differenza che la regola può rilevare e non "nettamente migliore": **non** diventa un candidato. Nella tesi si cita solo come esplorazione post-hoc. *(Aggiunta del 25/09/2026: non replicata. L'analisi registrata "bersaglio continuo dell'albuminuria", più sotto, dà −0,004 (IC −0,038; +0,030); nella tesi va citata quella.)*
 
 ### Decisioni (23/09/2026)
 - **Nessun nuovo candidato e nessuna CV ripetuta**: circa 16 ore di calcolo (più 7 per una replica) per differenze attese di 0,01–0,02, che la regola non potrebbe comunque dichiarare. Il difetto `repeat_seeds` si dichiara, con la differenza minima rilevabile.
@@ -1789,6 +1789,43 @@ Durante l'audit del 23/09 un'esplorazione **non registrata** (4 varianti, seed 4
 ### Limiti, dichiarati prima
 - Con 5 fold e una partizione la differenza minima dimostrabile è circa 0,02 per un confronto (sezione precedente): differenze più piccole non si possono né dimostrare né escludere, e conta l'estremo superiore dell'IC, che dice quale guadagno è escluso.
 - Esplorativa e post-hoc: qualunque esito non cambia le conclusioni confermate sul test set, che non verrà riaperto.
+
+---
+
+## Fase D — bersaglio continuo dell'albuminuria: risultati (25/09/2026)
+`python -m src.models.phase_d --continuous-target`, dopo i commit di registrazione (`52d4723`, 19:36:21) e del codice (`4a18106`, 19:36:22). Record dei fold scritti fra le 19:38:55 e le 19:46:42 (da 86 a 160 secondi per fold; 30 tentativi Optuna per fold, da 10 a 17 interrotti dal pruner). Test set non letto; le 8 tabelle CSV di `analytics/phase_d/` sono identiche a prima (sha256 verificato). Tabelle in `analytics/phase_d/continuous_target/`: `discrimination.csv`, `comparison.csv`, `components.csv`; record per fold in `albuminuria/` e `combinato/`. Tutti i numeri sotto sono stati ricalcolati in modo indipendente dai record con sklearn: coincidono alla quarta cifra decimale.
+
+### Target composito (`discrimination.csv`, 4.350 soggetti, 425 positivi)
+| modello | AUROC (IC 95%) | PR-AUC | specificità a sensibilità 0,90 |
+|---|---|---|---|
+| bersaglio continuo | 0,6986 (0,6702–0,7269) | 0,2701 | 0,2135 |
+| `target_decomposition` (stesso modello, bersaglio binario) | 0,7016 (0,6737–0,7295) | 0,2604 | 0,2428 |
+| Random Forest (riferimento) | 0,7032 (0,6757–0,7308) | 0,2460 | 0,2324 |
+
+### Confronti registrati (`comparison.csv`, t corretto di Nadeau-Bengio sui 5 fold esterni)
+| confronto | differenza di AUROC (IC 95%) | p | esito |
+|---|---|---|---|
+| primario: continuo − binario | −0,0039 (−0,0379; +0,0300) | 0,763 | **non aiuta** |
+| regola della Fase D: continuo − Random Forest | −0,0049 (−0,0317; +0,0219) | Holm 1,00 (famiglia di 12) | **non migliora** |
+| secondario: sola componente albuminuria (ACR ≥ 30, 387 positivi) | −0,0144 (−0,0432; +0,0143) | 0,236 | descrittivo |
+
+Sulla sola componente albuminuria l'AUROC complessiva è 0,6775 (0,6476–0,7075) per la stima continua contro 0,6905 (0,6613–0,7196) per il classificatore binario (`components.csv`, "albuminuria (ACR >= 30), tutti i soggetti").
+
+### Per fascia di ACR dei positivi (`components.csv`, descrittivo, nessun test)
+| fascia | bersaglio continuo | bersaglio binario |
+|---|---|---|
+| 30–45 (106 positivi) | 0,6844 | 0,6664 |
+| 45–100 (134) | 0,6682 | 0,6834 |
+| 100–300 (102) | 0,6975 | 0,7093 |
+| ≥ 300 (45) | 0,7426 | 0,7669 |
+
+Il bersaglio continuo riconosce un po' meglio i positivi appena sopra la soglia (+0,018 nella fascia 30–45) e peggio quelli gravi (−0,024 sopra 300): sposta la discriminazione, non la aumenta. Con 45–134 positivi per fascia gli IC si sovrappongono ampiamente: è un'osservazione, non un risultato.
+
+### Lettura
+- **Dicotomizzare l'ACR non è il limite.** Addestrare sul valore continuo non migliora la discriminazione del target composito né quella della sola albuminuria: l'IC esclude guadagni superiori a +0,030 rispetto allo stesso modello binario e a +0,022 rispetto alla Random Forest.
+- **L'esplorazione non registrata del 23/09 (+0,010/+0,020) non si replica**: la versione registrata dà −0,004. Il disegno di allora ("bersaglio ausiliario") non è documentato; nella tesi si cita solo il risultato registrato.
+- **Rafforza il verdetto dell'audit**: dopo tecnica, quantità di dati, rumore dell'etichetta, unità dell'ACR e ora anche la dicotomizzazione del bersaglio, il limite resta l'informazione sull'albuminuria contenuta negli esami di routine.
+- Per la tesi (post-hoc, esplorativo): "Addestrare la componente albuminuria sul logaritmo dell'ACR invece che sulla soglia non migliora la discriminazione (differenza di AUROC −0,004, IC da −0,038 a +0,030)".
 
 ---
 

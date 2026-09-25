@@ -6,20 +6,33 @@
 \usepackage{csquotes}
 \usepackage{subfig}
 \usepackage{graphicx}
-\usepackage{indentfirst}
-\usepackage{fancyhdr}
 \usepackage{siunitx}
+\usepackage{tikz}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{parskip}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning}
 \usepackage[italian]{babel}
-\setlength{\parindent}{1cm}
 
 \pagestyle{fancy}
+\setlength{\headheight}{14.5pt}
 \renewcommand{\chaptermark}[1]{\markboth{\thechapter.\ \uppercase{#1}}{}}
 \fancyhf{}
-\fancyhead[C]{\textbf{\leftmark}}
+\fancyhead[L]{\small\nouppercase{\leftmark}}
+\fancyhead[R]{}
 \fancyfoot[C]{\thepage}
-\renewcommand{\headrulewidth}{1pt}
+\renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\footrulewidth}{1pt}
-\usepackage[Conny]{fncychap}
+
+\titleformat{\chapter}[display]
+{\normalfont\raggedright}
+{\large\bfseries \MakeUppercase{\chaptertitlename\ \thechapter}}
+{6pt}
+{\Huge\bfseries}
+[\vspace{10pt}\titlerule]
+
+\titlespacing*{\chapter}{0pt}{10pt}{35pt}
 
 \title{Tesi Triennale}
 \author{Francesco Coppola}
@@ -59,7 +72,7 @@
 		{\LARGE{\bf TESI DI LAUREA}}\\
 		\vspace{3mm}
     	%Titolo
-        {\LARGE{\bf Profili Clinici e Metabolici per l'Individuazione del Danno Renale Occulto: Modelli di Apprendimento e Stratificazione KDIGO}}\\
+        {\LARGE{\bf Profili Clinici e Metabolici per l'Individuazione del Danno Renale Occulto: Modelli di Machine Learning e Stratificazione KDIGO}}\\
     	\vspace{3mm}
     \end{center}
     
@@ -92,34 +105,125 @@ Dedicata a coloro che\\ ci provano ogni giorno.
 \hyphenpenalty=10000
 \exhyphenpenalty=10000
 \chapter{Introduzione}
-La malattia renale cronica è una condizione diffusa e spesso non riconosciuta. Agisce in silenzio e può farlo a lungo senza che la persona sappia di averla. ~\cite{centers_for_disease_and_prevention_chronic_2026,wang_prevalence_2023}.
+La malattia renale cronica è una condizione diffusa e spesso non riconosciuta: la maggior parte delle persone che ne sono  affette non sa di averla.~\cite{centers_for_disease_and_prevention_chronic_2026,wang_prevalence_2023}.
 
-Riconoscere tale malattia non richiede esami complessi, richiede delle analisi del sangue e una delle urine ~\cite{stevens_kdigo_2024}. Queste analisi però non sono di routine, vengono di fatto prescritte solo a chi ha un motivo per farle come le persone diabetiche. ~\cite{american_diabetes_association_professional_practice_committee_11_2024}. Per tutti gli altri pazienti resta aperta una domanda: a chi prescriverle?
+Riconoscere tale malattia non richiede esami complessi: bastano delle analisi del sangue e una delle urine~\cite{stevens_kdigo_2024}. Eppure, nonostante la creatinina nel sangue sia un esame diffuso e poco costoso, le persone a rischio non vengono sottoposte di routine agli esami per la malattia renale~\cite{bang_screening_2007}. Le linee guida li prescrivono ogni anno soprattutto a chi ha un già un motivo preciso per farli, come le persone con diabete~\cite{american_diabetes_association_professional_practice_committee_11_2024}. Per tutti gli altri pazienti resta aperta una domanda: a chi prescriverli per primi?
 
-Questa tesi affronta la domanda con i dati che un ambulatorio raccoglie già durante delle semplici visite di routine: età, misura del corpo, pressione arteriosa ed esami del sangue. Su questi dati sono stati addestrati modelli di machine learning che stimano la probabilità del singolo paziente di avere marcatori di malattia renale. La tesi parla di danno renale occulto, cioè marcatori presenti ma mai cercati e riprende il termine usato dal punteggio SCORED (Screening for Occult Renal Disease) ~\cite{bang_screening_2007}. Questa analisi è stata fatta eliminando volutamente gli esami renali dall'input, questo perché l'obiettivo non è sostituire gli esami che definiscono la malattia, ma indicare a chi farli.
+Questa tesi affronta la domanda con i dati che un ambulatorio raccoglie già durante una normale visita: età, misure del corpo, pressione arteriosa ed esami del sangue di routine. Su questi dati sono stati addestrati modelli di machine learning che stimano la probabilità che il singolo paziente presenti marcatori di malattia renale. La tesi parla di danno renale occulto, cioè di marcatori presenti ma mai cercati, e riprende, il termine usato dal punteggio SCORED (\textit{Screening for Occult Renal Disease})~\cite{bang_screening_2007}. Gli esami renali sono stati esclusi volutamente dall'input: l'obiettivo non è sostituire gli esami che definiscono la malattia, ma indicare a chi farli.
 
 \section{La malattia renale cronica: un problema clinico silenzioso}
-Per capire l'utilità di uno strumento simile occore capire come la malattia renale cronica viene definita e in che modo viene riconosciuta.
+Per capire l'utilità di uno strumento simile occorre capire come la malattia renale cronica viene definita e in che modo viene riconosciuta.
 
-Secondo le linee guida KDIGO (Kidney Disease: Improving Global Outcomes), la malattia renale cronica (CKD, Chronic Kidney Disease) è un alterazione della struttura o della funzione dei reni che persiste per almeno tre mesi ~\cite{stevens_kdigo_2024}. Nella pratica si riconosce con due esami. il primo è la creatinina nel sangue, da cui si ottiene la velocità di filtrazione glomerulare (\textbf{eGFR}), cioè quanto plasma i reni riescono a filtrare in un minuto. il secondo esame è il rapporto fra albumina e creatinina nelle urine (\textbf{ACR}), che misura quanta albumina il rene lascia passare. un eGFR $< \SI{60}{\milli\liter\per\minute\per1.73\meter\squared}$ oppure un ACR pari o superiore a $30\text{mg/g}$ \cite{stevens_kdigo_2024}. Incrociando i due valori, KDIGO divide il rischio in quattro livelli: basso, moderato, alto e molto alto ~\cite{stevens_kdigo_2024}.
+Secondo le linee guida KDIGO (\textit{Kidney Disease: Improving Global Outcomes}), la malattia renale cronica (CKD, Chronic Kidney Disease) è un' alterazione della struttura o della funzione dei reni che persiste per almeno tre mesi~\cite{stevens_kdigo_2024}. Nella pratica si riconosce con due esami. il primo è la creatinina nel sangue, da cui si stima la velocità di filtrazione glomerulare (\textbf{eGFR}, \textit{estimated Glomerular Filtration Rate}), cioè quanto plasma i reni riescono a filtrare in un minuto. il secondo esame è il rapporto fra albumina e creatinina nelle urine (\textbf{ACR}, \textit{Albumin-to-Creatinine Ratio}), che misura quanta albumina il rene lascia passare. Sono considerati marcatori di malattia un eGFR $< \SI{60}{\milli\liter\per\minute\per1.73\meter\squared}$ oppure un ACR pari o superiore a $30\text{mg/g}$~\cite{stevens_kdigo_2024}. Incrociando i due valori, KDIGO divide il rischio in quattro livelli: basso, moderato, alto e molto alto ~\cite{stevens_kdigo_2024}.
 
-La malattia è frequente e poco conosciuta da chi ne è affetto. Negli USA riguarda circa il 14\% degli adulti, l'87\% delle persone con CKD non sa di averla ~\cite{centers_for_disease_and_prevention_chronic_2026}. In Cina un'indagine nazionale su 176.874 adulti ha stimato una prevalenza dell'8,2\%, con una consapevolezza della malattia del 10\% ~\cite{wang_prevalence_2023}. Nella stessa indagine il marcatore più frequente era l'albuminuria, presente nel 6,7\% degli adulti, mentre l'eGFR ridotto riguardava il 2,2\% ~\cite{wang_prevalence_2023}. le linee guida indicano di cercare la malattia nelle persone a rischio usando entrambi gli esami. Per i diabetici è prevista la somministrazione annuale di ACR e eGFR, in tutto il diabete di tipo 2 e nel tipo 1 dopo cinque anni dalla diagnosi ~\cite{american_diabetes_association_professional_practice_committee_11_2024}. La malattia renale cronica attribuita al diabete riguarda tra il 20\% e il 40\% dei diabetici~\cite{american_diabetes_association_professional_practice_committee_11_2024}. Per chi non ha il diabete non vi è alcuna raccomandazione, la stessa albuminuria viene esaminata annualmente solo nei diabetici ~\cite{bragg-gresham_using_2025}.
+La malattia è frequente e poco conosciuta da chi ne è affetto. Negli USA riguarda circa il 14\% degli adulti, e l'87\% degli adulti con CKD non sa di averla~\cite{centers_for_disease_and_prevention_chronic_2026}. In Cina un'indagine nazionale su 176.874 adulti ha stimato una prevalenza dell'8,2\%, con una consapevolezza della malattia del 10\%~\cite{wang_prevalence_2023}. Nella stessa indagine il marcatore più frequente era l'albuminuria, presente nel 6,7\% degli adulti, mentre l'eGFR ridotto riguardava il 2,2\%~\cite{wang_prevalence_2023}.
 
-Testare tutti, d'altra parte, non è la soluzione più efficiente. Una revisione di 21 valutazioni economiche ha trovato lo screening più conveniente nei gruppi con punteggi di rischio selezionati e non conveniente nelle popolazioni senza diabete né ipertensione ~\cite{yeo_cost-effectiveness_2024}. Già nel 2003 uno studio di Buolware e colleghi ha mostrato come lo screening sia più conveniente se rivolto ai gruppi a rischio alto~\cite{boulware_screening_2003}.
+Le linee guida indicano di cercare la malattia nelle persone a rischio usando entrambi gli esami~\cite{stevens_kdigo_2024}. Per le persone con diabete è prevista la somministrazione annuale di ACR e eGFR, in tutto il diabete di tipo 2 e nel tipo 1 dopo cinque anni dalla diagnosi~\cite{american_diabetes_association_professional_practice_committee_11_2024}. La malattia renale cronica attribuita al diabete riguarda infatti fra il 20\% e il 40\% dei diabetici~\cite{american_diabetes_association_professional_practice_committee_11_2024}. Per chi non ha il diabete manca un'indicazione analoga: lo screening annuale dell'albuminuria è raccomandato solo nelle persone con diabete~\cite{bragg-gresham_using_2025}.
+
+Testare tutti, d'altra parte, non è la soluzione più efficiente. Una revisione di 21 valutazioni economiche ha trovato lo screening più conveniente nelle popolazioni selezionate con punteggi di rischio più alti e non conveniente nelle popolazioni senza diabete né ipertensione~\cite{yeo_cost-effectiveness_2024}. Già nel 2003 Boulware e colleghi avevano trovato lo screening della proteinuria non conveniente, a meno di rivolgerlo ai gruppi a rischio più alto, come anziani e ipertesi, o di ripeterlo solo ogni dieci anni~\cite{boulware_screening_2003}.
+
+Il problema clinico da cui parte questa tesi è quindi decidere, fra le persone senza diabete, chi sottoporre per primo agli esami renali.
 
 \section{Modelli di rischio e machine learning per la malattia renale}
-Per decidere chi sottoporre a un esame serve una stima del rischio della singola persona. in medicina questa stima viene da modelli di predizione clinica, che combinano più caratteristiche di una persona in una probabilità ~\cite{collins_tripodai_2024}.
+Per decidere chi sottoporre a un esame serve una stima del rischio della singola persona. in medicina questa stima viene da modelli di predizione clinica, che stimano la probabilità che una persona presenti una condizione (modelli diagnostici) o che la sviluppi in futuro (modelli prognostici)~\cite{collins_tripodai_2024}.
 
-Negli ultimi anni, grazie alla digitalizzazione, sono stati resi disponibili grandi quantità di dati clinici già strutturati, come parametri vitali ed esami di laboratorio ~\cite{rajkomar_machine_2019}. Il machine learning ha permesso di elaborare questi dati e offrire metodi che imparano relazioni complesse direttamente dagli esempi ~\cite{rajkomar_machine_2019,topol_high-performance_2019}. Anche per la malattia renale esiste un ampia gamma di modelli di machine learning ~\cite{sanmarchi_predict_2023}.
+Con la digitalizzazione dei dati sanitari, le cartelle cliniche elettroniche permettono di addestrare un modello su decine di milioni di cartelle di pazienti, con centinaia di miliardi di dati~\cite{rajkomar_machine_2019}. A differenza dei sistemi tradizionali, programmati con regole esplicite, nel machine learning il modello impara dagli esempi~\cite{rajkomar_machine_2019}. La diffusione di questi metodi in medicina è stata resa possibile da grandi insiemi di dati etichettati~\cite{topol_high-performance_2019}, e con l'accesso crescente ai dati e a software pronti all'uso sviluppare un modello di predizione è diventato più rapido e semplice~\cite{collins_tripodai_2024}. Anche per la malattia renale esiste un ampia gamma di modelli di machine learning~\cite{sanmarchi_predict_2023}.
 
-Questi modelli possono essere raggruppati in tre filoni. il primo comprende i punteggi clinici nati per lo screening in medicina generale. SCORED stima la probabilità di un eGFR ridotto a partire da nove informazioni semplici, fra cui età, anemia, diabete e proteinuria ~\cite{bang_screening_2007}. QKidney stima il rischio di sviluppare la malattia nei cinque anni successivi usando i dati delle cure primarie di Inghilterra e Galles ~\cite{hippisley-cox_predicting_2010}.
+Questi modelli possono essere raggruppati in tre filoni. il primo comprende i punteggi clinici per individuare le persone a rischio nella popolazione generale o nelle cure primarie. SCORED stima la probabilità di un eGFR ridotto a partire da nove informazioni semplici, fra cui età, anemia, diabete e proteinuria~\cite{bang_screening_2007}. QKidney stima il rischio di sviluppare la malattia nei cinque anni successivi, usando i dati delle cure primarie di Inghilterra e Galles~\cite{hippisley-cox_predicting_2010}.
 
-Il secondo filone riguarda l'albuminuria, il marcatore più difficile da stimare senza un esame delle urine. Bragg-Gresham e colleghi hanno costruito un modello per stabilire quali adulti statunitensi senza diabete sottoporre allo screening dell'albuminuria ~\cite{bragg-gresham_using_2025}. MERWACS usa il machine learning per individuare, fra gli adulti con almeno 50 anni, chi sottoporre a screening per la malattia renale ~\cite{yoo_merwacs_2026}.
+Il secondo filone riguarda l'albuminuria, il marcatore più difficile da stimare senza un esame delle urine. Bragg-Gresham e colleghi hanno costruito un modello per stabilire quali adulti statunitensi senza diabete sottoporre allo screening dell'albuminuria~\cite{bragg-gresham_using_2025}. MERWACS usa il machine learning per individuare, fra gli adulti con almeno 50 anni, chi sottoporre per primo agli esami di laboratorio per la malattia renale~\cite{yoo_merwacs_2026}.
 
-Il terzo filone lavora a valle della diagnosi. la \textit{Kidney Failure Risk Equation}, validata su oltre 700.000 pazienti di più di 30 paesi, stima nei pazienti con malattia già accertata il rischio di arrivare alla dialisi o al trapianto, e parte proprio da eGFR e ACR \cite{tangri_multinational_2016}.
+Il terzo filone lavora a valle della diagnosi. La \textit{Kidney Failure Risk Equation}, validata su oltre 700.000 pazienti di più di 30 paesi, stima nei pazienti con malattia già accertata il rischio di arrivare alla dialisi o al trapianto, e parte proprio da eGFR e ACR~\cite{tangri_multinational_2016}.
 
-Questo strumento si colloca fra il primo e il secondo filone, stima i marcatori presenti oggi prima che gli esami renali vengano eseguiti.
+Questo strumento si colloca fra il primo e il secondo filone: stima i marcatori presenti oggi, prima che gli esami renali vengano eseguiti.
 
+\section{Limiti degli approcci esistenti e obiettivi della tesi}
+La letteratura appena descritta lascia aperti alcuni problemi, che conviene raccogliere in un unico punto perchè motivano le scelte di questo lavoro.
+
+Il primo limite riguarda gli input, Alcuni modelli includono fra i predittori un esame che misura direttamente il danno renale: SCORED, per esempio, include la proteinuria~\cite{bang_screening_2007}. Nel caso estremo il modello ricopia la definizione della malattia. Uno dei dataset pubblici dell'UCI (\textit{University of California, Irvine}) sulla malattia renale cronica contiene creatinina e urea del sangue, albumina e peso specifico delle urine~\cite{l_rubini_chronic_2015}, e due lavori che lo usano riportano accuratezze altissime fra il 98,9\% e il 99,8\%~\cite{qin_machine_2020,chittora_prediction_2021}. Prestazioni simili sono ottime per misurare la regola diagnostica non la capacità di anticiparla.
+
+Il secondo limite riguarda il \textit{target}. Prestazioni più alte si ottengono quando si stima l'eGFR ridotto~\cite{bang_screening_2007,sabanayagam_deep_2020}, che per costruzione dipende dall'età, inclusa nell'equazione che lo calcola~\cite{inker_new_2021}. Quando il \textit{target} è l'albuminuria, il marcatore più frequente nella popolazione~\cite{wang_prevalence_2023}, i modelli senza esami delle urine ottengono prestazioni più modeste~\cite{bragg-gresham_using_2025,muntner_development_2011}. Un modello che segua la definizione KDIGO, e quindi stimi insieme i due marcatori, deve misurarsi con la parte più difficile del problema.
+
+Il terzo limite riguarda la validazione. Una revisione sistematica conta 47 modelli di rischio per la malattia renale, di cui solo 13 validati esternamente~\cite{echouffo-tcheugui_risk_2012}. Fra i modelli per la malattia renale incidente sviluppati o validati su cartelle cliniche di comunità, il 64\% presenta un alto rischio di distorsione~\cite{haris_prediction_2024}. I modelli di machine learning, inoltre, vengono raramente verificati su popolazioni diverse da quella di sviluppo~\cite{sanmarchi_predict_2023}.
+
+Il quarto limite riguarda l'utilità clinica. Nessuno dei dodici modelli esaminati da Haris e colleghi esistono analisi dell'utilità clinica o studi di impatto~\cite{haris_prediction_2024}. Tuttavia Van Calster e colleghi raccomandano di riportare sempre una misura di utilità clinica, come il \textit{net benefit} con la \textit{decision curve analysis}, insieme~\cite{van_calster_evaluation_2025}.
+
+Dall'insieme di questi limiti nasce l'obiettivo della tesi: stabilire se, con i soli dati clinici e gli esami del sangue di routine, sia possibile individuare le persone con marcatori di malattia renale cronica, e se il rischio stimato rispetti la gravità definita da KDIGO. Il lavoro svolto vuole rispondere alle seguenti domande:
+\begin{enumerate}
+	\item Il modello distingue chi presenta marcatori di malattia renale da chi non li presenta?
+	\item Il rischio stimato cresce con la gravità indicata dai livelli KDIGO?
+	\item Quanti casi di rischio alto e molto alto vengono riconosciuti?
+	\item Le fasce di rischio del modello corrispondono alla stratificazione clinica?
+	\item Le tecniche di bilanciamento delle classi migliorano il riconoscimento dei casi gravi, o solo le metriche medie?
+	\item Come si comporta lo stesso modello nelle persone con diabete?
+\end{enumerate}
+
+Il lavoro non propone un nuovo algoritmo e non costruisce uno strumento diagnostico. Con una sola misurazione per persona non si può verificare la persistenza richiesta dalla definizione~\cite{stevens_kdigo_2024}: per questo si parla di marcatori e non di diagnosi. Il contributo è una procedura completa e verificabile, e una misura onesta di quanto questi dati permettono di ottenere.
+\section{Approccio metodologico}
+Per rispondere alle sei domande è stata costruita una procedura che parte dai dati grezzi e arriva alla valutazione finale, schematizzata nella figura~\ref{fig:schema_metodologico}.
+
+I dati provengono da un dataset pubblico raccolto nel reparto di Diabetologia ed Endocrinologia di un ospedale di Shanghai, con 5.922 persone descritte da 190 variabili~\cite{li_bimodal_2026}. Per ogni persona si stabilisce, dagli esami renali, se presenta i marcatori definiti da KDIGO. La velocità di filtrazione glomerulare non viene presa dal dataset ma ricalcolata con un'equazione validata~\cite{inker_new_2021} perchè gli autori non documentano quella usata per la colonna fornita~\cite{li_bimodal_2026}. Gli esami renali servono solo a costruire questa etichetta, poi vengono esclusi dall'input. Il modello vede soltanto il profilo clinico e metabolico della persona: anagrafica, misure del corpo, pressione, glicemia, lipidi, emocromo, anamnesi e stili di vita.
+
+Prima di qualsiasi stima che impari dai dati, una parte dei soggetti viene messa da parte come insieme di test: resta chiusa per tutto lo sviluppo e viene letta una sola volta, alla fine, per confermare le conclusioni.
+
+Sui dati restanti si confrontano diversi modelli di complessità crescente: un classificatore di riferimento, una regressione logistica con i predittori di SCORED disponibili nel dataset, una regressione logistica regolarizzata e due modelli basati su insiemi di alberi decisionali, Random Forest~\cite{breiman_random_2001} e XGBoost~\cite{chen_xgboost_2016}. Le loro stime vengono confrontate con i quattro livelli KDIGO, per verificare se ordinano le persone come la stratificazione clinica. Sugli stessi modelli si misurano poi le tecniche di bilanciamento, dalla semplice pesatura dei casi fino alla generazione di dati sintetici~\cite{chawla_smote_2002,xu_modeling_2019}. Il sottogruppo delle persone con diabete viene analizzato a parte.
+
+\begin{center}
+\begin{tikzpicture}[
+	node distance=0.6cm,
+	block/.style={rectangle, draw=blue!50!black, text width=0.75\textwidth, text centered, rounded corners=4pt, minimum height=0.9cm, fill=blue!5, thick, font=\sffamily},
+	line/.style={draw, -Stealth, thick, gray!60!black}
+	]
+	
+	\node [block] (n1) {Dataset pubblico (coorte ospedaliera)};
+	\node [block, below=of n1] (n2) {Etichetta: marcatori KDIGO};
+	\node [block, below=of n2] (n3) {Separazione dell'insieme di test};
+	\node [block, below=of n3] (n4) {Esclusione degli esami renali};
+	\node [block, below=of n4] (n5) {Modelli di complessità crescente};
+	\node [block, below=of n5] (n6) {Bilanciamento delle classi e sottogruppo diabetico};
+	\node [block, below=of n6] (n7) {Confronto con i livelli KDIGO};
+	\node [block, below=of n7] (n8) {Conferma sull'insieme di test};
+	
+	\path [line] (n1) -- (n2);
+	\path [line] (n2) -- (n3);
+	\path [line] (n3) -- (n4);
+	\path [line] (n4) -- (n5);
+	\path [line] (n5) -- (n6);
+	\path [line] (n6) -- (n7);
+	\path [line] (n7) -- (n8);
+	
+\end{tikzpicture}
+\captionof{figure}{Schema generale della procedura. Ogni blocco corrisponde a un momento del lavoro descritto nel testo; procedure e parametri sono riportati nel Capitolo 3.}
+\label{fig:schema_metodologico}
+\end{center}
+
+\section{Risultati ottenuti}
+Applicando la procedura descritta, le previsioni sono state valutate in validazione incrociata e, una sola volta, sull'insieme di test.
+
+Senza alcun esame renale, il modello con le prestazioni più alte, il Random Forest, distingue le persone con marcatori di malattia renale con un'area sotto la curva ROC (AUROC) di 0,703 [0,676; 0,731] in validazione incrociata. Sull'insieme di test, mai usato durente lo svilupp, l'AUROC è di 0,743 [0,699; 0,786]. Il risultato è in linea con i modelli pubblicati per un \textit{target} simile~\cite{yoo_merwacs_2026,muntner_development_2011}. Le differenze fra i modelli confrontati non sono statisticamente significative.
+
+Il rischio stimato rispetta la gravità clinica. In tutti i modelli la probabilità media cresce a ogni livello KDIGO, e fra il 67\% il 70\% delle coppie di persone di livello diverso è ordinato come nella stratificazione clinica. Con una soglia fissata per trovare il 90\% dei casi, i modelli riconoscono fra 46 e 47 dei 50 casi di rischio alto e fra 18 e 20 dei 21 casi di rischio molto alto.
+
+Il danno renale conclamato viene riconosciuto meglio: nei cinque modelli dell'analisi del limite di prestazione l'AUROC è fra 0,81 e 0,86 per l'eGFR ridotto e fra 0,76 e 0,79 per l'albuminuria grave, con ACR di almeno $300\text{mg/g}$. l'albuminuria, presente in nove casi positivi su dieci, è più difficile da stimare dagli esami del sangue: per i casi con sola albuminuria l'AUROC è fra 0,67 e 0,69. Per quelli appena sopra la soglia, con ACR fra 30 e 45 \text{mg/g}, scende fra 0,65 e 0,68. È il limite principale del lavoro. Undici strategie aggiuntive, compresi modelli più recenti, non migliorano il risultato in modo apprezzaabile, e nemmno l'addestramento del modello sul valore continuo dell'albuminuria invece che sulla sola soglia diagnostica.
+
+Il risultato più rilevante per la pratica è l'utilità clinica. Sull'intera popolazione, con una soglia di rischio del 7\%, usare il modello per decidere chi testare evita fra 9 e 13 esami inutili ogni 100 persone rispetto a testare tutti. Fra le persone con diabete, invece, il modello ne segnalerebbe fra il 97\% e il 100\%: equivale a testarle tutte, come già prescrivono le linee guida, e il suo spazio d'uso sono le persone senza diabete.
+
+Rispetto alla regressione logistica costruita sui predittori del punteggio SCORED, i modelli con gli esami del sangue riducono gli esami necessari a parità di casi trovati. Per trovare l'85\% dei casi, una combinazione di tre modelli che usa solo 21 delle 74 variabili fa esaminare 66,0 persone ogni 100 invece di 73,8, cioè 7,8 esami in meno ogni 100 persone valutate. In una popolazione con le stesse caratteristiche sarebbero circa 780 esami in meno ogni 10.000 persone. È un analisi esplorativa, decisa dopo i risultati principali, e in AUROC il vantaggio su SCORED non è statisticamente significativo. Sull'insieme di test il vantaggio in AUROC su SCORED resta netto solo per Random Forest (0,743 contro 0,723).
+
+Sul piano metodologico, la tesi mette alla prova una pratica sempre più usata, la correzione dello sbilanciamento delle classi~\cite{van_den_goorbergh_harm_2022}. A parità di prestazioni, nessuna tecnica fa riconoscere più casi gravi. 
+
+Tutte le conclusioni sono state sottoposte all'insieme di test, aperto una sola volta alla fine, e nessuna delle cinque affermazioni fissate in anticipo è stata contraddetta. Il risultato complessivo è un modello che, con dati già disponibili in ambulatorio, si colloca al livello degli strumenti pubblicati per lo stesso problema e riduce gli esami inutili nella popolazione senza diabete. A questo si aggiunge una misura precisa di dove e perchè questi dati smettono di bastare.
+
+\section{Struttura della tesi}
+Il resto dell'elaborato è organizzato come segue.
+
+\textbf{Capitolo 2, Stato dell'arte.} La malattia renale cronica e i criteri KDIGO, le strategie di screening, i modelli di rischio con e senza esami renali, il machine learning applicato alla malattia renale, il problema delle classi sbilanciate e le misure per valutare un modello clinico.
+
+\textbf{Capitolo 3, Metodologia.} Il dataset e la costruzione dell'etichetta, la selezione delle variabili e il trattamento dei valori mancanti, i modelli e il protocollo di validazione, le tecniche di bilanciamento, le analisi esplorative, la conferma sull'insieme di test e il prototipo.
+
+\textbf{Capitolo 4, Risultati ottenuti.} Le risposte alle sei domande, la ricerca del limite di prestazione, l'utilità clinica, la conferma sull'insieme di test e il confronto con lo stato dell'arte.
+
+\textbf{Capitolo 5, Conclusioni e sviluppi futuri.} I contributi, i limiti del lavoro e le possibili estensioni.
 
 \chapter{Stato dell'arte}
 
