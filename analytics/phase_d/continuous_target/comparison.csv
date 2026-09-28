@@ -1,0 +1,4 @@
+comparison,candidate,reference,difference,low,high,t,p_value,passes,family,p_holm
+primario,continuous_target,target_decomposition,-0.003941551142750144,-0.037878975056259825,0.029995872770759536,-0.3224611392150793,0.7632540662170654,False,,
+regola della Fase D,continuous_target,random_forest,-0.004903709254402466,-0.03171804708039326,0.021910628571588327,-0.5077462529580767,0.6383487283878758,False,12.0,1.0
+secondario: sola componente albuminuria (ACR >= 30),continuous_target,target_decomposition,-0.01443279318016446,-0.04319892229810191,0.014333335937772989,-1.3930222524939042,0.2360396845938072,,,
