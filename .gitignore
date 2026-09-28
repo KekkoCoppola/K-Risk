@@ -64,8 +64,6 @@ analytics/phase_a/interpretation/*.npz
 *.vrb
 docs/thesis/*.pdf
 docs/thesis/main.bcf
-.gitignore
-docs/thesis/main.lot
-.gitignore
 docs/thesis/main.lof
+docs/thesis/main.lot
 docs/thesis/main.run.xml

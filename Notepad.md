@@ -1722,6 +1722,113 @@ Quelli dichiarati nel protocollo: 23 casi gravi, 88 diabetici con 23 positivi (i
 
 ---
 
+## Audit del tetto dei dati — registrazione (23/09/2026, prima dei calcoli)
+Branch `experimental/tetto-dati`. Domanda: il limite ad AUROC circa 0,70 è davvero dei dati, o esistono scelte che danno risultati nettamente migliori? Audit indipendente a quattro ruoli: esperto di codice (ha letto solo il codice senza commenti), critico, ricercatore (fonti con DOI verificato su Crossref), valorizzatore. Tutto è post-hoc ed esplorativo: il test set è già stato aperto una volta (22/09) e **non** viene letto.
+
+### Cosa è emerso prima di questa registrazione (sul solo training)
+- **Nessun leakage né bug che deprima le prestazioni**: imputazione e scaling sul solo fold di training (cache del fold 0 ricalcolata identica), fold annidati coerenti fra le fasi, CKD-EPI 2021 e mappa KDIGO corretti.
+- **Difetto di metodo**: `phase_d.repeat_seeds` è scritto nella regola ma nessun codice lo esegue. Con una sola partizione a 5 fold la differenza minima che la regola può dichiarare "significativa" (Nadeau-Bengio + Holm su 11) è circa 0,040; con 3 ripetizioni circa 0,020 (DS mediana delle differenze per fold 0,0105). "Nessun candidato migliora" va letto come "nessuno migliora di almeno 0,02–0,04": differenze di 0,01–0,02 non si possono né escludere né dimostrare.
+- **Unità dell'ACR non documentate**: nel training `UMAUCR` = 176,8 × `UmALB`/`UCRE` su tutte le 4.350 righe; `HighACR` degli autori coincide con `UMAUCR` ≥ 30. Il dizionario del dataset lascia le unità vuote. La mediana di `UCRE` (185) è compatibile solo con i mg/dL (Barr et al. 2005, mediana NHANES 118,6 mg/dL), e con i mg/dL il fattore corretto sarebbe 100: in quel caso la soglia 30 corrisponderebbe a un ACR vero di circa 17 mg/g. Non dimostrabile: si dichiara come limite e si misura con un'analisi di sensibilità.
+- **L'idea nuova migliore vale al massimo +0,01/+0,02**: un'esplorazione non registrata (4 varianti, seed 42/43/44) con l'ACR continuo come bersaglio ausiliario ha dato +0,010/+0,020. Sotto la differenza che la regola può rilevare e non "nettamente migliore": **non** diventa un candidato. Nella tesi si cita solo come esplorazione post-hoc. *(Aggiunta del 25/09/2026: non replicata. L'analisi registrata "bersaglio continuo dell'albuminuria", più sotto, dà −0,004 (IC −0,038; +0,030); nella tesi va citata quella.)*
+
+### Decisioni (23/09/2026)
+- **Nessun nuovo candidato e nessuna CV ripetuta**: circa 16 ore di calcolo (più 7 per una replica) per differenze attese di 0,01–0,02, che la regola non potrebbe comunque dichiarare. Il difetto `repeat_seeds` si dichiara, con la differenza minima rilevabile.
+- **Registrate in `configs/config.yaml` solo tre diagnostiche**, da secondi a pochi minuti: `semi_synthetic_control` (controllo positivo a intensità nota, al posto del tautologico UmALB), `label_noise_auroc` (rumore dell'etichetta in AUROC, con avvertenza sull'effetto spettro), `acr_label_sensitivity` (soglia 53,04 = fattore 100; i suoi numeri erano già stati esplorati prima di questa registrazione).
+- **Test set**: non si riapre. La run 1 del 22/09 resta definitiva.
+
+---
+
+## Audit del tetto dei dati — risultati (23/09/2026)
+`python -m src.models.phase_d --diagnostics label_noise_auroc acr_label_sensitivity semi_synthetic_control` sulle previsioni out-of-fold del training (test set non letto; i CSV già esistenti della Fase D sono rimasti identici, verificato con sha256). Tabelle in `analytics/phase_d/`: `semi_synthetic_control.csv`, `label_noise_auroc.csv`, `acr_label_sensitivity.csv`. Modelli: i tre riferimenti, `ensemble_mean` e `tabpfn`.
+
+### La pipeline impara quando l'informazione c'è (`semi_synthetic_control.csv`)
+| feature semi-sintetica z | AUROC univariata di z | AUROC out-of-fold con z (IC 95%) | senza z | esito |
+|---|---|---|---|---|
+| rumore 2,58 × DS di log(ACR) | 0,75 | 0,795 (0,771–0,818) | 0,696 | passa |
+| rumore 1,99 × DS di log(ACR) | 0,80 | 0,831 (0,809–0,853) | 0,696 | passa |
+
+Con un segnale di intensità moderata e nota, XGBoost con gli iperparametri della Fase A lo trova e lo somma alle altre variabili. È un controllo più severo di quello con `UmALB` (0,933), che era quasi il numeratore dell'ACR.
+
+### Quanto costa il rumore dell'etichetta (`label_noise_auroc.csv`)
+- per fascia di ACR dei positivi: 30–45 → 0,645–0,682; 45–100 → 0,675–0,684; 100–300 → 0,698–0,718; ≥ 300 → 0,758–0,790. L'albuminuria grave si riconosce meglio, ma resta lontana da una discriminazione alta;
+- casi netti (zona grigia 17,7–35,4 mg/g esclusa, salvo eGFR < 60): 0,701–0,717 contro 0,696–0,710, cioè **+0,005/+0,009**. È un limite superiore (effetto spettro): il rumore vicino alla soglia costa al massimo circa 0,01;
+- solo coppie della stessa giornata: 0,696–0,711. L'effetto giornata sull'etichetta non gonfia né deprime l'AUROC.
+
+### Quanto pesa l'incertezza sull'unità dell'ACR (`acr_label_sensitivity.csv`)
+- etichetta attuale (UMAUCR ≥ 30, 425 positivi): 0,696–0,710;
+- fattore 100 (UMAUCR ≥ 53,04, 293 positivi, prevalenza 6,7%): **0,705–0,720**, cioè da +0,003 a +0,016 a seconda del modello;
+- fattore 100 con zone grigie escluse: 0,722–0,755 (limite superiore, stesso effetto spettro);
+- le previsioni sono quelle dei modelli addestrati sulla soglia 30: misurano quanto l'ordinamento si trasferisce, non un modello riaddestrato.
+
+### Verdetto
+Il tetto è dei dati, e ora è misurato da tre lati: la pipeline estrae segnali moderati quando esistono; il rumore dell'etichetta vicino alla soglia vale al massimo circa 0,01; l'incertezza sull'unità dell'ACR al massimo +0,016. Resta la scarsa informazione sull'albuminuria negli esami di routine (componente "solo albuminuria" 0,67–0,69 contro eGFR < 60 0,80–0,86 in `label_quality.csv`). Con una sola partizione la regola della Fase D rileva solo differenze di 0,02–0,04: differenze di 0,01–0,02 non sono né escluse né dimostrate.
+
+Come si ottiene 0,02–0,04 (ricalcolabile da `analytics/phase_d/folds_auc.csv` con la formula di `evaluation.corrected_ttest`): differenza minima = t critico × √(1/5 + 870/3.480) × DS delle differenze per fold contro la Random Forest. La DS mediana sugli 11 candidati è 0,0105 (da 0,0057 a 0,0266). Un solo confronto: 2,776 × 0,671 × DS ≈ **0,0195**, circa 0,02; primo passo di Holm su 11 (α = 0,05/11): 5,747 × 0,671 × DS ≈ **0,0403**, circa 0,04 (calcolati con la DS mediana non arrotondata).
+
+---
+
+## Fase D — bersaglio continuo dell'albuminuria: registrazione (25/09/2026, prima del codice e dei calcoli)
+Branch `experimental/bersaglio-continuo`. Analisi **post-hoc ed esplorativa**, chiesta dall'utente durante la stesura della tesi: il test set non viene letto (la run 1 del 22/09 resta definitiva) e le tabelle della Fase D non cambiano (uscite in `analytics/phase_d/continuous_target/`). Protocollo in `configs/config.yaml`, `phase_d.continuous_target`.
+
+### Perché
+- Il punto debole è l'albuminuria. Componente "solo albuminuria" contro i negativi: AUROC da 0,672 a 0,686 sui 13 modelli di `analytics/phase_d/label_quality.csv` (3 riferimenti e 10 candidati), contro 0,802–0,860 per la componente eGFR < 60 (stessa tabella). Per fascia di ACR dei positivi, la più difficile è 30–45: AUROC da 0,645 a 0,682 sui 5 modelli di `analytics/phase_d/label_noise_auroc.csv`.
+- Tutti i modelli finora hanno imparato solo "ACR ≥ 30 sì/no". Dicotomizzare una variabile continua perde informazione e fa sembrare molto diversi due soggetti vicini ma ai lati opposti della soglia (Altman & Royston 2006, testo completo letto il 25/09/2026, PMC1458573). Addestrare sul logaritmo dell'ACR usa anche la distanza dalla soglia, proprio nella zona in cui il modello sbaglia di più.
+- Sulla scala logaritmica il fattore 176,8 di `UMAUCR` (unità non documentate, audit del 23/09) diventa una costante additiva: l'addestramento non dipende dall'unità.
+
+### Già esplorato, dichiarato
+Durante l'audit del 23/09 un'esplorazione **non registrata** (4 varianti, seed 42/43/44, "ACR continuo come bersaglio ausiliario", sezione precedente) aveva dato +0,010/+0,020. Non ha lasciato codice né tabelle, quindi quel numero non è riproducibile. Questa analisi lo sostituisce con una versione registrata, riproducibile e verificata da test, ma non è cieca rispetto a quell'ordine di grandezza.
+
+### Protocollo (fissato ora)
+- **Confronto appaiato con `target_decomposition`** (AUROC 0,7016, IC 0,6737–0,7295, `analytics/phase_d/discrimination.csv`), da cui differisce **solo** per il bersaglio dell'albuminuria: stessi 5 fold esterni e 5 interni, XGBoost, spazio della Fase B (max_depth 1–12), 30 tentativi Optuna (TPE con il seed del progetto, MedianPruner), stessa metrica di ottimizzazione (PR-AUC sui fold interni contro ACR ≥ 30), stessa componente eGFR < 60 (i record di `target_decomposition/egfr`, riusati senza ricalcolo), stessa combinazione p = 1 − (1 − p_A)(1 − p_G).
+- **Bersaglio**: logaritmo naturale di `UMAUCR`, senza troncamento (nel training tutti i valori sono > 0; minimo 0,18). Modello: `XGBRegressor` (hist, errore quadratico, seed del progetto).
+- **Da stima continua a probabilità**: p_A = logistica a una variabile sulla stima μ (Platt 1999), stimata sulle previsioni out-of-fold dei 5 fold interni del training del fold esterno, con gli iperparametri scelti da Optuna. È monotona: non cambia l'ordinamento di μ; serve solo a combinarla con p_G.
+- **Primario**: AUROC del target composito, `continuous_target` − `target_decomposition`, t corretto di Nadeau-Bengio sui 5 fold esterni. Il bersaglio continuo "aiuta" se la differenza è ≥ 0,01, il limite inferiore dell'IC 95% > 0 e p < 0,05 (confronto unico).
+- **Regola della Fase D**: contro la Random Forest (AUROC media sui fold 0,7078, la più alta fra i riferimenti), differenza ≥ 0,01, limite inferiore > 0, p di Holm < 0,05 sulla famiglia di 12 (gli 11 candidati della Fase D, p da `comparison.csv`, più questo). Se la supera, prima di adottarlo va ripetuto su 3 partizioni: decisione da prendere con l'utente (circa 16 ore).
+- **Secondari, descrittivi**: AUROC della sola componente albuminuria (μ contro ACR ≥ 30, confrontata con la probabilità di `target_decomposition/albuminuria` con lo stesso t corretto); AUROC per componente del target e per fascia di ACR, con le definizioni di `label_quality` e `label_noise_auroc`.
+
+### Limiti, dichiarati prima
+- Con 5 fold e una partizione la differenza minima dimostrabile è circa 0,02 per un confronto (sezione precedente): differenze più piccole non si possono né dimostrare né escludere, e conta l'estremo superiore dell'IC, che dice quale guadagno è escluso.
+- Esplorativa e post-hoc: qualunque esito non cambia le conclusioni confermate sul test set, che non verrà riaperto.
+
+---
+
+## Fase D — bersaglio continuo dell'albuminuria: risultati (25/09/2026)
+`python -m src.models.phase_d --continuous-target`, dopo i commit di registrazione (`52d4723`, 19:36:21) e del codice (`4a18106`, 19:36:22). Record dei fold scritti fra le 19:38:55 e le 19:46:42 (da 86 a 160 secondi per fold; 30 tentativi Optuna per fold, da 10 a 17 interrotti dal pruner). Test set non letto; le 8 tabelle CSV di `analytics/phase_d/` sono identiche a prima (sha256 verificato). Tabelle in `analytics/phase_d/continuous_target/`: `discrimination.csv`, `comparison.csv`, `components.csv`; record per fold in `albuminuria/` e `combinato/`. Tutti i numeri sotto sono stati ricalcolati in modo indipendente dai record con sklearn: coincidono alla quarta cifra decimale.
+
+### Target composito (`discrimination.csv`, 4.350 soggetti, 425 positivi)
+| modello | AUROC (IC 95%) | PR-AUC | specificità a sensibilità 0,90 |
+|---|---|---|---|
+| bersaglio continuo | 0,6986 (0,6702–0,7269) | 0,2701 | 0,2135 |
+| `target_decomposition` (stesso modello, bersaglio binario) | 0,7016 (0,6737–0,7295) | 0,2604 | 0,2428 |
+| Random Forest (riferimento) | 0,7032 (0,6757–0,7308) | 0,2460 | 0,2324 |
+
+### Confronti registrati (`comparison.csv`, t corretto di Nadeau-Bengio sui 5 fold esterni)
+| confronto | differenza di AUROC (IC 95%) | p | esito |
+|---|---|---|---|
+| primario: continuo − binario | −0,0039 (−0,0379; +0,0300) | 0,763 | **non aiuta** |
+| regola della Fase D: continuo − Random Forest | −0,0049 (−0,0317; +0,0219) | Holm 1,00 (famiglia di 12) | **non migliora** |
+| secondario: sola componente albuminuria (ACR ≥ 30, 387 positivi) | −0,0144 (−0,0432; +0,0143) | 0,236 | descrittivo |
+
+Sulla sola componente albuminuria l'AUROC complessiva è 0,6775 (0,6476–0,7075) per la stima continua contro 0,6905 (0,6613–0,7196) per il classificatore binario (`components.csv`, "albuminuria (ACR >= 30), tutti i soggetti").
+
+### Per fascia di ACR dei positivi (`components.csv`, descrittivo, nessun test)
+| fascia | bersaglio continuo | bersaglio binario |
+|---|---|---|
+| 30–45 (106 positivi) | 0,6844 | 0,6664 |
+| 45–100 (134) | 0,6682 | 0,6834 |
+| 100–300 (102) | 0,6975 | 0,7093 |
+| ≥ 300 (45) | 0,7426 | 0,7669 |
+
+Il bersaglio continuo riconosce un po' meglio i positivi appena sopra la soglia (+0,018 nella fascia 30–45) e peggio quelli gravi (−0,024 sopra 300): sposta la discriminazione, non la aumenta. Con 45–134 positivi per fascia gli IC si sovrappongono ampiamente: è un'osservazione, non un risultato.
+
+### Lettura
+- **Dicotomizzare l'ACR non è il limite.** Addestrare sul valore continuo non migliora la discriminazione del target composito né quella della sola albuminuria: l'IC esclude guadagni superiori a +0,030 rispetto allo stesso modello binario e a +0,022 rispetto alla Random Forest.
+- **L'esplorazione non registrata del 23/09 (+0,010/+0,020) non si replica**: la versione registrata dà −0,004. Il disegno di allora ("bersaglio ausiliario") non è documentato; nella tesi si cita solo il risultato registrato.
+- **Rafforza il verdetto dell'audit**: dopo tecnica, quantità di dati, rumore dell'etichetta, unità dell'ACR e ora anche la dicotomizzazione del bersaglio, il limite resta l'informazione sull'albuminuria contenuta negli esami di routine.
+- Per la tesi (post-hoc, esplorativo): "Addestrare la componente albuminuria sul logaritmo dell'ACR invece che sulla soglia non migliora la discriminazione (differenza di AUROC −0,004, IC da −0,038 a +0,030)".
+
+---
+
 ## Da fare per concludere il progetto (scritto il 20/09/2026)
 **Superata il 22/09/2026**: Fase C, Fase D, blocco qualità e conclusioni delle domande 1–6 sono conclusi; il protocollo del test finale è nella sezione "Conferma finale sul test set — protocollo". Il testo che segue resta come traccia storica.
 
