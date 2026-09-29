@@ -311,6 +311,50 @@ phase_d:
                             thresholds: [20, 30, 45, 53.04, 60, 100, 300],
                             factor: {observed: 176.8, alternative: 100},
                             grey_zones: [[17.7, 35.4], [20, 45], [15, 60]]}
+  # registrato il 25/09/2026, PRIMA di scrivere il codice e di calcolare. Analisi post-hoc ed
+  # esplorativa, decisa dopo la Fase D, l'audit e la conferma sul test set: il test set non viene letto
+  # e le tabelle della Fase D non cambiano (uscite in una cartella propria).
+  # Domanda: addestrare la componente albuminuria sul valore continuo dell'ACR, invece che sulla sola
+  # soglia ACR >= 30, migliora la discriminazione? Dicotomizzare una variabile continua perde
+  # informazione e fa sembrare molto diversi due soggetti vicini ma ai lati opposti della soglia
+  # (Altman & Royston 2006); i modelli della Fase D riconoscono meno i positivi con ACR fra 30 e 45
+  # (label_noise_auroc.csv). Confronto appaiato con target_decomposition, da cui differisce SOLO per
+  # il bersaglio dell'albuminuria: stessi fold, XGBoost, spazio della Fase B (max_depth 1-12), 30
+  # tentativi (TPE con il seed del progetto, MedianPruner), stessa metrica di ottimizzazione (PR-AUC sui
+  # fold interni contro ACR >= 30), stessa componente eGFR < 60 (record di target_decomposition/egfr,
+  # riusati senza ricalcolo), stessa combinazione p = 1 - (1 - p_A)(1 - p_G).
+  # NB, dichiarato: durante l'audit del 23/09/2026 un'esplorazione NON registrata (4 varianti, seed
+  # 42/43/44, ACR continuo come bersaglio ausiliario) aveva dato +0,010/+0,020 (Notepad, audit del
+  # tetto dei dati). Non ha lasciato codice né tabelle: questa analisi la sostituisce con una versione
+  # registrata e riproducibile, ma non è "cieca" rispetto a quell'ordine di grandezza.
+  continuous_target:
+    output: analytics/phase_d/continuous_target
+    matched: target_decomposition
+    # bersaglio: logaritmo naturale di UMAUCR, senza troncamento (nel training tutti i valori sono > 0).
+    # Sulla scala logaritmica il fattore 176,8 di UMAUCR (unità non documentate) è una costante
+    # additiva e non cambia l'ordinamento
+    transform: log
+    # XGBRegressor (tree_method hist, errore quadratico, seed del progetto)
+    model: xgboost_regressor
+    # dalla stima continua mu alla probabilità p_A di ACR >= 30: logistica a una variabile su mu
+    # (Platt 1999), stimata sulle previsioni out-of-fold dei 5 fold interni del training del fold
+    # esterno, con gli iperparametri scelti da Optuna. È monotona: non cambia l'ordinamento di mu
+    probability: platt_inner_oof
+    # confronti sui 5 fold esterni con il t corretto di Nadeau-Bengio (stesso codice della Fase D).
+    # Primario: AUROC del target composito, continuous_target - target_decomposition; il bersaglio
+    # continuo "aiuta" se la differenza è >= min_difference, il limite inferiore dell'IC 95% > 0 e
+    # p < 0,05 (confronto unico, nessuna correzione).
+    # Regola della Fase D: contro il riferimento con AUROC media sui fold più alta (Random Forest),
+    # differenza >= min_difference, limite inferiore > 0 e p di Holm < 0,05 sulla famiglia di 12 (gli 11
+    # candidati della Fase D, p da comparison.csv, più questo). Se la supera, prima di adottarlo va
+    # ripetuto su 3 partizioni: decisione da prendere con l'utente (circa 16 ore di calcolo).
+    # Secondari, descrittivi: AUROC della sola componente albuminuria (mu contro ACR >= 30, confrontata
+    # con la probabilità di target_decomposition/albuminuria, stesso t corretto), AUROC per componente
+    # del target e per fascia di ACR (stesse definizioni di label_quality e label_noise_auroc).
+    # Limite dichiarato prima: con 5 fold e una partizione la differenza minima dimostrabile è circa
+    # 0,02 per un confronto (audit del 23/09/2026); per differenze più piccole conta l'IC, che dice
+    # quale guadagno è escluso
+    min_difference: 0.01
   candidates:
     # media delle probabilità out-of-fold dei tre riferimenti (nessun nuovo addestramento)
     ensemble_mean: {kind: ensemble}
