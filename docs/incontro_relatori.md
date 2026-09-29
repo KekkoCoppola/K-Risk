@@ -4,7 +4,7 @@ Documento di studio per l'incontro richiesto il 24/09/2026: "tutto quello che ha
 
 Ogni numero viene dalle tabelle in `analytics/`, dal `Notepad.md` o dalla storia git; i numeri principali sono stati ricontrollati sulle tabelle il 24/09/2026. Il test set non è stato riaperto.
 
-Aggiornato il 29/09/2026 con il bersaglio continuo dell'albuminuria (25/09) e il primo capitolo della tesi (26/09). La versione da dire in 15 minuti è in [`incontro_15_minuti.md`](incontro_15_minuti.md).
+Aggiornato il 29/09/2026 con il bersaglio continuo dell'albuminuria (25/09) e il primo capitolo della tesi (26/09). La versione da dire in 15 minuti è in [`incontro_15_minuti.md`](incontro_15_minuti.md); lo schema della pipeline, passo per passo, è in [`pipeline_passo_passo.md`](pipeline_passo_passo.md).
 
 **Come usarlo**
 - **§0**: le due domande del messaggio, con cui probabilmente si apre l'incontro.
@@ -538,6 +538,9 @@ Con una mappa completa delle 190 colonne in config: ogni colonna sta in un solo 
 
 Il dettaglio è nel §2.4.
 
+**(scomoda) La selezione delle variabili prima della CV non è leakage?**
+No, perché le regole decisive non usano l'esito: tipo di variabile, esami renali, mancanti oltre il 15%. Per comorbidità e questionario il Notepad cita anche l'assenza di segnale, ma solo come conferma: li escludeva già la soglia dei mancanti. L'unica selezione basata sull'esito, quella del tri-ensemble (21 variabili scelte con SHAP e coefficienti), l'ho fatta dentro ogni fold: fatta fuori, l'AUROC saliva in modo fittizio da 0,703 a 0,716.
+
 **(scomoda) Come sai di non avere leakage?**
 Cinque controlli:
 1. le colonne renali sono vietate da un'asserzione nel codice, verificata da un test;
@@ -591,6 +594,13 @@ Sui dati tabellari non hanno un vantaggio sistematico sugli ensemble di alberi (
 - **fold interni**: dentro ogni fold esterno, altri 5 servono a scegliere gli iperparametri;
 - **perché**: scegliere e valutare sugli stessi fold darebbe stime ottimistiche (Varma & Simon 2006; Cawley & Talbot 2010);
 - **dettagli**: fold stratificati sul livello KDIGO, seed 42, gli stessi per imputazione, Fase A, Fase B e Fase D.
+
+**La CV è fatta sui dati aumentati? E prima o dopo il preprocessing?**
+I fold sono sempre tagliati sui soggetti reali, e la validazione è sempre reale. Il preprocessing ha due momenti:
+- **prima della CV**, una volta sul training: selezione delle colonne e codifiche. Non imparano nulla dai dati;
+- **dentro ogni fold**: standardizzazione, moda e MissForest. Sono stimati sulla parte di training del fold e applicati alla validazione.
+
+In Fase B il bilanciamento arriva dopo, sulla sola parte di training del fold: aumentare prima di dividere metterebbe copie dello stesso paziente in training e in validazione (Santos et al. 2018). Lo schema completo è in [`pipeline_passo_passo.md`](pipeline_passo_passo.md).
 
 **Come funziona Optuna?**
 - **TPE**: propone gli iperparametri modellando dove stanno i tentativi buoni e dove quelli cattivi;
