@@ -83,6 +83,10 @@ Queste trasformazioni lavorano riga per riga e non imparano nulla dai dati: si f
   - nessuna variabile da sola supera AUROC 0,75; la più alta è l'età, con 0,653.
 - **Perché non è leakage farla prima della CV**: le regole decisive non usano l'esito (tipo di variabile, esami renali, mancanti). L'unica selezione basata sull'esito, quella del tri-ensemble, è stata fatta dentro ogni fold (passo 16).
 - **Set di sensibilità `no_consequence`** (67 colonne): toglie le 7 variabili che la malattia renale altera, cioè emoglobina, globuli rossi, ematocrito, acido urico, albumina, proteine totali e albumina glicata. Serve a verificare che il modello non riconosca la malattia dalle sue conseguenze: l'AUROC cambia fra −0,012 e +0,001.
+  - **come si usa**: in Fase A si ripete tutto sul set di 67, con gli stessi fold, la stessa imputazione e gli stessi 5 modelli (SCORED resta con 4 predittori, senza emoglobina);
+  - gli iperparametri non si riottimizzano: si riusano quelli del set principale, fold per fold, così l'unica differenza sono le 7 variabili tolte;
+  - il confronto è la differenza fra i due set per ogni modello, con il t corretto di Nadeau-Bengio sui 5 fold;
+  - non entra in Fase B né nel test, perché in Fase A non ha cambiato nulla.
 
 ### 6. Codifiche, nessun one-hot
 - **Come**:
