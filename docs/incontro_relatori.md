@@ -4,6 +4,8 @@ Documento di studio per l'incontro richiesto il 24/09/2026: "tutto quello che ha
 
 Ogni numero viene dalle tabelle in `analytics/`, dal `Notepad.md` o dalla storia git; i numeri principali sono stati ricontrollati sulle tabelle il 24/09/2026. Il test set non è stato riaperto.
 
+Aggiornato il 29/09/2026 con il bersaglio continuo dell'albuminuria (25/09) e il primo capitolo della tesi (26/09). La versione da dire in 15 minuti è in [`incontro_15_minuti.md`](incontro_15_minuti.md).
+
 **Come usarlo**
 - **§0**: le due domande del messaggio, con cui probabilmente si apre l'incontro.
 - **§1**: il progetto in 2 minuti.
@@ -27,10 +29,10 @@ Dopo il KDIGO sono chiuse anche:
 - le Fasi A (modelli), B (bilanciamento), C (diabetici) e D (tetto di prestazione);
 - l'utilità clinica (decision curve, calibrazione, costi);
 - la conferma sul test set, aperta una sola volta il 22/09;
-- un audit sul tetto dei dati, il 23/09.
+- un audit sul tetto dei dati (23/09) e una prova con il bersaglio continuo dell'albuminuria (25/09).
 
 Mancano due cose:
-- la scrittura della tesi: ho iniziato l'introduzione;
+- la scrittura della tesi: il primo capitolo, l'introduzione, è scritto; restano gli altri quattro;
 - il prototipo dimostrativo: c'è un sito dei risultati in `docs/`, ma non ancora uno strumento che calcola il rischio di un paziente.
 
 ### "Come ti sembra la pipeline, corposa o minimal?"
@@ -48,11 +50,11 @@ Risposta consigliata: **corposa soprattutto nella validazione; i modelli invece 
   10. conferma sul test
 - **modelli provati**:
   - 5 nelle Fasi A e B;
-  - 11 candidati in Fase D, fra cui CatBoost, LightGBM, EBM, TabPFN v2 ed ensemble;
+  - 12 strategie in Fase D, fra cui CatBoost, LightGBM, EBM, TabPFN v2, ensemble e un bersaglio continuo;
   - 2 modelli profondi: CTGAN come generatore di dati sintetici e TabPFN, un transformer pre-addestrato.
 - **dimensioni**:
-  - 13 pull request fra l'8 e il 23 settembre;
-  - 28 moduli Python (circa 5.600 righe) e 177 test automatici;
+  - 14 pull request fra l'8 e il 28 settembre;
+  - 28 moduli Python (circa 5.800 righe) e 182 test automatici;
   - 45 figure;
   - un registro delle decisioni di 2.100 righe.
 - **cosa la rende corposa**: non il numero di modelli, ma i controlli:
@@ -100,8 +102,9 @@ Risposta consigliata: **corposa soprattutto nella validazione; i modelli invece 
 | 22/09 | conclusioni, protocollo del test, **esecuzione unica sul test** (18:20–18:37) | #9 |
 | 22–23/09 | sito dei risultati su GitHub Pages, in italiano e inglese | #10, #11 |
 | 23/09 | audit del tetto dei dati; inizio della scrittura | #12, #13 |
+| 24–26/09 | introduzione della tesi; bersaglio continuo dell'albuminuria (post-hoc); primo capitolo | #14 |
 
-Il lavoro sperimentale si concentra fra il 17 e il 23/09; i calcoli lunghi (Fase A, Fase B) sono girati di notte.
+Il lavoro sperimentale si concentra fra il 17 e il 25/09; i calcoli lunghi (Fase A, Fase B) sono girati di notte.
 
 ### 2.1 Giorno 0 (08/09): la repo e i dati
 - **Cosa**: repo GitHub, nata come *MetaRisk* e poi rinominata K-Risk; struttura delle cartelle, README, licenza MIT per il codice, `CITATION.cff`, requirements.
@@ -434,10 +437,22 @@ Il lavoro sperimentale si concentra fra il 17 e il 23/09; i calcoli lunghi (Fase
 
 **Verdetto**: il tetto è dei dati. Con una sola partizione, però, la regola della Fase D rileva solo differenze di 0,02–0,04.
 
-### 2.13 Cosa manca
+### 2.13 24–26/09: bersaglio continuo dell'albuminuria e primo capitolo
+**Bersaglio continuo** (post-hoc, protocollo registrato prima dei calcoli nel commit `52d4723`)
+- **idea**: tutti i modelli imparano "ACR ≥ 30 sì/no", ma dicotomizzare una variabile continua perde informazione (Altman & Royston 2006). Qui un `XGBRegressor` impara il logaritmo dell'ACR, e una regressione di Platt trasforma la stima in probabilità;
+- **confronto**: appaiato con il bersaglio scomposto della Fase D, identico salvo il bersaglio dell'albuminuria;
+- **risultato**: AUROC 0,699, differenza −0,004 (IC da −0,038 a +0,030); contro la Random Forest −0,005, p di Holm 1,00. **Non aiuta**: riconosce un po' meglio i positivi appena sopra 30 e un po' peggio quelli gravi, cioè sposta la discriminazione senza aumentarla;
+- un'esplorazione non registrata del 23/09 dava +0,010/+0,020 e non si replica: nella tesi si cita solo il risultato registrato;
+- rafforza il verdetto dell'audit: nemmeno la dicotomizzazione del bersaglio è il limite.
+
+**Tesi**: il 26/09 è stato scritto il primo capitolo, l'introduzione (problema clinico, modelli di rischio, limiti degli approcci esistenti, approccio, risultati, struttura della tesi).
+
+**Dove**: `src/models/phase_d.py` (`--continuous-target`), `analytics/phase_d/continuous_target/`, `docs/thesis/main.tex`.
+
+### 2.14 Cosa manca
 - **la tesi** (`docs/thesis/main.tex`, template UNISA):
-  - ci sono frontespizio e introduzione in corso; gli altri capitoli sono vuoti;
-  - la bibliografia (`bib.bib`, 30 voci) è avviata;
+  - il capitolo 1, l'introduzione, è scritto; restano stato dell'arte, metodologia, risultati e conclusioni;
+  - la bibliografia (`bib.bib`, 31 voci) è avviata;
   - `valorizzazione_tesi.md` §9bis elenca 5 punti da inserire;
 - **il prototipo dimostrativo**;
 - **da decidere con i relatori**: cosa entra nel testo e cosa va in appendice (§4).
@@ -698,7 +713,7 @@ Perché dipende dalla prevalenza. Vale 0,44 contro 0,19, ma rapportata alla prev
 **(scomoda) AUROC 0,70 non è poco?**
 È moderata, ma è il tetto di questo bersaglio con questi dati, ed è misurato:
 - la componente eGFR si riconosce (0,80–0,86), l'albuminuria no (0,67–0,69);
-- 11 strategie diverse restano fra 0,692 e 0,710;
+- 12 strategie diverse, compreso il bersaglio continuo, restano fra 0,692 e 0,710;
 - in letteratura i modelli per l'albuminuria senza esami delle urine stanno fra 0,58 e 0,76;
 - il punteggio sviluppato nello stesso ospedale (Wu et al. 2017) arriva a 0,70–0,72.
 
@@ -709,6 +724,9 @@ Cinque prove:
 3. più dati aiuterebbero poco: dal 60% al 100% del training, +0,006/+0,008;
 4. la pipeline trova i segnali quando ci sono: 0,933 con l'albumina urinaria, 0,795 e 0,831 con le variabili semi-sintetiche;
 5. l'etichetta è rumorosa: solo il 43,5% degli ACR ≥ 30 misurati su urina casuale si conferma sulla prima urina del mattino (Saydah et al. 2013).
+
+**Avete provato a usare il valore continuo dell'ACR invece della soglia?**
+Sì, il 25/09, con un protocollo registrato prima dei calcoli: un XGBoost che impara il logaritmo dell'ACR, confrontato con lo stesso modello addestrato sulla soglia. La differenza è −0,004 (IC da −0,038 a +0,030): non aiuta. Un'esplorazione precedente, non registrata, dava +0,01/+0,02: non si è replicata, e nella tesi cito solo il risultato registrato.
 
 **(scomoda) "Nessun candidato migliora" non è solo mancanza di potenza?**
 In parte sì, ed è dichiarato:
@@ -821,14 +839,14 @@ Il KFRE (Tangri et al. 2016) predice l'insufficienza renale in chi ha già una m
 ### M. Metodo di lavoro e riproducibilità
 
 **Come hai organizzato il lavoro?**
-- **git**: un branch per fase e 13 pull request unite in `main`;
+- **git**: un branch per fase e 14 pull request unite in `main`;
 - **un solo file di configurazione** (`configs/config.yaml`) per percorsi, seed, soglie, gruppi di feature, protocolli e regole di decisione;
 - **protocolli prima dei risultati**: ogni protocollo è scritto nel Notepad e in config prima del calcolo;
-- **test**: 177 automatici con pytest;
+- **test**: 182 automatici con pytest;
 - **esecuzioni**: riprendibili, con i fold imputati in cache e seed fissi;
 - **dati e ambiente**: dati grezzi versionati con impronta, file di lock delle versioni.
 
-Il lavoro sperimentale sta fra il 17 e il 23/09: preparati a raccontare i tempi, con i calcoli lunghi eseguiti di notte.
+Il lavoro sperimentale sta fra il 17 e il 25/09: preparati a raccontare i tempi, con i calcoli lunghi eseguiti di notte.
 
 **Come si riproduce?**
 - i comandi, in ordine, sono nel README;
@@ -841,7 +859,7 @@ Questa risposta la conosci solo tu: dalla con esattezza e per primo, perché i r
 - quali strumenti hai usato e per cosa (codice, revisioni, ricerca bibliografica) e che cosa hai deciso tu;
 - quali garanzie non dipendono da chi ha scritto il codice:
   - protocolli scritti prima dei risultati;
-  - 177 test automatici;
+  - 182 test automatici;
   - controlli di coerenza (il classificatore di maggioranza, le due formule del net benefit);
   - difetti e correzioni delle revisioni registrati nel Notepad;
   - test set protetto;
@@ -852,7 +870,7 @@ Verifica prima dell'incontro se il corso o l'ateneo hanno regole sull'uso di str
 ### N. Tesi e prossimi passi
 
 **A che punto è la tesi?**
-- in LaTeX, con il template UNISA: frontespizio e introduzione in corso, capitoli vuoti, bibliografia avviata (30 voci);
+- in LaTeX, con il template UNISA: il capitolo 1 (introduzione) è scritto; restano stato dell'arte, metodologia, risultati e conclusioni; bibliografia avviata (31 voci);
 - il contenuto dei capitoli di metodo e risultati è già scritto nel Notepad, nelle 45 figure e nelle tabelle di `analytics/`, e va trasformato in testo;
 - `valorizzazione_tesi.md` §8 prepara i punti deboli da presentare alla commissione, §9bis elenca cosa inserire.
 
@@ -885,7 +903,7 @@ Nessuna cambia un risultato, ma i relatori potrebbero notarle aprendo la repo.
 - **`Notepad.md`, "Da fare" e "Fase A: stato"**: alcune voci non spuntate sono concluse (Fase C, test set, librerie della Fase B). Resta davvero aperta la verifica in letteratura delle ipotesi su peptide C e albumina glicata.
 - **Recall alla soglia 0,5 con l'undersampling**: il README e il Notepad scrivono 61%, `valorizzazione_tesi.md` 60%. La media dei 4 modelli (`analytics/phase_b/evaluation/naive.csv`) è 0,605: il valore giusto è 60%.
 - **"Screening di popolazione"**: le sezioni del Notepad scritte prima del 22/09 usano questa formula. Va letta come "coorte ospedaliera, in maggioranza senza diabete noto", come dichiara il Notepad stesso nei limiti.
-- **Numero dei test**: 168 funzioni di test, che con la parametrizzazione diventano 177 casi, il numero citato in `valorizzazione_tesi.md`.
+- **Numero dei test**: al 29/09 sono 173 funzioni di test, che con la parametrizzazione diventano 182 casi. `valorizzazione_tesi.md` cita 177, il numero del 23/09, prima dei test aggiunti con la PR #14.
 
 ---
 
@@ -1005,9 +1023,9 @@ Nessuna cambia un risultato, ma i relatori potrebbero notarle aprendo la repo.
 | soglia 0,5, recall | dal 2% al 60% (training); dal 4,4% al 40–65% (test) |
 | CTGAN | AUROC 0,62 |
 | componenti del bersaglio | eGFR < 60: 0,80–0,86; sola albuminuria: 0,67–0,69 |
-| Fase D | 11 candidati fra 0,692 e 0,710; differenza minima rilevabile 0,02–0,04 |
+| Fase D | 11 candidati più il bersaglio continuo, tutti fra 0,692 e 0,710; differenza minima rilevabile 0,02–0,04 |
 | controlli positivi | 0,933 (albumina urinaria); 0,795 e 0,831 (semi-sintetici) |
 | utilità al 7% / 10% | 9–13 / 25–28 esami inutili evitati ogni 100 (test: 13–19 / 29–33) |
 | diabetici alla soglia globale | segnalati il 97–100% |
 | test set | 22/09, 18:20–18:37, una volta; 5 affermazioni, nessuna contraddetta |
-| codice | 28 moduli Python, circa 5.600 righe; 177 test; 13 pull request |
+| codice | 28 moduli Python, circa 5.800 righe; 182 test; 14 pull request |
