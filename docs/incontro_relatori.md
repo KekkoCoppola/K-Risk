@@ -253,7 +253,8 @@ Il lavoro sperimentale si concentra fra il 17 e il 25/09; i calcoli lunghi (Fase
   - scegliendo a caso, per trovare il 90% dei positivi andrebbe esaminato il 90% dei soggetti; con il modello il 77–80%.
 - **domanda 2**:
   - la probabilità media cresce a ogni livello (XGBoost: 0,086 → 0,142 → 0,194 → 0,284);
-  - concordanza di Jonckheere-Terpstra 0,674–0,702: circa 7 coppie su 10 sono ordinate come KDIGO.
+  - concordanza di Jonckheere-Terpstra 0,674–0,702: circa 7 coppie su 10 sono ordinate come KDIGO;
+  - attenzione: il 98,5% di quelle coppie sono "basso contro positivo", cioè le stesse dell'AUROC. Fra i soli positivi (moderato, alto, molto alto) la concordanza è 0,61–0,64: l'ordine della gravità c'è, ma è debole. Il valore è ricavato dalle tabelle esistenti (§3 D), senza intervallo.
 - **domanda 3**: alla soglia scelta 46–47 "alto" su 50 e 18–20 "molto alto" su 21. I casi gravi però non sono riconosciuti più dei moderati.
 - **domanda 4**:
   - kappa circa 0,2. L'accordo osservato è alto (0,85) solo perché il 90% dei soggetti è "basso": è il paradosso della prevalenza;
@@ -657,6 +658,18 @@ Con una prevalenza del 9,8% solo l'1–3% dei soggetti supera 0,30, e al massimo
 **Cos'è la concordanza di Jonckheere-Terpstra?**
 È la quota di coppie di soggetti di livelli diversi in cui il soggetto del livello più grave ha la probabilità più alta; i pareggi valgono 1/2 e 0,5 significa nessuna tendenza. Qui vale circa 0,70. Il test dà p < 10⁻³², ma con 4.350 soggetti conta la dimensione dell'effetto, non il p.
 
+**(scomoda) Ma la concordanza 0,70 non è la stessa cosa dell'AUROC?**
+In gran parte sì. Il bersaglio è "livello moderato o superiore", quindi il 98,5% delle coppie confrontate (1.668.125 su 1.694.309) sono "basso contro positivo", le stesse dell'AUROC. Per questo i due numeri quasi coincidono (XGBoost: 0,698 contro 0,699). La gravità vera si misura sulle sole coppie fra positivi (moderato, alto, molto alto): lì la concordanza è 0,61–0,64.
+- **come si ottiene**: è un'identità esatta, (statistica di Jonckheere − AUROC × coppie AUROC) / coppie fra positivi, con i numeri di `q2_trend.csv` e `q1_discrimination.csv`;
+- **limite**: non ha un intervallo di confidenza, e nella tesi va dichiarata come lettura post-hoc;
+- **cosa cambia**: le conclusioni no. Il modello ordina la gravità, ma debolmente, coerente con il kappa di circa 0,2.
+
+**(scomoda) Il confronto con KDIGO non è circolare?**
+È non indipendente, ed è dichiarato fra i limiti: bersaglio e livelli usano gli stessi marcatori. Non è però circolare, perché il modello non vede né eGFR né ACR. La domanda è: senza esami renali, il modello ordina i soggetti come KDIGO? Il confronto mette accanto, per ogni soggetto, quello che dice il modello (probabilità, classe, fascia) e il livello vero. Le fasce sono la proposta di gravità del modello, non i livelli: che coincidano poco è il risultato, non un difetto del metodo.
+
+**Perché non un modello ordinale sui 4 livelli?**
+Una regressione ordinale (proportional odds) sarebbe più stabile di un classificatore a 4 classi: stima un solo insieme di coefficienti e 3 soglie. Non è stata provata: è uno sviluppo possibile. Un indizio che il guadagno sarebbe piccolo c'è: il bersaglio continuo dell'ACR, che usa tutta l'informazione sulla gravità dell'albuminuria, non migliora e riconosce peggio proprio i casi con ACR ≥ 300 (0,743 contro 0,767).
+
 **Perché il kappa pesato lineare e non quadratico?**
 I livelli KDIGO sono ordinali. Il kappa quadratico equivale a un coefficiente di correlazione intraclasse, che tratta la scala come a intervalli (Fleiss & Cohen 1973).
 
@@ -1026,7 +1039,7 @@ Nessuna cambia un risultato, ma i relatori potrebbero notarle aprendo la repo.
 | AUROC sul test | 0,714 – 0,743 |
 | PR-AUC | 0,224–0,251, cioè 2,3–2,6 volte la prevalenza |
 | da esaminare a sensibilità 0,90 | 77–80%, contro il 90% scegliendo a caso |
-| concordanza con i livelli | 0,674–0,702 |
+| concordanza con i livelli | 0,674–0,702; fra i soli positivi 0,61–0,64 |
 | kappa fasce/livelli | 0,197–0,228 |
 | "molto alto" riconosciuti | 18–20 su 21 |
 | bilanciamento, casi gravi | ±3 su 71, p di Holm 1,00 |

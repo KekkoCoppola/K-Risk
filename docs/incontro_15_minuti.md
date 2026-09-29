@@ -54,8 +54,8 @@ Tre regole:
 ### 4.1 Discriminazione modesta, ma onesta (1 minuto)
 > Il modello distingue chi ha i marcatori con un'AUROC di circa 0,70 in cross-validation, e fra 0,71 e 0,74 sul test. Nessun modello è migliore degli altri in modo dimostrabile: la logistica con i 5 predittori di SCORED resta vicina ai modelli con 74 variabili. È quello che trova la letteratura quando i confronti sono fatti bene.
 
-### 4.2 Ordina la gravità, ma non la separa (30 secondi)
-> La probabilità stimata cresce a ogni livello KDIGO: circa 7 coppie di pazienti su 10 sono ordinate come KDIGO. Le fasce del modello però non riproducono i livelli: il modello riconosce la presenza del danno, non il grado.
+### 4.2 Ordina la gravità, ma solo debolmente (30 secondi)
+> La probabilità stimata cresce in media a ogni livello KDIGO. Fra i soli positivi, però, l'ordine è debole: la concordanza con i livelli è fra 0,61 e 0,64, dove 0,5 vuol dire nessun ordine. E le fasce del modello non riproducono i livelli: il modello riconosce la presenza del danno, non il grado.
 
 ### 4.3 Il risultato centrale: il bilanciamento non aiuta, ma sembra aiutare (1 minuto e mezzo)
 > La domanda principale era: le tecniche di bilanciamento fanno riconoscere più casi gravi? No. A parità di sensibilità nessuna tecnica ne trova di più, e SMOTE e CTGAN peggiorano.
