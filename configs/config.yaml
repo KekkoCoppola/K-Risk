@@ -449,3 +449,173 @@ final_test:
   techniques: [none, class_weight, level_weight, undersampling, oversampling, smote_nc, smote_nc_level, ctgan, ctgan_level]
   # criteri delle affermazioni (A)-(E)
   claims: {min_models: 3, diabetic_alert_rate: 0.90, utility_thresholds: [0.07, 0.10], naive_threshold: 0.5}
+
+# fase E: richieste dei relatori (29/09/2026). Analisi POST-HOC ed esplorativa, registrata qui PRIMA di
+# scrivere il codice e di calcolare. Il test set non viene letto (la conferma del 22/09/2026 resta
+# definitiva); stessi fold esterni e interni delle fasi A-D; uscite in una cartella propria.
+# Richieste: (1) provare più famiglie di modelli; (2) combinare ACR ed eGFR togliendo la soglia: i
+# modelli imparano i valori continui (log ACR e log creatinina) senza mai vedere la soglia, che entra
+# solo alla fine attraverso la definizione KDIGO; (3) far imparare i modelli fra loro (stacking);
+# (4) riportare più metriche, non solo l'AUROC.
+phase_e:
+  output: analytics/phase_e
+  # Optuna come nelle fasi B e D: TPE con il seed del progetto, MedianPruner, 30 tentativi.
+  # Classificatori: PR-AUC media sui fold interni. Regressori: errore quadratico medio sui fold interni
+  # (la soglia non entra nemmeno nella scelta degli iperparametri)
+  n_trials: 30
+  # probabilità portate in logit con questo limite (kNN e probabilità empiriche possono valere 0 o 1)
+  clip: 1.0e-4
+  # (1) famiglie nuove, mai provate nelle fasi A-D, sul target composito binario
+  zoo:
+    extra_trees: {}
+    hist_gb: {}
+    # punteggio = funzione di decisione (nessuna probabilità interna)
+    svm_rbf: {}
+    knn: {}
+    naive_bayes: {}
+    lda: {}
+    qda: {}
+    mlp: {}
+    adaboost: {}
+    # logistica su spline cubiche delle numeriche (nodi ai quantili), categoriche invariate: un GAM
+    spline_lr: {}
+    # logistica L2 con tutti i prodotti a coppie e i quadrati delle 74 feature: interazioni esplicite
+    lr_interactions: {}
+  # famiglie già calcolate: previsioni out-of-fold esterne e iperparametri riusati dai record, nessun
+  # nuovo addestramento (modifica del 29/09/2026 chiesta dall'utente, prima di qualsiasi risultato:
+  # prima si prevedevano nuove previsioni sui fold interni)
+  reused:
+    lr_penalized: analytics/phase_a/main
+    random_forest: analytics/phase_a/main
+    xgboost: analytics/phase_a/sensitivity/depth_1_12/main
+    catboost: analytics/phase_d
+    lightgbm: analytics/phase_d
+    ebm: analytics/phase_d
+    tabpfn: analytics/phase_d
+  spaces:
+    extra_trees:
+      n_estimators: {type: int, low: 100, high: 1000}
+      max_depth: {type: int, low: 3, high: 25}
+      min_samples_split: {type: int, low: 2, high: 50}
+      min_samples_leaf: {type: int, low: 1, high: 20}
+      max_features: {type: categorical, choices: [sqrt, log2, 0.25, 0.5, 0.75]}
+      criterion: {type: categorical, choices: [gini, entropy]}
+    hist_gb:
+      max_iter: {type: int, low: 100, high: 1000}
+      learning_rate: {type: float, low: 0.01, high: 0.3, log: true}
+      max_leaf_nodes: {type: int, low: 2, high: 64}
+      min_samples_leaf: {type: int, low: 5, high: 100}
+      l2_regularization: {type: float, low: 0.0, high: 5.0}
+      max_features: {type: float, low: 0.5, high: 1.0}
+    svm_rbf:
+      C: {type: float, low: 1.0e-3, high: 100.0, log: true}
+      gamma: {type: float, low: 1.0e-4, high: 0.1, log: true}
+    knn:
+      n_neighbors: {type: int, low: 5, high: 300, log: true}
+      weights: {type: categorical, choices: [uniform, distance]}
+      p: {type: categorical, choices: [1, 2]}
+    naive_bayes:
+      var_smoothing: {type: float, low: 1.0e-12, high: 0.1, log: true}
+    lda:
+      shrinkage: {type: float, low: 0.0, high: 1.0}
+    qda:
+      reg_param: {type: float, low: 0.0, high: 1.0}
+    # hidden: neuroni per strato separati da "-"; arresto anticipato sul 10% del training
+    mlp:
+      hidden: {type: categorical, choices: ["64", "128", "64-32", "128-64"]}
+      alpha: {type: float, low: 1.0e-5, high: 1.0, log: true}
+      learning_rate_init: {type: float, low: 1.0e-4, high: 1.0e-2, log: true}
+      batch_size: {type: categorical, choices: [64, 128, 256]}
+    adaboost:
+      n_estimators: {type: int, low: 50, high: 1000}
+      learning_rate: {type: float, low: 0.01, high: 1.0, log: true}
+      max_depth: {type: int, low: 1, high: 3}
+    spline_lr:
+      n_knots: {type: int, low: 3, high: 8}
+      C: {type: float, low: 1.0e-4, high: 10.0, log: true}
+    lr_interactions:
+      C: {type: float, low: 1.0e-5, high: 1.0, log: true}
+  # (2) ACR ed eGFR combinati, senza soglia. Bersagli continui: log(UMAUCR) e log(SCRE). eGFR < 60 si
+  # riscrive come SCRE > SCRE60(età, sesso), la creatinina a cui CKD-EPI 2021 dà 60 (formula chiusa: il
+  # ramo con creatinina/kappa >= 1 vale fino a 138 anni). Probabilità del target composito dalla
+  # distribuzione congiunta dei residui out-of-fold interni (empirica, nessuna ipotesi di normalità
+  # né di indipendenza fra le due componenti):
+  #   p(x) = 1 - media_i 1{mu_A(x) + e_A,i < log 30  e  mu_C(x) + e_C,i < log SCRE60(x)}
+  continuous:
+    targets: {acr: UMAUCR, creatinine: SCRE}
+    # margine KDIGO: distanza dalla soglia in larghezze di una categoria KDIGO, fissate a priori:
+    # A2 (30-300 mg/g) = log 10 sulla scala del log ACR; G3a (eGFR 45-60) = log(60/45)/1,2 sulla scala del
+    # log della creatinina (eGFR proporzionale a creatinina^-1,2 nel ramo sopra kappa)
+    margin_units: {acr: 2.302585093, creatinine: 0.239735060}
+    # modello della scala dei residui (variante eteroschedastica): LightGBM su log(e^2) con parametri
+    # fissi, stimato con cross-fitting sui fold interni
+    scale_model: {n_estimators: 200, learning_rate: 0.05, num_leaves: 7, min_child_samples: 100}
+    arms:
+      # un LightGBM per bersaglio (spazio di phase_d.spaces.lightgbm), residui empirici congiunti
+      combinato_lgbm: {model: lightgbm, residuals: empirical}
+      # stesse medie di combinato_lgbm, residui standardizzati da un modello della scala per soggetto
+      combinato_lgbm_etero: {from: combinato_lgbm, residuals: heteroscedastic}
+      # rete neurale con due uscite e strati condivisi (apprendimento multi-compito, Caruana 1997),
+      # bersagli standardizzati sul training, spazio di phase_e.spaces.mlp
+      combinato_mlp: {model: mlp_multitask, residuals: empirical}
+      # un solo bersaglio continuo che combina le due componenti: M = max(margine ACR, margine eGFR),
+      # positivo se e solo se il target composito vale 1; LightGBM, residui empirici
+      margine_kdigo: {model: lightgbm, target: margin, residuals: empirical}
+  # (3) i modelli imparano fra loro (stacked generalization, Wolpert 1992): meta-modello logistico L2
+  # sulle previsioni out-of-fold esterne di tutti i classificatori (nuovi e riusati) e delle uscite di
+  # combinato_lgbm (probabilità e i due margini previsti). Cross-fitting sui fold esterni: il
+  # meta-modello del fold k si stima sulle previsioni e sulle etichette degli altri quattro fold (C
+  # scelto per PR-AUC in una CV a 5 fold su quelle righe) e si applica al fold k. Limite dichiarato:
+  # le previsioni degli altri fold vengono da modelli di base addestrati anche sul fold k (stacking su
+  # previsioni out-of-fold, senza un secondo livello di annidamento). Media dei ranghi: media delle
+  # posizioni di ogni modello nella distribuzione delle sue previsioni sugli altri quattro fold,
+  # nessun parametro stimato sulle etichette
+  stacking:
+    meta: {Cs: 10, cv: 5, scoring: average_precision}
+  # (4) valutazione sulle previsioni out-of-fold esterne. Ricalibrazione (Platt) e soglie del fold k
+  # stimate SOLO sulle previsioni e sulle etichette degli altri quattro fold esterni, poi applicate al
+  # fold k: nessuna etichetta del fold valutato entra nella scelta della soglia (modifica del
+  # 29/09/2026, prima di qualsiasi risultato: prima erano previsti i fold interni). Senza soglia:
+  # AUROC (DeLong), PR-AUC, Brier e Brier scalato, log-loss, intercetta e pendenza di calibrazione (dopo
+  # Platt), AUROC per componente (eGFR < 60; sola albuminuria) contro i negativi, concordanza con i 4
+  # livelli KDIGO. Con soglia (sensibilità 0,90; Youden): sensibilità, specificità, VPP, VPN, F1, MCC,
+  # accuratezza bilanciata, quota di allerta. Regressori: R^2 e Spearman dei due bersagli.
+  evaluation:
+    target_sensitivity: 0.90
+    # pannello clinico aggiunto il 29/09/2026 su richiesta dell'utente, PRIMA di calcolare qualsiasi
+    # metrica della fase E (per i modelli delle fasi A-D alcune di queste misure sono già state viste in
+    # passato sulle stesse previsioni: non è una valutazione cieca per loro). Tutto sulle probabilità
+    # ricalibrate con cross-fitting; soglie sempre dagli altri fold esterni; IC di Wilson per le
+    # proporzioni, bootstrap semplice (percentile) per net benefit ed esami evitati.
+    # Punti operativi: sensibilità fissata (soglia dagli altri fold) e Youden
+    sensitivity_grid: [0.80, 0.85, 0.90, 0.95]
+    # classifica: il 5-50% dei soggetti con rischio più alto (quantili delle probabilità, senza
+    # etichette): precisione, lift = precisione / prevalenza, quota dei positivi e dei casi gravi presi
+    top_fractions: [0.05, 0.10, 0.20, 0.30, 0.50]
+    # casi gravi: livelli KDIGO alto e molto alto (sensibilità, AUROC contro i negativi)
+    severe_levels: [alto, molto alto]
+    # decision curve: soglie di probabilità come esempi (Bragg-Gresham et al. 2024 usa 5% e 7%).
+    # Secondaria: l'utente non vuole il confronto con "testare tutti" in primo piano
+    net_benefit_thresholds: [0.05, 0.07, 0.10]
+    bootstrap: 1000
+    # altri ambiti, aggiunti il 29/09/2026 su richiesta dell'utente, sempre prima di qualsiasi metrica
+    # della fase E: AUROC parziale standardizzata (McClish) a sensibilità >= 0,80, Gini, statistica KS,
+    # errore di calibrazione atteso (decili), rapporto O:E; AUROC di ogni livello KDIGO contro "basso",
+    # di ACR >= 300 contro i negativi; correlazione di Spearman della probabilità con log ACR ed eGFR su
+    # tutti i soggetti; ai punti operativi anche accuratezza con tasso di non informazione, F2, kappa di
+    # Cohen, rapporto di odds diagnostico, sensibilità per livello KDIGO. Sottogruppi descrittivi, senza
+    # test e senza correzioni, da non usare per scegliere il modello: diabete (DM), sesso, età (< 40,
+    # 40-59, >= 60), ipertensione nota (HypertenHis)
+    subgroups: [diabete, sesso, eta, ipertensione]
+    # CORREZIONE del 29/09/2026, decisa DOPO aver visto la prima valutazione (dichiarata): il
+    # cross-fitting della ricalibrazione presupponeva che i modelli dei 5 fold dessero punteggi sulla
+    # stessa scala. Non è vero per tutti (gradient boosting a istogrammi: AUROC aggregata 0,620 contro
+    # 0,695 di media dei fold; Naive Bayes 0,635 contro 0,684), quindi le metriche aggregate mescolavano
+    # scale diverse. Prima della ricalibrazione, dello stacking e della media dei ranghi ogni punteggio
+    # diventa il suo percentile dentro il proprio fold esterno (ranghi medi / (n + 1), nessuna
+    # etichetta). I confronti con il riferimento non cambiano: usano le AUROC dei singoli fold
+    within_fold_percentiles: true
+    # regola della Fase D: contro il riferimento della Fase A con AUROC media sui fold più alta,
+    # differenza >= 0,01, limite inferiore dell'IC 95% di Nadeau-Bengio > 0, p di Holm < 0,05 sulla
+    # famiglia dei candidati della fase E. Stesso test, famiglia separata, per la PR-AUC
+    min_difference: 0.01
