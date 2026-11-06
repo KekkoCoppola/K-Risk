@@ -67,3 +67,8 @@ docs/thesis/main.bcf
 docs/thesis/main.lof
 docs/thesis/main.lot
 docs/thesis/main.run.xml
+
+# Markdown: versionati solo i README
+*.md
+!README.md
+!data/README.md
