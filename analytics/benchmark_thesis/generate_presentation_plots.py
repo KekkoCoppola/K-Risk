@@ -3,7 +3,6 @@
 2. Gradiente clinico KDIGO: sensibilità che cresce con la gravità clinica del paziente.
 """
 import json
-import shutil
 import sys
 from pathlib import Path
 
@@ -16,7 +15,6 @@ from sklearn.metrics import roc_curve
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(BASE_DIR))
 OUTPUT_DIR = BASE_DIR / "analytics" / "benchmark_thesis"
-ARTIFACT_DIR = Path(r"C:\Users\franc\.gemini\antigravity-ide\brain\5d25a663-b80a-46e6-b1e2-7dc0f178174e")
 
 from src.data.kidney import kdigo_level, target
 from src.data.split import PROCESSED
@@ -101,8 +99,7 @@ def main():
     p1 = OUTPUT_DIR / "05_sensitivity_specificity_tradeoff.png"
     plt.savefig(p1, dpi=300)
     plt.close()
-    shutil.copy2(p1, ARTIFACT_DIR / p1.name)
-    print(f"Salvato e copiato {p1.name}")
+    print(f"Salvato {p1.name}")
 
     # 2. Grafico Gradiente Clinico KDIGO
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
@@ -148,8 +145,7 @@ def main():
     p2 = OUTPUT_DIR / "06_kdigo_severity_gradient.png"
     plt.savefig(p2, dpi=300)
     plt.close()
-    shutil.copy2(p2, ARTIFACT_DIR / p2.name)
-    print(f"Salvato e copiato {p2.name}")
+    print(f"Salvato {p2.name}")
 
 if __name__ == "__main__":
     main()
