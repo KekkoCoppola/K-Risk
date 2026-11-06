@@ -1,0 +1,69 @@
+gruppo,modello,auc_composito,auc_sola_albuminuria
+Fase A: modelli della tesi,lr_penalized,0.7003641813413263,0.676341145132001
+Fase A: modelli della tesi,lr_scored,0.6792071937055078,0.6616222096694568
+Fase A: modelli della tesi,random_forest,0.7078246534282503,0.6888709527876268
+Fase A: modelli della tesi,xgboost,0.7043506931434995,0.6847949850128543
+Fase B: bilanciamento (8 tecniche × 4 modelli),lr_penalized | class_weight,0.6989674035219183,0.676160772343828
+Fase B: bilanciamento (8 tecniche × 4 modelli),lr_penalized | ctgan,0.5833855376545523,0.561964428207688
+Fase B: bilanciamento (8 tecniche × 4 modelli),lr_penalized | ctgan_level,0.592137879355564,0.587782964197675
+Fase B: bilanciamento (8 tecniche × 4 modelli),lr_penalized | level_weight,0.7012573997751966,0.67714843877971
+Fase B: bilanciamento (8 tecniche × 4 modelli),lr_penalized | oversampling,0.6894567253653053,0.6668547055809947
+Fase B: bilanciamento (8 tecniche × 4 modelli),lr_penalized | smote_nc,0.6853862869988759,0.6636108758569277
+Fase B: bilanciamento (8 tecniche × 4 modelli),lr_penalized | smote_nc_level,0.6847748220307232,0.6607242440736028
+Fase B: bilanciamento (8 tecniche × 4 modelli),lr_penalized | undersampling,0.7012184338703633,0.6806344317443698
+Fase B: bilanciamento (8 tecniche × 4 modelli),lr_scored | class_weight,0.6790992881228923,0.6608256626745851
+Fase B: bilanciamento (8 tecniche × 4 modelli),lr_scored | ctgan,0.5716972648932185,0.5741154812235433
+Fase B: bilanciamento (8 tecniche × 4 modelli),lr_scored | ctgan_level,0.5852903709254402,0.5869213973406016
+Fase B: bilanciamento (8 tecniche × 4 modelli),lr_scored | level_weight,0.6791532409142002,0.6603728778807305
+Fase B: bilanciamento (8 tecniche × 4 modelli),lr_scored | oversampling,0.6784278756088422,0.6598227494761393
+Fase B: bilanciamento (8 tecniche × 4 modelli),lr_scored | smote_nc,0.6695796178343948,0.6492975199915694
+Fase B: bilanciamento (8 tecniche × 4 modelli),lr_scored | smote_nc_level,0.6674215061820907,0.6466197736523625
+Fase B: bilanciamento (8 tecniche × 4 modelli),lr_scored | undersampling,0.6775616335706257,0.6591796210701629
+Fase B: bilanciamento (8 tecniche × 4 modelli),random_forest | class_weight,0.7061491195204197,0.6861339555073086
+Fase B: bilanciamento (8 tecniche × 4 modelli),random_forest | ctgan,0.6550498313975271,0.6399201073771356
+Fase B: bilanciamento (8 tecniche × 4 modelli),random_forest | ctgan_level,0.6695421506182091,0.6568473052410754
+Fase B: bilanciamento (8 tecniche × 4 modelli),random_forest | level_weight,0.7073420756837767,0.6851011318515027
+Fase B: bilanciamento (8 tecniche × 4 modelli),random_forest | oversampling,0.701632071937055,0.6810885777011769
+Fase B: bilanciamento (8 tecniche × 4 modelli),random_forest | smote_nc,0.6701925814911952,0.6593566750557415
+Fase B: bilanciamento (8 tecniche × 4 modelli),random_forest | smote_nc_level,0.6751172723866616,0.662593615112069
+Fase B: bilanciamento (8 tecniche × 4 modelli),random_forest | undersampling,0.7046744098913452,0.6864176483823112
+Fase B: bilanciamento (8 tecniche × 4 modelli),xgboost | class_weight,0.6936830273510679,0.6729352633619278
+Fase B: bilanciamento (8 tecniche × 4 modelli),xgboost | ctgan,0.6835908579992507,0.6665403366180785
+Fase B: bilanciamento (8 tecniche × 4 modelli),xgboost | ctgan_level,0.6858209067066318,0.6706313641859406
+Fase B: bilanciamento (8 tecniche × 4 modelli),xgboost | level_weight,0.7013952791307606,0.6781034575754931
+Fase B: bilanciamento (8 tecniche × 4 modelli),xgboost | oversampling,0.691333083551892,0.6716527179884653
+Fase B: bilanciamento (8 tecniche × 4 modelli),xgboost | smote_nc,0.690074185088048,0.6757126732442149
+Fase B: bilanciamento (8 tecniche × 4 modelli),xgboost | smote_nc_level,0.6887673285874859,0.6734880603308315
+Fase B: bilanciamento (8 tecniche × 4 modelli),xgboost | undersampling,0.6828639940052454,0.6626089529042151
+Fase D: candidati del tetto,ensemble_mean,0.7096290745597602,0.6881325590908525
+Fase D: candidati del tetto,catboost,0.6995518920944173,0.6792688914397317
+Fase D: candidati del tetto,lightgbm,0.7070633195953541,0.6862154288720906
+Fase D: candidati del tetto,ebm,0.6989913825402772,0.6812590661623904
+Fase D: candidati del tetto,tabpfn,0.716912701386287,0.6917528684076106
+Fase D: candidati del tetto,xgboost_native_nan,0.7067455976020982,0.6818991616339144
+Fase D: candidati del tetto,xgboost_extended,0.6990843012364181,0.6797378732039756
+Fase D: candidati del tetto,xgboost_no_pruner,0.6972079430498315,0.6769502615872914
+Fase D: candidati del tetto,lr_all_scaled,0.697058074185088,0.6737069955415649
+Fase D: candidati del tetto,target_decomposition,0.706862495316598,0.68656661961583
+Fase D: candidati del tetto,tri_ensemble_top21,0.7057294866991383,0.6830539870894116
+Fase D: candidati del tetto,continuous_target/combinato,0.7029209441738479,0.6809868717211881
+Fase E: famiglie nuove,extra_trees,0.7014672161858374,0.6808210996751264
+Fase E: famiglie nuove,hist_gb,0.6951457474709629,0.6768053991496099
+Fase E: famiglie nuove,knn,0.6599850131135258,0.652149167582943
+Fase E: famiglie nuove,naive_bayes,0.684235294117647,0.6705260184076168
+Fase E: famiglie nuove,lda,0.7005260397152492,0.6760849502415683
+Fase E: famiglie nuove,qda,0.6962158111652305,0.677699768321529
+Fase E: famiglie nuove,svm_rbf,0.6285680029973773,0.6117496051922368
+Fase E: famiglie nuove,adaboost,0.6992251779692769,0.6767573239468361
+Fase E: famiglie nuove,mlp,0.6395144248782316,0.6145160171145687
+Fase E: famiglie nuove,spline_lr,0.7060651929561633,0.6808015687305453
+Fase E: famiglie nuove,lr_interactions,0.6760464593480705,0.659817497144781
+Fase E: ACR + eGFR senza soglia,combinato_lgbm,0.7133907830648182,0.6893024809149493
+Fase E: ACR + eGFR senza soglia,combinato_lgbm_etero,0.7105432746346947,0.689352285805693
+Fase E: ACR + eGFR senza soglia,combinato_mlp,0.693925814911952,0.6693180328721293
+Fase E: ACR + eGFR senza soglia,margine_kdigo,0.7050026227051329,0.6828607348743899
+Fase E: combinazioni di modelli,stacking,0.7157796927688272,0.693627353344481
+Fase E: combinazioni di modelli,rank_mean,0.7115114275009367,0.6907977161521355
+controllo,positive_control,0.9339437991757211,0.9464393339454855
+controllo,semi_synthetic_control/z80,0.8314604720869241,0.8372026312207798
+controllo,semi_synthetic_control/z75,0.7949644061446235,0.7946838499797229
