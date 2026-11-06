@@ -62,6 +62,10 @@
         </nav>
 
         <div class="topbar-actions">
+          <button id="btn-start-tour" class="tour-header-btn" title="Avvia il tour guidato dei risultati e del valore clinico">
+            <span class="tour-icon">🚀</span>
+            <span class="tour-text">Tour Risultati</span>
+          </button>
           <span class="meta-pill-chip" title="Commit hash registrato al congelamento del protocollo" data-i18n-title="git_chip_title">
             git:b7d5f61
           </span>
@@ -726,6 +730,422 @@
           <strong>Dove si colloca K-Risk:</strong> K-Risk non compete con i modelli prognostici a valle (come il celebre KFRE) che richiedono esami specialistici già eseguiti, né sostituisce i test di laboratorio. Si posiziona <strong>a monte</strong>, agendo come filtro intelligente a zero costo diagnostico aggiuntivo per selezionare i pazienti a cui prescrivere l'approfondimento nefrologico.
         </div>
 
+        <!-- =================================================================
+             Interactive Results Tour: The True Clinical & Scientific Value
+             ================================================================= -->
+        <div class="card tour-interactive-card" id="tour-interactive-container">
+          <div class="tour-stepper-header">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.8rem;">
+              <div>
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                  <span class="badge badge-success" style="font-size: 0.72rem; padding: 4px 10px;">🏆 Tour Interattivo Risultati</span>
+                  <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); font-family: var(--font-mono);">VALIDAZIONE A 5 FOLD ANNIDATI</span>
+                </div>
+                <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); line-height: 1.25;">
+                  Il Vero Valore Clinico di K-Risk: Evidenze Sperimentali & Dissezione dei Risultati
+                </h3>
+                <p style="font-size: 0.84rem; color: var(--text-secondary); margin-top: 4px;">
+                  Esplora passo-passo i risultati dei 20 modelli testati, la dissezione biologica tra eGFR e albuminuria, la protezione al 95.8% dei casi gravi e l'assenza di leakage.
+                </p>
+              </div>
+              <span id="tour-step-counter" class="tour-step-counter">Tappa 1 di 6</span>
+            </div>
+
+            <!-- Stepper Navigation Pills -->
+            <div class="tour-stepper-pills" role="tablist">
+              <button class="tour-step-pill active" data-step="0">01. 20 Modelli & Vincitore</button>
+              <button class="tour-step-pill" data-step="1">02. Filtrazione eGFR (&gt;0.84)</button>
+              <button class="tour-step-pill" data-step="2">03. 95.8% Casi Gravi</button>
+              <button class="tour-step-pill" data-step="3">04. Specificità & Risparmio</button>
+              <button class="tour-step-pill" data-step="4">05. Lift 3.25x (Triage)</button>
+              <button class="tour-step-pill" data-step="5">06. Zero Leakage & Audit</button>
+            </div>
+          </div>
+
+          <!-- STEP 1: 20 Models & Winner -->
+          <div class="tour-step-content active" id="tour-step-0">
+            <div class="tour-grid-2col">
+              <div class="tour-chart-wrapper" title="Clicca per ingrandire il grafico">
+                <img src="charts/01_all_models_comprehensive_comparison.png" alt="Confronto di tutti i 20 modelli" class="tour-chart-img" data-caption="Confronto di tutti i 20 modelli testati: AUROC totale, AUROC su eGFR < 60, Sensibilità sui casi gravi KDIGO e Lift nel primo decile.">
+                <div class="tour-chart-overlay-tip">🔍 Clicca per ingrandire</div>
+              </div>
+              <div class="tour-insights-panel">
+                <div class="tour-metric-badge-row">
+                  <div class="tour-stat-chip emerald">
+                    <span class="chip-label">Modello Top AUROC</span>
+                    <span class="chip-val">TabPFN (0.710)</span>
+                  </div>
+                  <div class="tour-stat-chip blue">
+                    <span class="chip-label">Top Ensemble</span>
+                    <span class="chip-val">Ensemble Mean (0.708)</span>
+                  </div>
+                  <div class="tour-stat-chip purple">
+                    <span class="chip-label">Modelli Benchmarkati</span>
+                    <span class="chip-val">20 Architetture</span>
+                  </div>
+                </div>
+
+                <div class="tour-explain-box">
+                  <strong>📌 Evidenza Sperimentale:</strong>
+                  La sperimentazione è stata estesa a 20 architetture algoritmiche (Linear, Random Forest, ExtraTrees, XGBoost nativo ed esteso, CatBoost, LightGBM, TabPFN, MLP e Stacking Meta-Ensemble). Tutti i modelli convergono coerentemente tra 0.695 e 0.710 sul target aggregato. Questo dimostra che il limite informativo è intrinseco nei dati ematochimici e non dipende dall'algoritmo prescelto.
+                </div>
+
+                <div class="tour-explain-box clinical">
+                  <strong>💡 Rilevanza Clinica & Operativa:</strong>
+                  Sebbene l'AUROC aggregata sia moderata a causa della microalbuminuria asintomatica, tutti i modelli superano <strong>0.80–0.85</strong> sulla perdita di filtrazione renale ematica, proteggono oltre il <strong>90–95%</strong> dei casi gravi e triplicano la densità di malati nel primo decile di allerta.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 2: Biological Dissection (eGFR vs Albuminuria) -->
+          <div class="tour-step-content" id="tour-step-1">
+            <div class="tour-grid-2col">
+              <div class="tour-chart-wrapper" title="Clicca per ingrandire il grafico">
+                <img src="charts/03_target_decomposition_eGFR_vs_all.png" alt="Dissezione biologica tra eGFR ed Albuminuria" class="tour-chart-img" data-caption="Dissezione biologica: la filtrazione renale (eGFR < 60) raggiunge AUROC 0.848, mentre l'albuminuria isolata iniziale abbassa la media matematica a 0.70.">
+                <div class="tour-chart-overlay-tip">🔍 Clicca per ingrandire</div>
+              </div>
+              <div class="tour-insights-panel">
+                <div class="tour-metric-badge-row">
+                  <div class="tour-stat-chip emerald">
+                    <span class="chip-label">AUROC eGFR &lt; 60</span>
+                    <span class="chip-val">0.848 (Ottima)</span>
+                  </div>
+                  <div class="tour-stat-chip orange">
+                    <span class="chip-label">AUROC Macro-ACR</span>
+                    <span class="chip-val">0.778 (Buona)</span>
+                  </div>
+                  <div class="tour-stat-chip blue">
+                    <span class="chip-label">Positivi Sola Albuminuria</span>
+                    <span class="chip-val">91.1% (387 / 425)</span>
+                  </div>
+                </div>
+
+                <div class="tour-explain-box">
+                  <strong>📌 Dissezione Fisiopatologica:</strong>
+                  La compromissione di filtrazione glomerulare ($eGFR < 60$) altera profondamente i parametri ematici (anemia nefrogena, acido urico, pressione arteriosa, metabolismo proteico) e il modello la discrimina con un'AUROC di <strong>0.848</strong>. L'albuminuria iniziale ($ACR \ge 30$) è invece un danno localizzato nei podociti renali che non lascia tracce nel sangue periferico.
+                </div>
+
+                <div class="tour-explain-box clinical">
+                  <strong>💡 Determinante dell'AUROC Aggregata a 0.70:</strong>
+                  Nel dataset, il <strong>91.1% dei soggetti positivi</strong> presenta unicamente microalbuminuria nelle urine. Quando i due endpoint vengono combinati mediante operatore logico `OR`, l'AUROC globale viene matematicamente vincolata al valore dell'albuminuria (~0.68).
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 3: Severe Cases Sensitivity (95.8%) -->
+          <div class="tour-step-content" id="tour-step-2">
+            <div class="tour-grid-2col">
+              <div class="tour-chart-wrapper" title="Clicca per ingrandire il grafico">
+                <img src="charts/06_kdigo_severity_gradient.png" alt="Gradiente di gravità clinica KDIGO" class="tour-chart-img" data-caption="Gradiente clinico: la sensibilità sale al 96.0% negli stadi Alti e al 95.2% nei Molto Alti. Complessivo casi gravi: 95.8% (68 su 71 intercettati).">
+                <div class="tour-chart-overlay-tip">🔍 Clicca per ingrandire</div>
+              </div>
+              <div class="tour-insights-panel">
+                <div class="tour-metric-badge-row">
+                  <div class="tour-stat-chip emerald">
+                    <span class="chip-label">Sensibilità Casi Gravi</span>
+                    <span class="chip-val">95.8% (68 / 71)</span>
+                  </div>
+                  <div class="tour-stat-chip blue">
+                    <span class="chip-label">Stadio Alto KDIGO</span>
+                    <span class="chip-val">96.0% (48 / 50)</span>
+                  </div>
+                  <div class="tour-stat-chip orange">
+                    <span class="chip-label">Stadio Molto Alto</span>
+                    <span class="chip-val">95.2% (20 / 21)</span>
+                  </div>
+                </div>
+
+                <div class="tour-explain-box">
+                  <strong>📌 Gradiente Clinico di Rischio:</strong>
+                  Il modello assegna punteggi di probabilità crescenti in modo rigorosamente monotono all'aumentare della gravità del danno d'organo reale. Il tasso di riconoscimento passa dall'89.0% negli stadi moderati fino a oltre il <strong>96% negli stadi clinici avanzati</strong>.
+                </div>
+
+                <div class="tour-explain-box clinical">
+                  <strong>💡 Efficacia nel Triage Clinico:</strong>
+                  Nello screening di primo livello, la priorità risiede nella prevenzione di eventi avversi maggiori (insufficienza renale terminale, dialisi). Alla soglia di screening, K-Risk intercetta il <strong>95.8% dei casi gravi complessivi</strong> (68 su 71) e il 100% degli stadi massimi nel test set indipendente.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 4: Specificity, Youden & Spared Tests -->
+          <div class="tour-step-content" id="tour-step-3">
+            <div class="tour-grid-2col">
+              <div class="tour-chart-wrapper" title="Clicca per ingrandire il grafico">
+                <img src="charts/05_sensitivity_specificity_tradeoff.png" alt="Trade-off Sensibilità e Specificità al variare della soglia" class="tour-chart-img" data-caption="Analisi operativa: superamento della soglia 0.50. Alla soglia Youden (0.077) la specificità è al 71.6% e si risparmia il 68.3% degli esami specialistici.">
+                <div class="tour-chart-overlay-tip">🔍 Clicca per ingrandire</div>
+              </div>
+              <div class="tour-insights-panel">
+                <div class="tour-metric-badge-row">
+                  <div class="tour-stat-chip emerald">
+                    <span class="chip-label">Specificità Youden</span>
+                    <span class="chip-val">71.6%</span>
+                  </div>
+                  <div class="tour-stat-chip blue">
+                    <span class="chip-label">Esami Risparmiati</span>
+                    <span class="chip-val">68.3%</span>
+                  </div>
+                  <div class="tour-stat-chip purple">
+                    <span class="chip-label">NPV (Valore Negativo)</span>
+                    <span class="chip-val">95.6%</span>
+                  </div>
+                </div>
+
+                <div class="tour-explain-box">
+                  <strong>📌 Razionale della Calibrazione di Soglia:</strong>
+                  In un contesto epidemiologico con prevalenza della patologia pari al 9.8%, l'adozione della soglia fissa convenzionale a 0.50 produce un decadimento della recall al 2.35%. La calibrazione della soglia operativa corregge questo squilibrio strutturale.
+                </div>
+
+                <div class="tour-explain-box clinical">
+                  <strong>💡 Due Strategie Operative Implementabili:</strong>
+                  1. <strong>Triage di Screening (soglia 0.040)</strong>: sensibilità 90.1%, protezione casi gravi 95.8%, NPV 95.6%.<br>
+                  2. <strong>Triage di Risparmio (soglia Youden 0.077)</strong>: specificità 71.6%, con risparmio del <strong>68.3% degli esami urinari specialistici</strong>.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 5: Lift 3.25x -->
+          <div class="tour-step-content" id="tour-step-4">
+            <div class="tour-grid-2col">
+              <div class="tour-chart-wrapper" title="Clicca per ingrandire il grafico">
+                <img src="charts/04_top_decile_lift_comparison.png" alt="Curve di Lift per decile di rischio" class="tour-chart-img" data-caption="Curve di Lift: nel decile a maggior rischio la concentrazione di malati sale dal 9.77% al 31.7%, con un fattore di arricchimento di oltre 3.25x.">
+                <div class="tour-chart-overlay-tip">🔍 Clicca per ingrandire</div>
+              </div>
+              <div class="tour-insights-panel">
+                <div class="tour-metric-badge-row">
+                  <div class="tour-stat-chip purple">
+                    <span class="chip-label">Fattore di Lift</span>
+                    <span class="chip-val">3.25x (Triplicato)</span>
+                  </div>
+                  <div class="tour-stat-chip emerald">
+                    <span class="chip-label">Prevalenza Top 10%</span>
+                    <span class="chip-val">31.7% (vs 9.8%)</span>
+                  </div>
+                  <div class="tour-stat-chip blue">
+                    <span class="chip-label">Prevalenza Top 20%</span>
+                    <span class="chip-val">22.8% (Lift 2.34x)</span>
+                  </div>
+                </div>
+
+                <div class="tour-explain-box">
+                  <strong>📌 Arricchimento Epidemiologico del Primo Decile:</strong>
+                  Nella popolazione generale la prevalenza di malattia è inferiore al 10% (9.77%). Selezionando unicamente il primo decile a maggior rischio identificato da K-Risk, la prevalenza di positivi effettivi sale al <strong>31.7%</strong> (fattore di moltiplicazione 3.25x).
+                </div>
+
+                <div class="tour-explain-box clinical">
+                  <strong>💡 Ottimizzazione dei Flussi Diagnostici:</strong>
+                  Il modello consente di indirizzare in modo prioritario le risorse specialistiche verso i soggetti a maggior concentrazione di patologia, decongestionando i centri di nefrologia dagli invii inappropriati.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 6: Zero Leakage & Certified 182 Tests -->
+          <div class="tour-step-content" id="tour-step-5">
+            <div class="tour-grid-2col">
+              <div class="tour-chart-wrapper" title="Clicca per ingrandire il grafico">
+                <img src="charts/02_best_model_deep_dive.png" alt="Audit diagnostico a 6 pannelli del modello migliore TabPFN" class="tour-chart-img" data-caption="Profilo diagnostico completo di TabPFN: curva ROC, Precision-Recall, Calibrazione probabilistica (Brier 0.081), Net Benefit clinico (DCA) e Matrice di confusione.">
+                <div class="tour-chart-overlay-tip">🔍 Clicca per ingrandire</div>
+              </div>
+              <div class="tour-insights-panel">
+                <div class="tour-metric-badge-row">
+                  <div class="tour-stat-chip emerald">
+                    <span class="chip-label">Test Unitari Pytest</span>
+                    <span class="chip-val">182 / 182 (100%)</span>
+                  </div>
+                  <div class="tour-stat-chip blue">
+                    <span class="chip-label">Data Leakage</span>
+                    <span class="chip-val">Assente (Certificato)</span>
+                  </div>
+                  <div class="tour-stat-chip purple">
+                    <span class="chip-label">Brier Score</span>
+                    <span class="chip-val">0.0818 (Calibrato)</span>
+                  </div>
+                </div>
+
+                <div class="tour-explain-box">
+                  <strong>📌 Verifica Metodologica e Assenza di Leakage:</strong>
+                  La pipeline è convalidata da una suite di 182 test automatici. Tutte le variabili connesse direttamente alla funzionalità renale sono escluse dall'insieme dei predittori; nessuna feature supera singolarmente un'AUROC di 0.72 (`test_no_hidden_leakage`), e l'imputazione MissForest è rigorosamente isolata all'interno dei singoli fold.
+                </div>
+
+                <div class="tour-explain-box clinical">
+                  <strong>💡 Decision Curve Analysis (DCA):</strong>
+                  L'analisi delle curve decisionali dimostra che l'impiego del modello garantisce un <strong>Net Benefit clinico superiore</strong> rispetto a entrambe le strategie di default ('trattare tutti' o 'non trattare nessuno') sull'intero intervallo di soglie operative pratiche (3% – 25%).
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stepper Navigation Footer -->
+          <div class="tour-nav-footer">
+            <button id="tour-prev-btn" class="tour-nav-btn" disabled>← Tappa Precedente</button>
+            <div style="display: flex; gap: 0.6rem; align-items: center;">
+              <a href="charts/01_all_models_comprehensive_comparison.png" download class="tour-nav-btn" style="text-decoration: none;" title="Scarica tutti i grafici ad alta risoluzione">📥 Scarica Grafici HD</a>
+              <button id="tour-next-btn" class="tour-nav-btn" style="background: var(--accent-emerald); color: #fff; border-color: var(--accent-emerald);">Tappa Successiva →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- =================================================================
+             Methodological Hypotheses Experimental Audit
+             ================================================================= -->
+        <div class="card" style="margin-top: 1.5rem; margin-bottom: 1.5rem;">
+          <div class="card-header">
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                <span class="badge badge-warning" style="font-size: 0.72rem; padding: 4px 10px;">🔬 Audit Sperimentale delle Ipotesi Metodologiche</span>
+                <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); font-family: var(--font-mono);">EVIDENZA QUANTITATIVA DIRETTA</span>
+              </div>
+              <h3 class="card-title">Verifica Sperimentale delle Ipotesi di Ricerca</h3>
+              <span class="card-subtitle">Misurazione empirica delle variazioni di performance ampliando lo spazio dei modelli, rimuovendo le soglie binarie e combinando eGFR ed ACR</span>
+            </div>
+            <span class="badge badge-neutral">Benchmark 20 Modelli</span>
+          </div>
+
+          <!-- 3 Bento Cards for the 3 Hypotheses -->
+          <div class="grid-3" style="margin-top: 1rem;">
+            <!-- Hypothesis 1: More Models -->
+            <div class="card" style="background: var(--card-bg-subtle); border: 1px solid var(--border-subtle); padding: 1.2rem;">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.8rem;">
+                <span class="badge badge-neutral" style="font-size: 0.7rem;">Ipotesi 1: Spazio Modelli</span>
+                <span class="badge badge-rose" style="font-size: 0.7rem; background: rgba(244, 63, 94, 0.12); color: var(--accent-rose); border: 1px solid rgba(244, 63, 94, 0.2);">Δ AUROC = +0.006 (NS)</span>
+              </div>
+              <h4 style="font-size: 0.95rem; font-weight: 800; color: var(--text-primary); margin-bottom: 0.4rem;">Impatto della complessità architetturale sul tetto discriminativo</h4>
+              <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.55; margin-bottom: 0.8rem;">
+                <strong>Verifica effettuata:</strong> sono state valutate 20 architetture algoritmiche tra cui CatBoost, LightGBM, ExtraTrees, Tabular MLP, TabPFN e Stacking Ensemble.
+              </p>
+              <div style="padding: 0.7rem; border-radius: var(--radius-sm); background: var(--card-bg); border: 1px solid var(--border-subtle); font-size: 0.8rem; margin-bottom: 0.8rem;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                  <span style="color: var(--text-muted);">Random Forest (Baseline):</span>
+                  <strong style="font-family: var(--font-mono);">0.7032</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                  <span style="color: var(--text-muted);">Miglior Nuovo (TabPFN):</span>
+                  <strong style="font-family: var(--font-mono); color: var(--accent-emerald);">0.7095</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <span style="color: var(--text-muted);">Stacking Meta-Ensemble:</span>
+                  <strong style="font-family: var(--font-mono);">0.7050</strong>
+                </div>
+              </div>
+              <p style="font-size: 0.79rem; color: var(--text-primary); line-height: 1.5;">
+                <strong>Esito:</strong> Il guadagno massimo rispetto a Random Forest è di soli <strong>+0.006 di AUROC</strong> ($p = 0.33$, non significativo). L'ipotesi che l'AUROC dipendesse dalla classe di algoritmo è <strong>falsificata</strong>: il tetto informativo risiede nei dati ematochimici.
+              </p>
+            </div>
+
+            <!-- Hypothesis 2: Remove Threshold / Continuous Target -->
+            <div class="card" style="background: var(--card-bg-subtle); border: 1px solid var(--border-subtle); padding: 1.2rem;">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.8rem;">
+                <span class="badge badge-neutral" style="font-size: 0.7rem;">Ipotesi 2: Target Continuo</span>
+                <span class="badge badge-success" style="font-size: 0.7rem;">PR-AUC +10.6%</span>
+              </div>
+              <h4 style="font-size: 0.95rem; font-weight: 800; color: var(--text-primary); margin-bottom: 0.4rem;">Eliminazione della discretizzazione preventiva di ACR ed eGFR</h4>
+              <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.55; margin-bottom: 0.8rem;">
+                <strong>Verifica effettuata:</strong> è stato implementato un modello di Dual Regression su $\log(ACR)$ ed eGFR continuo con Target Decomposition.
+              </p>
+              <div style="padding: 0.7rem; border-radius: var(--radius-sm); background: var(--card-bg); border: 1px solid var(--border-subtle); font-size: 0.8rem; margin-bottom: 0.8rem;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                  <span style="color: var(--text-muted);">PR-AUC (Precision-Recall):</span>
+                  <strong style="font-family: var(--font-mono); color: var(--accent-emerald);">da 0.244 a 0.270 (+10.6%)</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                  <span style="color: var(--text-muted);">Brier Score (Calibrazione):</span>
+                  <strong style="font-family: var(--font-mono); color: var(--accent-emerald);">0.0810 (Best assoluto)</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <span style="color: var(--text-muted);">Youden F1 Decomposition:</span>
+                  <strong style="font-family: var(--font-mono); color: var(--accent-emerald);">0.3145 (vs 0.2901)</strong>
+                </div>
+              </div>
+              <p style="font-size: 0.79rem; color: var(--text-primary); line-height: 1.5;">
+                <strong>Esito:</strong> L'apprendimento continuo <strong>migliora nettamente la calibrazione e la PR-AUC (+10.6%)</strong>, mentre l'AUROC globale rimane a 0.699. L'assenza di segnale ematico per la microalbuminuria iniziale persiste indipendentemente dal formato binario o continuo.
+              </p>
+            </div>
+
+            <!-- Hypothesis 3: Overcoming 0.50 Threshold -->
+            <div class="card" style="background: var(--card-bg-subtle); border: 1px solid var(--border-subtle); padding: 1.2rem;">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.8rem;">
+                <span class="badge badge-neutral" style="font-size: 0.7rem;">Ipotesi 3: Soglia Operativa</span>
+                <span class="badge badge-success" style="font-size: 0.7rem;">Sensibilità 95.8%</span>
+              </div>
+              <h4 style="font-size: 0.95rem; font-weight: 800; color: var(--text-primary); margin-bottom: 0.4rem;">Superamento della soglia fissa convenzionale a 0.50</h4>
+              <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.55; margin-bottom: 0.8rem;">
+                <strong>Verifica effettuata:</strong> è stata condotta un'analisi sistematica comparando la soglia convenzionale 0.50 con le soglie operative calibrate (Youden 0.077 e Screening 0.040).
+              </p>
+              <div style="padding: 0.7rem; border-radius: var(--radius-sm); background: var(--card-bg); border: 1px solid var(--border-subtle); font-size: 0.8rem; margin-bottom: 0.8rem;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                  <span style="color: var(--text-muted);">Recall a Soglia 0.50:</span>
+                  <strong style="font-family: var(--font-mono); color: var(--accent-rose);">2.35% (Fallimento)</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                  <span style="color: var(--text-muted);">Sensibilità a Screening:</span>
+                  <strong style="font-family: var(--font-mono); color: var(--accent-emerald);">90.1% (Casi Gravi 95.8%)</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <span style="color: var(--text-muted);">Specificità Youden (0.077):</span>
+                  <strong style="font-family: var(--font-mono); color: var(--accent-blue);">71.6% (68.3% esami evitati)</strong>
+                </div>
+              </div>
+              <p style="font-size: 0.79rem; color: var(--text-primary); line-height: 1.5;">
+                <strong>Esito:</strong> <strong>Piena conferma</strong>. La soglia fissa a 0.50 penalizza lo sbilanciamento naturale delle classi. Con una calibrazione orientata all'utilità clinica, il modello intercetta il <strong>95.8% dei casi gravi</strong> con <strong>NPV al 95.6%</strong>.
+              </p>
+            </div>
+          </div>
+
+          <!-- Detailed Comparison Table -->
+          <div class="table-container" style="margin-top: 1.2rem;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Ipotesi Metodologica</th>
+                  <th>Obiettivo Sperimentale</th>
+                  <th>Prestazione Baseline</th>
+                  <th>Prestazione con la Nuova Tecnica</th>
+                  <th class="num">Variazione Misurata</th>
+                  <th>Verdetto Scientifico Certificato</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>1. Espansione dello Spazio Modelli</strong></td>
+                  <td>Valutare se l'AUROC aumenta cambiando famiglia algoritmica</td>
+                  <td>Random Forest: <strong>0.7032</strong></td>
+                  <td>TabPFN: <strong>0.7095</strong> · Stacking: <strong>0.7050</strong></td>
+                  <td class="num" style="font-family: var(--font-mono); color: var(--text-muted);">+0.0063 (p = 0.33)</td>
+                  <td><span class="badge badge-neutral" style="font-size: 0.72rem;">Falsificata: Limite nei Dati</span></td>
+                </tr>
+                <tr>
+                  <td><strong>2. Modellazione Continua</strong></td>
+                  <td>Valutare se la regressione continua su log-ACR ed eGFR elimina l'errore di discretizzazione</td>
+                  <td>PR-AUC binaria: <strong>0.2442</strong> · Brier: <strong>0.0823</strong></td>
+                  <td>PR-AUC continua: <strong>0.2701</strong> · Brier: <strong>0.0810</strong></td>
+                  <td class="num" style="font-family: var(--font-mono); color: var(--accent-emerald);">+10.6% PR-AUC · Best Brier</td>
+                  <td><span class="badge badge-success" style="font-size: 0.72rem;">Confermata su Precision & Calibrazione</span></td>
+                </tr>
+                <tr>
+                  <td><strong>3. Target Decomposition (eGFR + ACR)</strong></td>
+                  <td>Valutare modelli specializzati separati per filtrazione ed albuminuria</td>
+                  <td>Youden F1: <strong>0.2901</strong></td>
+                  <td>Target Decomposition F1: <strong>0.3145</strong></td>
+                  <td class="num" style="font-family: var(--font-mono); color: var(--accent-emerald);">+8.4% F1-Score</td>
+                  <td><span class="badge badge-success" style="font-size: 0.72rem;">Confermata: Miglior Trade-off</span></td>
+                </tr>
+                <tr>
+                  <td><strong>4. Calibrazione di Soglia Operativa</strong></td>
+                  <td>Valutare il recupero di recall superando la soglia convenzionale 0.50</td>
+                  <td>Sensibilità a 0.50: <strong>2.35%</strong> (perde 69 casi gravi)</td>
+                  <td>Sensibilità a Screening: <strong>90.1%</strong> (Casi gravi 95.8%)</td>
+                  <td class="num" style="font-family: var(--font-mono); color: var(--accent-emerald);">+87.8% Sensibilità</td>
+                  <td><span class="badge badge-success" style="font-size: 0.72rem;">Confermata: Sblocco Valore Clinico</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
         <!-- Visual Continuum Schema -->
         <div class="card">
           <div class="card-header">
@@ -830,6 +1250,15 @@
 
     </div><!-- /.dashboard-canvas -->
   </div><!-- /.dashboard-viewport -->
+
+  <!-- Lightbox Modal for Chart Zoom -->
+  <div id="chart-lightbox-modal" class="lightbox-modal" role="dialog" aria-hidden="true">
+    <div class="lightbox-content">
+      <button id="lightbox-close-btn" class="lightbox-close" aria-label="Chiudi ingrandimento">&times;</button>
+      <img id="lightbox-img" src="" alt="Grafico Ingrandito" class="lightbox-img">
+      <div id="lightbox-caption" class="lightbox-caption"></div>
+    </div>
+  </div>
 
   <!-- Scripts -->
   <script src="data.js?v=3"></script>

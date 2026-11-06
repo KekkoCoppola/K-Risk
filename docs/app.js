@@ -830,4 +830,98 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
   };
+
+  // =========================================================================
+  // Interactive Results Tour & Stepper Engine (Thesis Defense Ready)
+  // =========================================================================
+  function initTourStepper() {
+    const pills = document.querySelectorAll(".tour-step-pill");
+    const contents = document.querySelectorAll(".tour-step-content");
+    const prevBtn = document.getElementById("tour-prev-btn");
+    const nextBtn = document.getElementById("tour-next-btn");
+    const counter = document.getElementById("tour-step-counter");
+    const startTourBtn = document.getElementById("btn-start-tour");
+    let currentStep = 0;
+    const totalSteps = pills.length;
+
+    function goToStep(idx) {
+      if (idx < 0 || idx >= totalSteps) return;
+      currentStep = idx;
+      pills.forEach((p, i) => p.classList.toggle("active", i === currentStep));
+      contents.forEach((c, i) => c.classList.toggle("active", i === currentStep));
+      if (prevBtn) prevBtn.disabled = currentStep === 0;
+      if (nextBtn) {
+        nextBtn.innerHTML = currentStep === totalSteps - 1 
+          ? `Ricomincia Tour ↺` 
+          : `Tappa Successiva →`;
+      }
+      if (counter) counter.textContent = `Tappa ${currentStep + 1} di ${totalSteps}`;
+    }
+
+    pills.forEach((pill, idx) => {
+      pill.addEventListener("click", () => goToStep(idx));
+    });
+
+    if (prevBtn) {
+      prevBtn.addEventListener("click", () => goToStep(currentStep - 1));
+    }
+    if (nextBtn) {
+      nextBtn.addEventListener("click", () => {
+        if (currentStep === totalSteps - 1) {
+          goToStep(0);
+        } else {
+          goToStep(currentStep + 1);
+        }
+      });
+    }
+
+    if (startTourBtn) {
+      startTourBtn.addEventListener("click", () => {
+        switchTab("tab-results-positioning");
+        goToStep(0);
+        setTimeout(() => {
+          const tourContainer = document.getElementById("tour-interactive-container");
+          if (tourContainer) {
+            tourContainer.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        }, 100);
+      });
+    }
+
+    // Chart Lightbox Modal
+    const modal = document.getElementById("chart-lightbox-modal");
+    const modalImg = document.getElementById("lightbox-img");
+    const modalCap = document.getElementById("lightbox-caption");
+    const closeBtn = document.getElementById("lightbox-close-btn");
+
+    document.querySelectorAll(".tour-chart-wrapper").forEach(wrap => {
+      wrap.addEventListener("click", () => {
+        const img = wrap.querySelector(".tour-chart-img");
+        if (img && modal && modalImg) {
+          modalImg.src = img.src;
+          modalImg.alt = img.alt || "Grafico Risultati";
+          if (modalCap) modalCap.textContent = img.getAttribute("data-caption") || img.alt || "";
+          modal.classList.add("active");
+        }
+      });
+    });
+
+    if (closeBtn && modal) {
+      closeBtn.addEventListener("click", () => modal.classList.remove("active"));
+    }
+    if (modal) {
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) modal.classList.remove("active");
+      });
+    }
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && modal && modal.classList.contains("active")) {
+        modal.classList.remove("active");
+      }
+    });
+
+    goToStep(0);
+  }
+
+  initTourStepper();
 });
