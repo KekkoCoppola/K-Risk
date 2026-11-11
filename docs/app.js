@@ -163,6 +163,16 @@ document.addEventListener("DOMContentLoaded", () => {
         if (targetId) switchTab(targetId);
       });
     });
+
+    const pillNavBar = document.querySelector(".pill-nav-bar");
+    if (pillNavBar) {
+      pillNavBar.addEventListener("wheel", (e) => {
+        if (e.deltaY !== 0 && pillNavBar.scrollWidth > pillNavBar.clientWidth) {
+          e.preventDefault();
+          pillNavBar.scrollLeft += e.deltaY;
+        }
+      }, { passive: false });
+    }
   }
 
   function switchTab(tabId) {

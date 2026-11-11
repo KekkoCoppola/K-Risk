@@ -191,25 +191,35 @@ body:not(.light-mode) .brand-logo {
 .pill-nav-bar {
   display: flex;
   align-items: flex-end;
-  gap: 0.7rem;
+  gap: 0.45rem;
   background: transparent;
   padding: 2px 4px;
   border: none;
   overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none; /* Firefox: elimina lo slider */
+  -ms-overflow-style: none; /* IE/Edge: elimina lo slider */
+}
+
+.pill-nav-bar::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/Edge: elimina lo slider */
+  width: 0;
+  height: 0;
 }
 
 .nav-step-col {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   cursor: pointer;
   user-select: none;
+  flex: 0 0 auto;
 }
 
 .nav-step-index {
   font-family: var(--font-mono);
-  font-size: 0.76rem;
+  font-size: 0.72rem;
   font-weight: 700;
   color: #475569; /* colore scuro da inattivo in light mode */
   transition: all var(--transition-fast);
@@ -243,8 +253,8 @@ body:not(.light-mode) .nav-step-col.active .nav-step-index {
   background: rgba(255, 255, 255, 0.75);
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: var(--radius-full);
-  padding: 8px 18px;
-  font-size: 0.85rem;
+  padding: 7px 13px;
+  font-size: 0.82rem;
   font-weight: 600;
   color: #334155; /* colore scuro da inattivo */
   cursor: pointer;
