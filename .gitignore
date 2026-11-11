@@ -71,4 +71,5 @@ docs/thesis/main.run.xml
 # Markdown: versionati solo i README
 *.md
 !README.md
+!README_EN.md
 !data/README.md

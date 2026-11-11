@@ -16,6 +16,8 @@
 [![Status](https://img.shields.io/badge/stato-completato-brightgreen.svg)](#-stato-del-progetto)
 [![Platform UI](https://img.shields.io/badge/web--ui-GitHub%20Pages-6f42c1.svg)](https://kekkocoppola.github.io/K-Risk/)
 
+[🇮🇹 Versione Italiana](README.md) · [🇬🇧 English Version](README_EN.md)
+
 **Tesi di Laurea Triennale in Informatica** · *Università degli Studi di Salerno*  
 **Candidato:** Francesco Coppola (Mat. 0512119837)  
 **Relatori:** Dott.ssa Fabiola De Marco, Dott. Domenico Rossi  
