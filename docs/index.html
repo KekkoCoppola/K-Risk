@@ -51,13 +51,25 @@
             <span class="nav-step-index">04</span>
             <button class="pill-nav-item pipeline-step-btn" data-tab="tab-phase-d" role="tab" id="nav-phase-d" data-i18n="nav_phase_d">Fase D</button>
           </div>
-          <div class="nav-step-col" data-tab="tab-final-test">
+          <div class="nav-step-col" data-tab="tab-unsupervised">
             <span class="nav-step-index">05</span>
+            <button class="pill-nav-item pipeline-step-btn" data-tab="tab-unsupervised" role="tab" id="nav-unsupervised" data-i18n="nav_unsupervised">Non Sup. & AI</button>
+          </div>
+          <div class="nav-step-col" data-tab="tab-external-validation">
+            <span class="nav-step-index">06</span>
+            <button class="pill-nav-item pipeline-step-btn" data-tab="tab-external-validation" role="tab" id="nav-external" data-i18n="nav_external">NHANES & Mortalità</button>
+          </div>
+          <div class="nav-step-col" data-tab="tab-final-test">
+            <span class="nav-step-index">07</span>
             <button class="pill-nav-item pipeline-step-btn" data-tab="tab-final-test" role="tab" id="nav-final-test" data-i18n="nav_final_test">Lockbox & DCA</button>
           </div>
+          <div class="nav-step-col" data-tab="tab-gallery">
+            <span class="nav-step-index">08</span>
+            <button class="pill-nav-item pipeline-step-btn" data-tab="tab-gallery" role="tab" id="nav-gallery" data-i18n="nav_gallery">Atlas Grafici</button>
+          </div>
           <div class="nav-step-col" data-tab="tab-results-positioning">
-            <span class="nav-step-index">06</span>
-            <button class="pill-nav-item pipeline-step-btn" data-tab="tab-results-positioning" role="tab" id="nav-results-positioning" data-i18n="nav_results">Risultati</button>
+            <span class="nav-step-index">09</span>
+            <button class="pill-nav-item pipeline-step-btn" data-tab="tab-results-positioning" role="tab" id="nav-results-positioning" data-i18n="nav_results">Risultati & Tesi</button>
           </div>
         </nav>
 
@@ -136,20 +148,27 @@
           </div>
         </div>
 
-        <!-- Hero Stats Cards (Matching the reference 78 / 56 / 203) -->
+        <!-- Hero Stats Cards -->
         <div class="hero-right-stats">
           <div class="stat-pill-card">
             <span class="stat-number">5.801</span>
             <span class="stat-caption">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-              <span data-i18n="stat_cohort_label">Coorte Totale</span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+              <span>Jinuo Dev</span>
             </span>
           </div>
           <div class="stat-pill-card">
-            <span class="stat-number">567</span>
+            <span class="stat-number">34.494</span>
             <span class="stat-caption">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
-              <span data-i18n="stat_positives_label">Positivi KDIGO</span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path></svg>
+              <span>NHANES USA</span>
+            </span>
+          </div>
+          <div class="stat-pill-card highlight-card" style="border-color: rgba(16, 185, 129, 0.4);">
+            <span class="stat-number" style="color: var(--accent-emerald);">+410</span>
+            <span class="stat-caption">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+              <span>Casi in Più (vs Linee Guida)</span>
             </span>
           </div>
           <div class="stat-pill-card highlight-card">
@@ -160,10 +179,10 @@
             </span>
           </div>
           <div class="stat-pill-card">
-            <span class="stat-number">0.743</span>
+            <span class="stat-number">0.790</span>
             <span class="stat-caption">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-              <span data-i18n="stat_auroc_label">AUROC Test</span>
+              <span>AUROC NHANES</span>
             </span>
           </div>
         </div>
@@ -620,7 +639,243 @@
 
 
       <!-- ===================================================================
-           TAB 05: FINAL TEST LOCKBOX & CLINICAL UTILITY (DCA)
+           TAB 05: UNSUPERVISED LEARNING & AI THRESHOLD
+           =================================================================== -->
+      <section id="tab-unsupervised" class="tab-pane" role="tabpanel">
+        <div class="section-header">
+          <div class="section-titles">
+            <h2 data-i18n="unsupervised_h2">05. Apprendimento Non Supervisionato & 'Soglia AI'</h2>
+            <p data-i18n="unsupervised_p">Esperimento condotto su richiesta dei relatori: eliminazione di formule KDIGO, cut-off clinici ed esami renali per comprendere il ragionamento autonomo dell'AI e verificare l'esistenza di un gradiente continuo di danno d'organo.</p>
+          </div>
+          <span class="badge badge-warning" data-i18n="unsupervised_badge">Richiesta Relatori</span>
+        </div>
+
+        <!-- Advisors Breakthrough Banner -->
+        <div class="breakthrough-banner">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap;">
+            <div>
+              <span class="badge badge-success" style="font-size: 0.75rem; padding: 4px 10px;">🌟 Scoperta Scientifica Chiave</span>
+              <h3 style="margin: 0.5rem 0 0.3rem 0; font-size: 1.2rem; color: var(--text-primary); font-weight: 800;">L'AI Scopre la Continuità Biologica: Rischio Sub-Clinico Sotto i 30 mg/g</h3>
+            </div>
+            <span class="meta-pill-chip">IC 95%: +0.080 – +0.104 SD</span>
+          </div>
+          <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6; margin: 0;" data-i18n="unsupervised_callout">
+            <strong>Cosa scopre l'AI senza formule né etichette:</strong> In assenza di vincoli diagnostici artificiali, il punteggio non supervisionato cresce in modo lineare e continuo con l'albuminuria (<strong>+0.092 deviazioni standard per ogni raddoppio di ACR</strong>, IC 95%: 0.080–0.104) <strong>già al di sotto della soglia clinica convenzionale di 30 mg/g</strong>. L'AI dimostra sperimentalmente che il danno cardio-metabolico renale è un continuum privo di gradini naturali.
+          </p>
+          <div class="breakthrough-stats-grid">
+            <div class="breakthrough-stat-card">
+              <span class="breakthrough-stat-val">+0.092 SD</span>
+              <span class="breakthrough-stat-label">Crescita per Raddoppio ACR</span>
+              <span class="breakthrough-stat-sub">Andamento rigorosamente continuo e lineare</span>
+            </div>
+            <div class="breakthrough-stat-card">
+              <span class="breakthrough-stat-val blue">0 Scalini</span>
+              <span class="breakthrough-stat-label">Punti di Flesso a 30 mg/g</span>
+              <span class="breakthrough-stat-sub">La soglia clinica è una convenzione operativa</span>
+            </div>
+            <div class="breakthrough-stat-card">
+              <span class="breakthrough-stat-val purple">0.991 AUROC</span>
+              <span class="breakthrough-stat-label">Split con Colonne Regola</span>
+              <span class="breakthrough-stat-sub">L'AI ritrova autonomamente la regola se fornita</span>
+            </div>
+            <div class="breakthrough-stat-card">
+              <span class="breakthrough-stat-val orange">0.654 AUROC</span>
+              <span class="breakthrough-stat-label">Split Sangue Puro (67 var.)</span>
+              <span class="breakthrough-stat-sub">Senza rene riflette l'asse metabolico dell'età</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3 Splits Bento Grid -->
+        <div class="card" style="margin-bottom: 1.5rem;">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">Confronto dei 3 Bracci Sperimentali (Come Ragiona l'AI vs il Clinico)</h3>
+              <span class="card-subtitle">Clustering non supervisionato (k-means / GMM) confrontato con la classificazione KDIGO</span>
+            </div>
+            <span class="badge badge-neutral">CV 5×1 Fold</span>
+          </div>
+          <div class="grid-3" id="unsupervised-splits-target" style="margin-top: 1rem;">
+            <!-- Rendered via JavaScript -->
+          </div>
+        </div>
+
+        <!-- Interactive Visualizer Grid -->
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">1. Rischio Sub-Clinico prima della Soglia</h3>
+                <span class="card-subtitle">Il punteggio AI discrimina la mortalità anche per ACR &lt; 30 mg/g</span>
+              </div>
+              <span class="badge badge-success">Soglia AI</span>
+            </div>
+            <div class="tour-chart-wrapper unsupervised-chart-wrap" data-caption="L'AI cattura il rischio continuo prima di 30 mg/g: progressione lineare della mortalità e dell'albuminuria sub-clinica.">
+              <img src="analytics/soglia_ai/punto7/fig1_ai_sotto_30.png" alt="Rischio AI Sotto 30 mg/g" class="tour-chart-img" />
+              <div class="tour-chart-overlay-tip">🔍 Clicca per ingrandire</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">2. Traiettoria degli Esami lungo il Gradiente ACR</h3>
+                <span class="card-subtitle">Acido urico, pressione, emocromo e glicemia lungo i valori continui</span>
+              </div>
+              <span class="badge badge-blue">Biomarcatori</span>
+            </div>
+            <div class="tour-chart-wrapper unsupervised-chart-wrap" data-caption="Andamento degli esami del sangue lungo il gradiente di ACR urinario: correlazioni biologiche multivariate.">
+              <img src="analytics/soglia_ai/punto2/fig2_esami_lungo_acr.png" alt="Esami lungo ACR" class="tour-chart-img" />
+              <div class="tour-chart-overlay-tip">🔍 Clicca per ingrandire</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top: 1.5rem;">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">3. Danno Renale o Massa Muscolare?</h3>
+                <span class="card-subtitle">Controllo rigoroso per escludere artefatti da creatinina muscolare scheletrica</span>
+              </div>
+              <span class="badge badge-neutral">Audit Fisiopatologico</span>
+            </div>
+            <div class="tour-chart-wrapper unsupervised-chart-wrap" data-caption="Deconvoluzione della massa muscolare: il segnale persiste (+377 casi) anche aggiustando per massa magra e sesso biologico.">
+              <img src="analytics/soglia_ai/punto3/fig1_reni_o_muscoli.png" alt="Reni o Muscoli" class="tour-chart-img" />
+              <div class="tour-chart-overlay-tip">🔍 Clicca per ingrandire</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">4. Specificità Eziologica: Cause di Morte (NHANES)</h3>
+                <span class="card-subtitle">Associazione specifica con morte cardiovascolare vs controllo neutro accidentale</span>
+              </div>
+              <span class="badge badge-rose">Controllo Negativo</span>
+            </div>
+            <div class="tour-chart-wrapper unsupervised-chart-wrap" data-caption="Controllo negativo per le cause di morte: associazione marcata con eventi cardiovascolari (HR 1.38) e nulla per incidenti (HR 1.08).">
+              <img src="analytics/soglia_ai/punto7/fig2_cause_di_morte.png" alt="Cause di Morte NHANES" class="tour-chart-img" />
+              <div class="tour-chart-overlay-tip">🔍 Clicca per ingrandire</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ===================================================================
+           TAB 06: EXTERNAL VALIDATION & HARD OUTCOMES (NHANES)
+           =================================================================== -->
+      <section id="tab-external-validation" class="tab-pane" role="tabpanel">
+        <div class="section-header">
+          <div class="section-titles">
+            <h2 data-i18n="external_h2">06. Validazione Esterna Trans-Popolazione & Mortalità (NHANES)</h2>
+            <p data-i18n="external_p">Valutazione su 34.494 adulti statunitensi (NHANES 2005–2018) senza riaddestramento (Zero-Shot). Dissezione della filtrazione (eGFR < 60) e associazione longitudinale con la mortalità cardiovascolare (CDC NDI).</p>
+          </div>
+          <span class="badge badge-success" data-i18n="external_badge">Validazione Trans-Continentale</span>
+        </div>
+
+        <!-- NHANES Validation Callout -->
+        <div class="breakthrough-banner">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap;">
+            <div>
+              <span class="badge badge-blue" style="font-size: 0.75rem; padding: 4px 10px;">🌎 Zero-Shot Transfer</span>
+              <h3 style="margin: 0.5rem 0 0.3rem 0; font-size: 1.2rem; color: var(--text-primary); font-weight: 800;">Dalla Cina Rurale agli USA: +410 Malati Identificati a Parità di Esami</h3>
+            </div>
+            <span class="meta-pill-chip">AUROC 0.790 su NHANES</span>
+          </div>
+          <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6; margin: 0;" data-i18n="external_callout">
+            <strong>Trasportabilità e Hard Outcomes:</strong> Il modello applicato direttamente alla popolazione USA individua <strong>+410 pazienti nefropatici in più (+22%)</strong> rispetto alle linee guida a parità di carico di esami urinari (AUROC 0.790). Inoltre, nei 28.433 soggetti considerati 'sani' da KDIGO, ogni deviazione standard in più nel punteggio predice un aumento del <strong>38% del rischio di morte cardiovascolare</strong> (HR 1.38), con controllo negativo perfetto sulle morti per incidente (HR 1.08).
+          </p>
+          <div class="breakthrough-stats-grid">
+            <div class="breakthrough-stat-card">
+              <span class="breakthrough-stat-val">+410 Casi</span>
+              <span class="breakthrough-stat-label">Guadagno vs Linee Guida</span>
+              <span class="breakthrough-stat-sub">IC 95%: 351 – 469 casi reali in più</span>
+            </div>
+            <div class="breakthrough-stat-card">
+              <span class="breakthrough-stat-val blue">0.914 AUROC</span>
+              <span class="breakthrough-stat-label">Filtrazione con Acido Urico</span>
+              <span class="breakthrough-stat-sub">Modello compatto a 5 variabili (+235 casi vs SCORED)</span>
+            </div>
+            <div class="breakthrough-stat-card">
+              <span class="breakthrough-stat-val orange">HR 1.38</span>
+              <span class="breakthrough-stat-label">Mortalità CV nei Sani KDIGO</span>
+              <span class="breakthrough-stat-sub">IC 95%: 1.20 – 1.58 (28.433 adulti sani)</span>
+            </div>
+            <div class="breakthrough-stat-card">
+              <span class="breakthrough-stat-val purple">0.933 AUROC</span>
+              <span class="breakthrough-stat-label">Controllo Positivo (+ UmALB)</span>
+              <span class="breakthrough-stat-sub">Dimostrazione del tetto biologico del sangue</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Grid with Advisors High-Res Presentation Panels -->
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Pannello Riassuntivo per la Presentazione ai Relatori</h3>
+                <span class="card-subtitle">Sintesi visiva dei 4 risultati: Trasporto, Soglia AI, Mortalità e Parsimonia</span>
+              </div>
+              <span class="badge badge-success">HD Panel</span>
+            </div>
+            <div class="tour-chart-wrapper external-val-chart-wrap" data-caption="Pannello di restituzione ai relatori: quadro completo dell'impatto clinico e scientifico della tesi.">
+              <img src="charts/figura_relatori.png" alt="Figura Relatori" class="tour-chart-img" />
+              <div class="tour-chart-overlay-tip">🔍 Clicca per ingrandire</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Controllo Positivo e Limite Biologico del Sangue</h3>
+                <span class="card-subtitle">Confronto diretto tra predittori ematochimici e inclusione dell'albumina urinaria</span>
+              </div>
+              <span class="badge badge-blue">Data Ceiling</span>
+            </div>
+            <div class="tour-chart-wrapper external-val-chart-wrap" data-caption="Sangue vs Urina: il controllo positivo (0.933) certifica che la soglia a ~0.70 dipende dall'assenza dell'esame delle urine nel sangue.">
+              <img src="analytics/presentation/06_sangue_vs_urina_controllo_positivo.png" alt="Controllo Positivo Sangue vs Urina" class="tour-chart-img" />
+              <div class="tour-chart-overlay-tip">🔍 Clicca per ingrandire</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top: 1.5rem;">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Generalizzazione Non Supervisionata su NHANES</h3>
+                <span class="card-subtitle">Cluster e separazione metabolica proiettati su 34.494 adulti statunitensi</span>
+              </div>
+              <span class="badge badge-neutral">Trans-Popolazione</span>
+            </div>
+            <div class="tour-chart-wrapper external-val-chart-wrap" data-caption="Validazione non supervisionata su NHANES: coerenza trans-etnica della rappresentazione appresa.">
+              <img src="analytics/soglia_ai/punto6/fig1_nonsup_e_validazione.png" alt="Non Supervisionato su NHANES" class="tour-chart-img" />
+              <div class="tour-chart-overlay-tip">🔍 Clicca per ingrandire</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Mortalità Cardiovascolare lungo il Gradiente di ACR</h3>
+                <span class="card-subtitle">Analisi longitudinale di sopravvivenza collegata al National Death Index del CDC</span>
+              </div>
+              <span class="badge badge-rose">Longitudinale CDC</span>
+            </div>
+            <div class="tour-chart-wrapper external-val-chart-wrap" data-caption="Mortalità a lungo termine lungo lo spettro di ACR: aumento esponenziale del rischio cardiovascolare.">
+              <img src="analytics/soglia_ai/punto4/fig1_mortalita_lungo_acr.png" alt="Mortalità lungo ACR" class="tour-chart-img" />
+              <div class="tour-chart-overlay-tip">🔍 Clicca per ingrandire</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ===================================================================
+           TAB 07: FINAL TEST LOCKBOX & CLINICAL UTILITY (DCA)
            =================================================================== -->
       <section id="tab-final-test" class="tab-pane" role="tabpanel">
         <div class="section-header">
@@ -715,7 +970,42 @@
 
 
       <!-- ===================================================================
-           TAB 06: RESULTS & K-RISK SCIENTIFIC POSITIONING
+           TAB 08: COMPLETE SCIENTIFIC CHART ATLAS
+           =================================================================== -->
+      <section id="tab-gallery" class="tab-pane" role="tabpanel">
+        <div class="section-header">
+          <div class="section-titles">
+            <h2 data-i18n="gallery_h2">08. Atlas Scientifico Completo: Tutti i Grafici</h2>
+            <p data-i18n="gallery_p">Galleria ad altissima risoluzione di tutti gli 82 grafici prodotti durante le fasi sperimentali, audit e sintesi per i relatori. Filtra per categoria, cerca per parola chiave e ingrandisci in lightbox.</p>
+          </div>
+          <span class="badge badge-success" data-i18n="gallery_badge">82 Grafici Certificati</span>
+        </div>
+
+        <!-- Filter & Search Toolbar -->
+        <div class="gallery-toolbar">
+          <div class="gallery-search-row">
+            <input type="text" id="gallery-search-input" class="gallery-search-input" placeholder="Cerca grafico per titolo, marcatore o tag..." data-i18n-placeholder="gallery_search_placeholder" />
+          </div>
+          <div class="gallery-filter-chips">
+            <button class="gallery-chip-btn active" data-category="all" data-i18n="gallery_filter_all">Tutti i Grafici</button>
+            <button class="gallery-chip-btn" data-category="impact" data-i18n="gallery_filter_impact">Breakthrough & Relatori</button>
+            <button class="gallery-chip-btn" data-category="unsupervised" data-i18n="gallery_filter_unsupervised">Non Supervisionato & Soglia AI</button>
+            <button class="gallery-chip-btn" data-category="dataset" data-i18n="gallery_filter_dataset">Coorte & Dataset</button>
+            <button class="gallery-chip-btn" data-category="preprocessing" data-i18n="gallery_filter_prep">Preprocessing</button>
+            <button class="gallery-chip-btn" data-category="phase_a" data-i18n="gallery_filter_phase_a">Fasi A–E</button>
+            <button class="gallery-chip-btn" data-category="clinical_utility" data-i18n="gallery_filter_clinical">Utilità Clinica & DCA</button>
+          </div>
+        </div>
+
+        <!-- Dynamic Card Grid -->
+        <div id="gallery-grid-target" class="gallery-grid">
+          <!-- Rendered via JavaScript -->
+        </div>
+      </section>
+
+
+      <!-- ===================================================================
+           TAB 09: RESULTS & K-RISK SCIENTIFIC POSITIONING
            =================================================================== -->
       <section id="tab-results-positioning" class="tab-pane" role="tabpanel">
         <div class="section-header">

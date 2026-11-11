@@ -140,7 +140,10 @@ document.addEventListener("DOMContentLoaded", () => {
     initPhaseAView();
     initPhaseBView();
     initPhaseDView();
+    initUnsupervisedView();
+    initExternalValidationView();
     initFinalTestView();
+    initGalleryView();
     updateTableFormatButtons();
     renderAllCharts();
   }
@@ -266,6 +269,150 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       </div>
     `;
+  }
+
+  // =========================================================================
+  // Unsupervised AI View
+  // =========================================================================
+  function initUnsupervisedView() {
+    const splitsTarget = document.getElementById("unsupervised-splits-target");
+    if (!splitsTarget || !data.unsupervised) return;
+    const isEn = state.lang === "en";
+
+    const splits = data.unsupervised.splits;
+    splitsTarget.innerHTML = splits.map(s => `
+      <div class="card" style="display: flex; flex-direction: column; gap: 0.6rem; padding: 1.2rem; background: var(--card-bg-subtle); border: 1px solid var(--border-subtle);">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem;">
+          <h4 style="margin: 0; font-size: 0.95rem; color: var(--text-primary); font-weight: 700;">${s.name}</h4>
+          <span class="badge ${s.auroc_with_kdigo > 0.9 ? 'badge-success' : s.auroc_with_kdigo > 0.8 ? 'badge-blue' : 'badge-warning'}">
+            AUROC ${s.auroc_with_kdigo.toFixed(3)}
+          </span>
+        </div>
+        <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0; line-height: 1.45;">${s.content}</p>
+        <div style="margin-top: auto; padding-top: 0.6rem; border-top: 1px solid var(--border-subtle); font-size: 0.78rem; font-weight: 600; color: var(--text-primary);">
+          ${isEn ? 'Observed AI Pattern:' : 'Comportamento AI:'} <span style="font-weight: 400; color: var(--text-secondary);">${s.finding}</span>
+        </div>
+      </div>
+    `).join("");
+
+    // Wire up unsupervised charts
+    document.querySelectorAll(".unsupervised-chart-wrap").forEach(wrap => {
+      wrap.onclick = () => {
+        const img = wrap.querySelector("img");
+        if (img) openLightbox(img.src, wrap.getAttribute("data-caption") || img.alt);
+      };
+    });
+  }
+
+  // =========================================================================
+  // External Validation View
+  // =========================================================================
+  function initExternalValidationView() {
+    document.querySelectorAll(".external-val-chart-wrap").forEach(wrap => {
+      wrap.onclick = () => {
+        const img = wrap.querySelector("img");
+        if (img) openLightbox(img.src, wrap.getAttribute("data-caption") || img.alt);
+      };
+    });
+  }
+
+  // =========================================================================
+  // Scientific Atlas Gallery Engine
+  // =========================================================================
+  let activeGalleryCategory = "all";
+  let gallerySearchQuery = "";
+
+  function initGalleryView() {
+    const gridTarget = document.getElementById("gallery-grid-target");
+    if (!gridTarget || !data.gallery) return;
+
+    // Filter toolbar buttons
+    const filterButtons = document.querySelectorAll(".gallery-chip-btn");
+    filterButtons.forEach(btn => {
+      btn.onclick = () => {
+        filterButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        activeGalleryCategory = btn.getAttribute("data-category") || "all";
+        renderGalleryCards();
+      };
+    });
+
+    // Search input
+    const searchInput = document.getElementById("gallery-search-input");
+    if (searchInput) {
+      searchInput.oninput = (e) => {
+        gallerySearchQuery = e.target.value.toLowerCase().trim();
+        renderGalleryCards();
+      };
+    }
+
+    renderGalleryCards();
+  }
+
+  function renderGalleryCards() {
+    const gridTarget = document.getElementById("gallery-grid-target");
+    if (!gridTarget || !data.gallery) return;
+    const isEn = state.lang === "en";
+
+    const filtered = data.gallery.filter(item => {
+      const matchCat = (activeGalleryCategory === "all") || (item.category === activeGalleryCategory);
+      if (!matchCat) return false;
+      if (!gallerySearchQuery) return true;
+      const title = (isEn ? item.title_en : item.title_it).toLowerCase();
+      const desc = (isEn ? item.desc_en : item.desc_it).toLowerCase();
+      const tag = (item.tag || "").toLowerCase();
+      return title.includes(gallerySearchQuery) || desc.includes(gallerySearchQuery) || tag.includes(gallerySearchQuery);
+    });
+
+    const zoomLabel = isEn ? "🔍 Expand in Lightbox" : "🔍 Ingrandisci in Lightbox";
+    const noResults = isEn ? "No figures match your search criteria." : "Nessun grafico corrisponde ai criteri di ricerca.";
+
+    if (filtered.length === 0) {
+      gridTarget.innerHTML = `<div style="grid-column: 1 / -1; padding: 3rem; text-align: center; color: var(--text-secondary); font-size: 0.9rem;">${noResults}</div>`;
+      return;
+    }
+
+    gridTarget.innerHTML = filtered.map(item => {
+      const title = isEn ? item.title_en : item.title_it;
+      const desc = isEn ? item.desc_en : item.desc_it;
+      return `
+        <div class="gallery-card" data-img="${item.path}" data-caption="${title}: ${desc}">
+          <div class="gallery-card-thumb-wrapper">
+            <img src="${item.path}" alt="${title}" class="gallery-card-img" loading="lazy" />
+          </div>
+          <div class="gallery-card-body">
+            <div class="gallery-card-header-row">
+              <span class="gallery-card-tag">${item.tag || item.category}</span>
+            </div>
+            <h4 class="gallery-card-title">${title}</h4>
+            <p class="gallery-card-desc">${desc}</p>
+            <div class="gallery-card-footer">
+              <span>${zoomLabel}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    gridTarget.querySelectorAll(".gallery-card").forEach(card => {
+      card.addEventListener("click", () => {
+        const imgSrc = card.getAttribute("data-img");
+        const caption = card.getAttribute("data-caption");
+        openLightbox(imgSrc, caption);
+      });
+    });
+  }
+
+  function openLightbox(src, caption) {
+    const modal = document.getElementById("chart-lightbox-modal");
+    const modalImg = document.getElementById("lightbox-img");
+    const modalCap = document.getElementById("lightbox-caption");
+    if (modal && modalImg) {
+      modalImg.src = src;
+      modalImg.alt = caption || "Grafico";
+      if (modalCap) modalCap.textContent = caption || "";
+      modal.classList.add("active");
+    }
   }
 
   // =========================================================================
@@ -603,6 +750,150 @@ document.addEventListener("DOMContentLoaded", () => {
         <div style="font-size: 0.78rem; color: var(--text-muted);">${card4Sub}</div>
       </div>
     `;
+  }
+
+  // =========================================================================
+  // Unsupervised AI View
+  // =========================================================================
+  function initUnsupervisedView() {
+    const splitsTarget = document.getElementById("unsupervised-splits-target");
+    if (!splitsTarget || !data.unsupervised) return;
+    const isEn = state.lang === "en";
+
+    const splits = data.unsupervised.splits;
+    splitsTarget.innerHTML = splits.map(s => `
+      <div class="card" style="display: flex; flex-direction: column; gap: 0.6rem; padding: 1.2rem; background: var(--card-bg-subtle); border: 1px solid var(--border-subtle);">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem;">
+          <h4 style="margin: 0; font-size: 0.95rem; color: var(--text-primary); font-weight: 700;">${s.name}</h4>
+          <span class="badge ${s.auroc_with_kdigo > 0.9 ? 'badge-success' : s.auroc_with_kdigo > 0.8 ? 'badge-blue' : 'badge-warning'}">
+            AUROC ${s.auroc_with_kdigo.toFixed(3)}
+          </span>
+        </div>
+        <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0; line-height: 1.45;">${s.content}</p>
+        <div style="margin-top: auto; padding-top: 0.6rem; border-top: 1px solid var(--border-subtle); font-size: 0.78rem; font-weight: 600; color: var(--text-primary);">
+          ${isEn ? 'Observed AI Pattern:' : 'Comportamento AI:'} <span style="font-weight: 400; color: var(--text-secondary);">${s.finding}</span>
+        </div>
+      </div>
+    `).join("");
+
+    // Wire up unsupervised charts
+    document.querySelectorAll(".unsupervised-chart-wrap").forEach(wrap => {
+      wrap.onclick = () => {
+        const img = wrap.querySelector("img");
+        if (img) openLightbox(img.src, wrap.getAttribute("data-caption") || img.alt);
+      };
+    });
+  }
+
+  // =========================================================================
+  // External Validation View
+  // =========================================================================
+  function initExternalValidationView() {
+    document.querySelectorAll(".external-val-chart-wrap").forEach(wrap => {
+      wrap.onclick = () => {
+        const img = wrap.querySelector("img");
+        if (img) openLightbox(img.src, wrap.getAttribute("data-caption") || img.alt);
+      };
+    });
+  }
+
+  // =========================================================================
+  // Scientific Atlas Gallery Engine
+  // =========================================================================
+  let activeGalleryCategory = "all";
+  let gallerySearchQuery = "";
+
+  function initGalleryView() {
+    const gridTarget = document.getElementById("gallery-grid-target");
+    if (!gridTarget || !data.gallery) return;
+
+    // Filter toolbar buttons
+    const filterButtons = document.querySelectorAll(".gallery-chip-btn");
+    filterButtons.forEach(btn => {
+      btn.onclick = () => {
+        filterButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        activeGalleryCategory = btn.getAttribute("data-category") || "all";
+        renderGalleryCards();
+      };
+    });
+
+    // Search input
+    const searchInput = document.getElementById("gallery-search-input");
+    if (searchInput) {
+      searchInput.oninput = (e) => {
+        gallerySearchQuery = e.target.value.toLowerCase().trim();
+        renderGalleryCards();
+      };
+    }
+
+    renderGalleryCards();
+  }
+
+  function renderGalleryCards() {
+    const gridTarget = document.getElementById("gallery-grid-target");
+    if (!gridTarget || !data.gallery) return;
+    const isEn = state.lang === "en";
+
+    const filtered = data.gallery.filter(item => {
+      const matchCat = (activeGalleryCategory === "all") || (item.category === activeGalleryCategory);
+      if (!matchCat) return false;
+      if (!gallerySearchQuery) return true;
+      const title = (isEn ? item.title_en : item.title_it).toLowerCase();
+      const desc = (isEn ? item.desc_en : item.desc_it).toLowerCase();
+      const tag = (item.tag || "").toLowerCase();
+      return title.includes(gallerySearchQuery) || desc.includes(gallerySearchQuery) || tag.includes(gallerySearchQuery);
+    });
+
+    const zoomLabel = isEn ? "🔍 Expand in Lightbox" : "🔍 Ingrandisci in Lightbox";
+    const noResults = isEn ? "No figures match your search criteria." : "Nessun grafico corrisponde ai criteri di ricerca.";
+
+    if (filtered.length === 0) {
+      gridTarget.innerHTML = `<div style="grid-column: 1 / -1; padding: 3rem; text-align: center; color: var(--text-secondary); font-size: 0.9rem;">${noResults}</div>`;
+      return;
+    }
+
+    gridTarget.innerHTML = filtered.map(item => {
+      const title = isEn ? item.title_en : item.title_it;
+      const desc = isEn ? item.desc_en : item.desc_it;
+      return `
+        <div class="gallery-card" data-img="${item.path}" data-caption="${title}: ${desc}">
+          <div class="gallery-card-thumb-wrapper">
+            <img src="${item.path}" alt="${title}" class="gallery-card-img" loading="lazy" />
+          </div>
+          <div class="gallery-card-body">
+            <div class="gallery-card-header-row">
+              <span class="gallery-card-tag">${item.tag || item.category}</span>
+            </div>
+            <h4 class="gallery-card-title">${title}</h4>
+            <p class="gallery-card-desc">${desc}</p>
+            <div class="gallery-card-footer">
+              <span>${zoomLabel}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    gridTarget.querySelectorAll(".gallery-card").forEach(card => {
+      card.addEventListener("click", () => {
+        const imgSrc = card.getAttribute("data-img");
+        const caption = card.getAttribute("data-caption");
+        openLightbox(imgSrc, caption);
+      });
+    });
+  }
+
+  function openLightbox(src, caption) {
+    const modal = document.getElementById("chart-lightbox-modal");
+    const modalImg = document.getElementById("lightbox-img");
+    const modalCap = document.getElementById("lightbox-caption");
+    if (modal && modalImg) {
+      modalImg.src = src;
+      modalImg.alt = caption || "Grafico";
+      if (modalCap) modalCap.textContent = caption || "";
+      modal.classList.add("active");
+    }
   }
 
   // =========================================================================

@@ -22,8 +22,36 @@ window.KRISK_I18N = {
       nav_phase_a: "Fase A",
       nav_phase_b: "Fase B",
       nav_phase_d: "Fase D",
+      nav_unsupervised: "Non Supervisionato",
+      nav_external: "Validazione NHANES",
       nav_final_test: "Lockbox & DCA",
-      nav_results: "Risultati",
+      nav_gallery: "Atlas Grafici",
+      nav_results: "Risultati & Tesi",
+
+      // Tab 05: Unsupervised Learning & AI Threshold
+      unsupervised_h2: "05. Apprendimento Non Supervisionato & 'Soglia AI'",
+      unsupervised_p: "Esperimento condotto su richiesta dei relatori: eliminazione di formule KDIGO, cut-off clinici ed esami renali per comprendere il ragionamento autonomo dell'AI e verificare l'esistenza di un gradiente continuo di danno d'organo.",
+      unsupervised_badge: "Richiesta Relatori",
+      unsupervised_callout: "<strong>Cosa scopre l'AI senza formule né etichette:</strong> In assenza di vincoli diagnostici artificiali, il punteggio non supervisionato cresce in modo lineare e continuo con l'albuminuria (<strong>+0.092 deviazioni standard per ogni raddoppio di ACR</strong>, IC 95%: 0.080–0.104) <strong>già al di sotto della soglia clinica convenzionale di 30 mg/g</strong>. L'AI dimostra sperimentalmente che il danno cardio-metabolico renale è un continuum privo di gradini naturali.",
+
+      // Tab 06: External Validation & Long-Term Mortality
+      external_h2: "06. Validazione Esterna Trans-Popolazione & Mortalità (NHANES)",
+      external_p: "Valutazione su 34.494 adulti statunitensi (NHANES 2005–2018) senza riaddestramento (Zero-Shot). Dissezione della filtrazione (eGFR < 60) e associazione longitudinale con la mortalità cardiovascolare (CDC NDI).",
+      external_badge: "Validazione Trans-Continentale",
+      external_callout: "<strong>Trasportabilità e Hard Outcomes:</strong> Il modello applicato direttamente alla popolazione USA individua <strong>+410 pazienti nefropatici in più (+22%)</strong> rispetto alle linee guida a parità di carico di esami urinari (AUROC 0.790). Inoltre, nei 28.433 soggetti considerati 'sani' da KDIGO, ogni deviazione standard in più nel punteggio predice un aumento del <strong>38% del rischio di morte cardiovascolare</strong> (HR 1.38), con controllo negativo perfetto sulle morti per incidente (HR 1.08).",
+
+      // Tab 08: Scientific Atlas Gallery
+      gallery_h2: "08. Atlas Scientifico Completo: Tutti i Grafici",
+      gallery_p: "Galleria ad altissima risoluzione di tutti gli 82 grafici prodotti durante le fasi sperimentali, audit e sintesi per i relatori. Filtra per categoria, cerca per parola chiave e ingrandisci in lightbox.",
+      gallery_badge: "82 Grafici Certificati",
+      gallery_filter_all: "Tutti i Grafici",
+      gallery_filter_impact: "Breakthrough & Relatori",
+      gallery_filter_unsupervised: "Non Supervisionato & Soglia AI",
+      gallery_filter_dataset: "Coorte & Dataset",
+      gallery_filter_prep: "Preprocessing",
+      gallery_filter_phase_a: "Fasi A–E",
+      gallery_filter_clinical: "Utilità Clinica & DCA",
+      gallery_search_placeholder: "Cerca grafico per titolo, marcatore o tag...",
 
       // Hero Bento Header
       hero_title: "Welcome in, K-Risk",
@@ -266,8 +294,36 @@ window.KRISK_I18N = {
       nav_phase_a: "Phase A",
       nav_phase_b: "Phase B",
       nav_phase_d: "Phase D",
+      nav_unsupervised: "Unsupervised AI",
+      nav_external: "NHANES Validation",
       nav_final_test: "Lockbox & DCA",
-      nav_results: "Results",
+      nav_gallery: "Chart Atlas",
+      nav_results: "Results & Thesis",
+
+      // Tab 05: Unsupervised Learning & AI Threshold
+      unsupervised_h2: "05. Unsupervised Learning & 'AI Threshold'",
+      unsupervised_p: "Experiment requested by thesis advisors: removing KDIGO formulas, clinical cutoffs, and renal lab tests to understand autonomous AI reasoning and verify continuous organ damage gradients.",
+      unsupervised_badge: "Advisors Inquest",
+      unsupervised_callout: "<strong>What AI discovers without labels or equations:</strong> In the absence of artificial clinical thresholds, the unsupervised risk score increases monotonically with albuminuria (<strong>+0.092 standard deviations per doubling of ACR</strong>, 95% CI: 0.080–0.104) <strong>well below the 30 mg/g clinical threshold</strong>. AI experimentally demonstrates that kidney damage operates along a continuum.",
+
+      // Tab 06: External Validation & Long-Term Mortality
+      external_h2: "06. External Trans-Population Validation & Mortality (NHANES)",
+      external_p: "Zero-Shot evaluation on 34,494 US adults (NHANES 2005–2018) without retraining. Biological dissection of filtration (eGFR < 60) and longitudinal association with cardiovascular mortality (CDC NDI).",
+      external_badge: "Trans-Continental Validation",
+      external_callout: "<strong>Transportability & Hard Outcomes:</strong> Applying the model directly to the US population detects <strong>+410 additional nephropathic cases (+22%)</strong> over clinical guidelines at identical urine testing volume (AUROC 0.790). Furthermore, among 28,433 individuals deemed 'healthy' by KDIGO, each 1 SD increase in predicted risk predicts a <strong>38% increase in cardiovascular mortality</strong> (HR 1.38), with zero accidental mortality association (HR 1.08).",
+
+      // Tab 08: Scientific Atlas Gallery
+      gallery_h2: "08. Complete Scientific Atlas: All Figures",
+      gallery_p: "High-resolution gallery of all 82 figures generated across experimental phases, audit runs, and advisor synthesis. Filter by domain, search keywords, and expand in full lightbox.",
+      gallery_badge: "82 Certified Figures",
+      gallery_filter_all: "All Charts",
+      gallery_filter_impact: "Breakthrough & Advisors",
+      gallery_filter_unsupervised: "Unsupervised & AI Threshold",
+      gallery_filter_dataset: "Cohort & Dataset",
+      gallery_filter_prep: "Preprocessing",
+      gallery_filter_phase_a: "Phases A–E",
+      gallery_filter_clinical: "Clinical Utility & DCA",
+      gallery_search_placeholder: "Search charts by title, marker, or tag...",
 
       // Hero Bento Header
       hero_title: "Welcome in, K-Risk",
