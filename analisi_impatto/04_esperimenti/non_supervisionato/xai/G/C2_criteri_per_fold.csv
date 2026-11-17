@@ -1,0 +1,41 @@
+fold,configurazione,surrogato_fedele,variabili_del_clinico,rapporto_acr,correzione_egfr,bun_prima_di_scre,famiglia_prima
+0,gmm_bic,True,False,False,False,True,emocromo
+1,gmm_bic,True,False,False,False,True,emocromo
+2,gmm_bic,True,False,False,False,True,emocromo
+3,gmm_bic,True,False,False,False,True,emocromo
+4,gmm_bic,False,False,False,False,False,emocromo
+0,gmm_k2,True,False,False,False,True,emocromo
+1,gmm_k2,True,False,False,False,True,emocromo
+2,gmm_k2,True,False,False,False,True,emocromo
+3,gmm_k2,True,False,False,False,True,emocromo
+4,gmm_k2,False,False,False,False,False,emocromo
+0,gmm_k4,False,False,False,False,False,emocromo
+1,gmm_k4,False,False,False,False,False,emocromo
+2,gmm_k4,False,False,False,False,False,emocromo
+3,gmm_k4,False,False,False,False,False,emocromo
+4,gmm_k4,False,False,False,False,False,emocromo
+0,kmeans_gap,True,False,False,False,True,emocromo
+1,kmeans_gap,True,False,False,False,False,emocromo
+2,kmeans_gap,True,False,False,False,True,emocromo
+3,kmeans_gap,True,False,False,False,True,emocromo
+4,kmeans_gap,True,False,False,False,False,emocromo
+0,kmeans_k2,True,False,False,False,True,emocromo
+1,kmeans_k2,True,False,False,False,True,emocromo
+2,kmeans_k2,True,False,False,False,True,emocromo
+3,kmeans_k2,True,False,False,False,True,"anamnesi, abitudini e sesso"
+4,kmeans_k2,True,False,False,False,False,emocromo
+0,kmeans_k4,True,False,False,False,False,emocromo
+1,kmeans_k4,True,False,False,False,False,emocromo
+2,kmeans_k4,True,False,False,False,True,emocromo
+3,kmeans_k4,True,False,False,False,False,"anamnesi, abitudini e sesso"
+4,kmeans_k4,True,False,False,False,False,"anamnesi, abitudini e sesso"
+0,mahalanobis,False,False,False,False,True,emocromo
+1,mahalanobis,False,False,False,False,True,emocromo
+2,mahalanobis,False,False,False,False,True,emocromo
+3,mahalanobis,False,False,False,False,True,emocromo
+4,mahalanobis,False,False,False,False,True,emocromo
+0,autoencoder,True,False,False,False,False,emocromo
+1,autoencoder,True,False,False,False,False,emocromo
+2,autoencoder,True,False,False,False,True,"anamnesi, abitudini e sesso"
+3,autoencoder,True,False,False,False,True,"anamnesi, abitudini e sesso"
+4,autoencoder,True,False,False,False,False,"anamnesi, abitudini e sesso"

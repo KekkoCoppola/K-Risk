@@ -1,0 +1,72 @@
+id,fase,nome,ruolo,ingressi,in_0_1,valori_distinti,previsioni_interne_oof,fold_con_iperparametri,secondi_registrati
+phase_a/main/lr_penalized,A,lr_penalized,modello,74 ammesse,True,4350,False,5,1402.0
+phase_a/main/lr_scored,A,lr_scored,modello,5 predittori SCORED,True,4270,False,0,0.0
+phase_a/main/random_forest,A,random_forest,modello,74 ammesse,True,4350,False,5,2878.3
+phase_a/main/xgboost,A,xgboost,modello,74 ammesse,True,4347,False,5,846.8
+phase_a/no_consequence/lr_penalized,A,lr_penalized,modello,74 meno le conseguenze (no_consequence),True,4350,False,5,4.1
+phase_a/no_consequence/lr_scored,A,lr_scored,modello,5 predittori SCORED,True,2346,False,0,0.0
+phase_a/no_consequence/random_forest,A,random_forest,modello,74 meno le conseguenze (no_consequence),True,4350,False,5,9.9
+phase_a/no_consequence/xgboost,A,xgboost,modello,74 meno le conseguenze (no_consequence),True,4350,False,5,1.9
+phase_a/sensitivity/depth_1_12/main/xgboost,A (sensibilità 1-12),xgboost,modello,74 ammesse,True,4350,False,5,1938.0
+phase_a/sensitivity/depth_1_12/no_consequence/xgboost,A (sensibilità 1-12),xgboost,modello,74 meno le conseguenze (no_consequence),True,4350,False,5,2.1
+phase_b/class_weight/main/lr_penalized,B,lr_penalized,modello,74 ammesse,True,4350,False,5,565.9
+phase_b/class_weight/main/lr_scored,B,lr_scored,modello,5 predittori SCORED,True,4270,False,0,0.0
+phase_b/class_weight/main/random_forest,B,random_forest,modello,74 ammesse,True,4350,False,5,1065.0
+phase_b/class_weight/main/xgboost,B,xgboost,modello,74 ammesse,True,4346,False,5,332.6
+phase_b/ctgan/main/lr_penalized,B,lr_penalized,modello,74 ammesse,True,4350,False,5,1.0
+phase_b/ctgan/main/lr_scored,B,lr_scored,modello,5 predittori SCORED,True,4270,False,0,0.0
+phase_b/ctgan/main/random_forest,B,random_forest,modello,74 ammesse,True,4350,False,5,49.3
+phase_b/ctgan/main/xgboost,B,xgboost,modello,74 ammesse,True,4350,False,5,33.9
+phase_b/ctgan_level/main/lr_penalized,B,lr_penalized,modello,74 ammesse,True,4350,False,5,0.9
+phase_b/ctgan_level/main/lr_scored,B,lr_scored,modello,5 predittori SCORED,True,4270,False,0,0.0
+phase_b/ctgan_level/main/random_forest,B,random_forest,modello,74 ammesse,True,4349,False,5,48.0
+phase_b/ctgan_level/main/xgboost,B,xgboost,modello,74 ammesse,True,4348,False,5,33.4
+phase_b/level_weight/main/lr_penalized,B,lr_penalized,modello,74 ammesse,True,4350,False,5,892.8
+phase_b/level_weight/main/lr_scored,B,lr_scored,modello,5 predittori SCORED,True,4270,False,0,0.0
+phase_b/level_weight/main/random_forest,B,random_forest,modello,74 ammesse,True,4350,False,5,1049.6
+phase_b/level_weight/main/xgboost,B,xgboost,modello,74 ammesse,True,4348,False,5,387.9
+phase_b/oversampling/main/lr_penalized,B,lr_penalized,modello,74 ammesse,True,4350,False,5,1512.4
+phase_b/oversampling/main/lr_scored,B,lr_scored,modello,5 predittori SCORED,True,4270,False,0,0.5
+phase_b/oversampling/main/random_forest,B,random_forest,modello,74 ammesse,True,4350,False,5,1855.0
+phase_b/oversampling/main/xgboost,B,xgboost,modello,74 ammesse,True,4350,False,5,512.5
+phase_b/smote_nc/main/lr_penalized,B,lr_penalized,modello,74 ammesse,True,4350,False,5,384.1
+phase_b/smote_nc/main/lr_scored,B,lr_scored,modello,5 predittori SCORED,True,4270,False,0,0.0
+phase_b/smote_nc/main/random_forest,B,random_forest,modello,74 ammesse,True,4350,False,5,3497.0
+phase_b/smote_nc/main/xgboost,B,xgboost,modello,74 ammesse,True,4350,False,5,2982.4
+phase_b/smote_nc_level/main/lr_penalized,B,lr_penalized,modello,74 ammesse,True,4350,False,5,427.3
+phase_b/smote_nc_level/main/lr_scored,B,lr_scored,modello,5 predittori SCORED,True,4270,False,0,0.0
+phase_b/smote_nc_level/main/random_forest,B,random_forest,modello,74 ammesse,True,4348,False,5,4209.8
+phase_b/smote_nc_level/main/xgboost,B,xgboost,modello,74 ammesse,True,4350,False,5,1584.1
+phase_b/undersampling/main/lr_penalized,B,lr_penalized,modello,74 ammesse,True,4350,False,5,125.9
+phase_b/undersampling/main/lr_scored,B,lr_scored,modello,5 predittori SCORED,True,4270,False,0,0.0
+phase_b/undersampling/main/random_forest,B,random_forest,modello,74 ammesse,True,4350,False,5,532.8
+phase_b/undersampling/main/xgboost,B,xgboost,modello,74 ammesse,True,4348,False,5,177.8
+phase_d/catboost,D,catboost,modello,74 ammesse,True,4348,False,5,2841.7
+phase_d/continuous_target/combinato,D,combinato,combinazione di altri modelli,74 ammesse,True,4350,False,0,0.0
+phase_d/ebm,D,ebm,modello,74 ammesse,True,4350,False,0,922.6
+phase_d/ensemble_mean,D,ensemble_mean,combinazione di altri modelli,74 ammesse,True,4350,False,0,0.0
+phase_d/lightgbm,D,lightgbm,modello,74 ammesse,True,4350,False,5,186.8
+phase_d/lr_all_scaled,D,lr_all_scaled,modello,74 ammesse,True,4350,False,5,695.2
+phase_d/tabpfn,D,tabpfn,modello,74 ammesse,True,4350,False,0,2948.7
+phase_d/target_decomposition,D,target_decomposition,combinazione di altri modelli,74 ammesse,True,4350,False,0,0.0
+phase_d/tri_ensemble_top21,D,tri_ensemble_top21,combinazione di altri modelli,21 scelte dentro il fold,True,4350,False,0,89.5
+phase_d/xgboost_extended,D,xgboost_extended,modello,74 ammesse,True,4350,False,5,983.6
+phase_d/xgboost_native_nan,D,xgboost_native_nan,modello,74 ammesse,True,4348,False,5,621.9
+phase_d/xgboost_no_pruner,D,xgboost_no_pruner,modello,74 ammesse,True,4350,False,5,735.3
+phase_e/adaboost,E (zoo),adaboost,modello,74 ammesse,True,4238,True,5,4481.1
+phase_e/combinato_lgbm,E (continuous),combinato_lgbm,modello (bersagli continui log ACR e log SCRE),74 ammesse,True,649,True,5,2126.0
+phase_e/combinato_lgbm_etero,E (continuous),combinato_lgbm_etero,modello (bersagli continui log ACR e log SCRE),74 ammesse,True,956,True,0,18.6
+phase_e/combinato_mlp,E (continuous),combinato_mlp,modello (bersagli continui log ACR e log SCRE),74 ammesse,True,724,True,5,410.0
+phase_e/extra_trees,E (zoo),extra_trees,modello,74 ammesse,True,4350,True,5,598.1
+phase_e/hist_gb,E (zoo),hist_gb,modello,74 ammesse,True,4223,True,5,2514.6
+phase_e/knn,E (zoo),knn,modello,74 ammesse,True,4341,True,5,56.2
+phase_e/lda,E (zoo),lda,modello,74 ammesse,True,4350,True,5,31.0
+phase_e/lr_interactions,E (zoo),lr_interactions,modello,74 ammesse,True,4350,True,5,197.7
+phase_e/margine_kdigo,E (continuous),margine_kdigo,modello (bersagli continui log ACR e log SCRE),74 ammesse,True,693,True,5,500.5
+phase_e/mlp,E (zoo),mlp,modello,74 ammesse,True,4350,True,5,208.0
+phase_e/naive_bayes,E (zoo),naive_bayes,modello,74 ammesse,True,4239,True,5,6.5
+phase_e/qda,E (zoo),qda,modello,74 ammesse,True,4335,True,5,21.0
+phase_e/rank_mean,E (combined),rank_mean,combinazione di altri modelli,74 ammesse,True,4211,False,0,0.0
+phase_e/spline_lr,E (zoo),spline_lr,modello,74 ammesse,True,4350,True,5,150.8
+phase_e/stacking,E (combined),stacking,combinazione di altri modelli,74 ammesse,True,4350,False,0,0.0
+phase_e/svm_rbf,E (zoo),svm_rbf,modello,74 ammesse,False,4350,True,5,175.5

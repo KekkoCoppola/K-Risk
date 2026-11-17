@@ -1,0 +1,5 @@
+regola,modelli,positivi_fuori_regola,trovati_da_almeno_meta,trovati_da_tutti,trovati_da_nessuno
+R-a_DM,65,327,40,0,124
+R-b_DM,65,263,64,0,34
+R-a_DMhis,65,371,28,0,192
+R-b_DMhis,65,294,81,1,47

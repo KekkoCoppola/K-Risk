@@ -1,0 +1,15 @@
+dataset,budget,strategia,testati,positivi,diff_vs_regola,ic_basso,ic_alto
+"Jinuo (training, n = 4.350)",budget R-a,R-a: diabete o ipertensione,378,98,0,,
+"Jinuo (training, n = 4.350)",budget R-a,solo età (i più anziani),378,82,-16,-40.0,5.0
+"Jinuo (training, n = 4.350)",budget R-a,"logistica semplice (età, sesso, diabete, ipertensione)",378,110,12,0.0,24.0
+"Jinuo (training, n = 4.350)",budget R-a,AI (Random Forest),378,120,22,6.0,38.0
+"Jinuo (training, n = 4.350)",budget R-a + età,R-a + età ≥ 60,723,164,0,,
+"Jinuo (training, n = 4.350)",budget R-a + età,"logistica semplice (età, sesso, diabete, ipertensione)",723,168,4,-1.0,10.0
+"Jinuo (training, n = 4.350)",budget R-a + età,AI (Random Forest),723,174,10,-6.0,27.0
+NHANES 2005–2018 (n = 34.494),budget R-a,R-a: diabete o ipertensione,13788,4300,0,,
+NHANES 2005–2018 (n = 34.494),budget R-a,solo età (i più anziani),13788,4310,10,-69.0,93.04999999999995
+NHANES 2005–2018 (n = 34.494),budget R-a,"logistica semplice (età, sesso, diabete, ipertensione)",13788,4598,298,238.0,361.04999999999995
+NHANES 2005–2018 (n = 34.494),budget R-a,AI (Random Forest),13788,4826,526,467.0,592.025
+NHANES 2005–2018 (n = 34.494),budget R-a + età,R-a + età ≥ 60,17655,5058,0,,
+NHANES 2005–2018 (n = 34.494),budget R-a + età,"logistica semplice (età, sesso, diabete, ipertensione)",17655,5022,-36,-66.025,-4.0
+NHANES 2005–2018 (n = 34.494),budget R-a + età,AI (Random Forest),17655,5231,173,131.0,217.02499999999998

@@ -1,0 +1,15 @@
+modello,causa,n,morti,HR_per_DS,ic_basso,ic_alto,solo_descrittivo
+"non supervisionato (k-means, nessuna etichetta)",Malattie renali (9),28433,14,1.0522172672770194,0.4987440917533607,2.2198983323564514,True
+"non supervisionato (k-means, nessuna etichetta)",Cuore (1),28433,384,1.419206299464244,1.2176837853323887,1.6540801024867022,False
+"non supervisionato (k-means, nessuna etichetta)",Cerebrovascolari (5),28433,98,1.232629137465153,0.9065686864827974,1.6759619135123505,False
+"non supervisionato (k-means, nessuna etichetta)",Diabete (7),28433,38,3.667288653706715,2.2229676577745763,6.05002327522384,False
+"non supervisionato (k-means, nessuna etichetta)",Tumori (2),28433,505,1.0630889362609643,0.942628975985692,1.1989426542067418,False
+"non supervisionato (k-means, nessuna etichetta)",Incidenti (4) - controllo negativo,28433,73,1.0759721337517691,0.8159670240681133,1.418826984990626,False
+"non supervisionato (k-means, nessuna etichetta)",Tutte le cause,28433,1844,1.1386283099206496,1.0677909222677513,1.2141650590167317,False
+"supervisionato (Random Forest, confronto)",Malattie renali (9),28433,14,1.1564379142862984,0.4882862210656441,2.7388621507282997,True
+"supervisionato (Random Forest, confronto)",Cuore (1),28433,384,1.3393449863394093,1.1341731592934676,1.5816323792656024,False
+"supervisionato (Random Forest, confronto)",Cerebrovascolari (5),28433,98,1.814324649552443,1.293425087716984,2.545005478271558,False
+"supervisionato (Random Forest, confronto)",Diabete (7),28433,38,3.167719690303254,1.9257123556532005,5.2107720069809,False
+"supervisionato (Random Forest, confronto)",Tumori (2),28433,505,1.0340774866493914,0.8995279960682837,1.1887526047760164,False
+"supervisionato (Random Forest, confronto)",Incidenti (4) - controllo negativo,28433,73,1.0925016337521163,0.797699804052334,1.4962518652853256,False
+"supervisionato (Random Forest, confronto)",Tutte le cause,28433,1844,1.1678057634544998,1.0852495677379732,1.2566421049124261,False

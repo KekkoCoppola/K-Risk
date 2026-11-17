@@ -1,0 +1,9 @@
+analisi,budget,strategia,testati,positivi,diff,ic_basso,ic_alto,auroc,auroc_ic
+6A Jinuo,R-a (diabete o ipertensione),regola,378,98,0,,,,
+6A Jinuo,R-a (diabete o ipertensione),"k-means k=4 (non supervisionato, primario)",378,98,0,-18.025,16.024999999999977,0.6479058823529412,0.620–0.674
+6A Jinuo,R-a (diabete o ipertensione),autoencoder (non supervisionato),378,96,-2,-19.0,14.0,0.6572235294117648,0.630–0.684
+6A Jinuo,R-a (diabete o ipertensione),"Random Forest (supervisionato, Fase A)",378,120,22,6.0,38.0,0.703212888722368,0.674–0.732
+6A Jinuo,R-b (anche pressione ≥ 140/90),regola,929,162,0,,,,
+6A Jinuo,R-b (anche pressione ≥ 140/90),"k-means k=4 (non supervisionato, primario)",929,175,13,-8.0,35.0,0.6479058823529412,0.620–0.674
+6A Jinuo,R-b (anche pressione ≥ 140/90),autoencoder (non supervisionato),929,175,13,-8.0,33.0,0.6572235294117648,0.630–0.684
+6A Jinuo,R-b (anche pressione ≥ 140/90),"Random Forest (supervisionato, Fase A)",929,203,41,20.0,64.0,0.703212888722368,0.674–0.732

@@ -1,0 +1,6 @@
+analisi,budget,strategia,testati,positivi,diff,ic_basso,ic_alto,auroc,auroc_ic,verita,pos_regola_stessa_verita
+6B NHANES,regola diabete o ipertensione noti,regola,13788,4300,0,,,,,KDIGO,
+6B NHANES,regola diabete o ipertensione noti,modello Jinuo applicato senza riaddestramento,13788,4710,410,350.975,469.025,0.7895402532314103,0.784–0.796,KDIGO,4300.0
+6B NHANES,regola diabete o ipertensione noti,modello Jinuo applicato senza riaddestramento,13788,4660,377,317.0,440.025,0.7895402532314103,0.784–0.796,corretta per i muscoli,4283.0
+6B NHANES,regola diabete o ipertensione noti,modello riaddestrato su NHANES (riferimento),13788,4826,526,466.975,593.025,0.8221086766770915,0.816–0.828,KDIGO,4300.0
+6B NHANES,regola diabete o ipertensione noti,modello riaddestrato su NHANES (riferimento),13788,4769,486,421.95,554.0,0.8221086766770915,0.816–0.828,corretta per i muscoli,4283.0

@@ -1,0 +1,11 @@
+modello,"non supervisionato (k-means, nessuna etichetta)",n,morti,eta_mediana,mortalita_pct,"supervisionato (Random Forest, confronto)"
+"non supervisionato (k-means, nessuna etichetta)",Q1,5687,112,35.0,1.9694039036398805,
+"non supervisionato (k-means, nessuna etichetta)",Q2,5686,240,41.0,4.220893422441083,
+"non supervisionato (k-means, nessuna etichetta)",Q3,5687,367,46.0,6.45331457710568,
+"non supervisionato (k-means, nessuna etichetta)",Q4,5686,553,55.0,9.72564192754133,
+"non supervisionato (k-means, nessuna etichetta)",Q5,5687,572,56.0,10.058027079303674,
+"supervisionato (Random Forest, confronto)",,5687,70,30.0,1.2308774397749254,Q1
+"supervisionato (Random Forest, confronto)",,5686,93,39.0,1.63559620119592,Q2
+"supervisionato (Random Forest, confronto)",,5687,239,46.0,4.2025672586601015,Q3
+"supervisionato (Random Forest, confronto)",,5686,600,58.0,10.552233556102708,Q4
+"supervisionato (Random Forest, confronto)",,5687,842,64.0,14.805697204149816,Q5

@@ -1,0 +1,11 @@
+regola,chi_sceglie,gruppo,testati,positivi,diff_contro_regola,ic_basso,ic_alto
+R-a_DM,regola del medico,regola,378,98,,,
+R-a_DM,solo età (i più anziani),baseline semplice,378,83,-15.0,-35.0,5.0
+R-a_DM,logistica con 6 variabili del clinico,baseline semplice,378,108,10.0,-2.0249999999999986,22.0
+R-a_DM,Random Forest (Fase A),modello AI,378,120,22.0,8.0,36.0
+R-a_DM,TabPFN (Fase D),modello AI,378,118,20.0,4.975000000000001,37.0
+R-b_DM,regola del medico,regola,929,162,,,
+R-b_DM,solo età (i più anziani),baseline semplice,929,170,8.0,-18.0,29.0
+R-b_DM,logistica con 6 variabili del clinico,baseline semplice,929,195,33.0,17.0,50.0
+R-b_DM,Random Forest (Fase A),modello AI,929,203,41.0,20.0,60.0
+R-b_DM,TabPFN (Fase D),modello AI,929,206,44.0,26.0,65.0

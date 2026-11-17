@@ -1,0 +1,12 @@
+modello,gruppo,auroc,ic_basso,ic_alto
+"mistura gaussiana, k = 2",non supervisionato su G (senza etichetta),0.551122367928063,0.5205381935378204,0.5817065423183057
+"mistura gaussiana, k = 4",non supervisionato su G (senza etichetta),0.5954077182465343,0.5681899070983657,0.6226255293947028
+Mahalanobis,non supervisionato su G (senza etichetta),0.6440608467590858,0.6213819262954485,0.6667397672227231
+"k-means, k = 2",non supervisionato su G (senza etichetta),0.6970520794304984,0.67069043868584,0.7234137201751568
+"Random Forest Fase A (74 colonne, senza esami renali)",supervisionato senza esami renali,0.7032128887223679,0.6756747074761853,0.7307510699685504
+"k-means, gap",non supervisionato su G (senza etichetta),0.7044795803671787,0.6787918411338035,0.7301673196005539
+"k-means, k = 4",non supervisionato su G (senza etichetta),0.7063145747470964,0.6803864326267084,0.7322427168674843
+autoencoder,non supervisionato su G (senza etichetta),0.7131204196328212,0.6882353864763562,0.7380054527892863
+elastic net su G,supervisionato su G (con etichetta),0.975814162607718,0.9680945463506436,0.9835337788647928
+Random Forest su G,supervisionato su G (con etichetta),0.996685500187336,0.9950939646335504,0.9982770357411218
+XGBoost su G,supervisionato su G (con etichetta),0.9977993255901084,0.996745095974157,0.99885355520606

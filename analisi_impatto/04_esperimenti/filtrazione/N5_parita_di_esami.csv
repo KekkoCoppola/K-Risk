@@ -1,0 +1,4 @@
+quota,testati,positivi_totali,XGBoost,C3 SCORED-5,più anziani,diff_vs_C3 SCORED-5,ic_basso_vs_C3 SCORED-5,ic_alto_vs_C3 SCORED-5,diff_vs_più anziani,ic_basso_vs_più anziani,ic_alto_vs_più anziani
+0.05,1725,2733,1073,869,727,204,152.0,258.0,346,287.975,404.0
+0.1,3450,2733,1658,1426,1300,232,181.0,282.0,358,298.95,414.025
+0.2,6900,2733,2223,2076,1959,147,105.0,190.0,264,218.975,314.0

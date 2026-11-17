@@ -1,0 +1,9 @@
+configurazione,variante,etichetta,auroc_media_fold,auroc_min_fold,auroc_max_fold,auroc_G_media_fold
+kmeans_k4,solo_colonne_del_target,solo le 18 colonne renali (esami + diagnosi scritte),0.99278831022855,0.9891345073061072,0.9951892094417384,0.7074319970026227
+kmeans_k4,tutte,tutte le 188 colonne,0.8376920194829524,0.8068340202322968,0.86693143499438,0.7074319970026227
+kmeans_k4,senza_le_14_assenti_in_G,senza le 14 diagnosi scritte (restano gli esami grezzi),0.6739123267141253,0.6354739602847509,0.7349269389284376,0.7074319970026227
+kmeans_k4,senza_colonne_del_target,senza nessuna delle 18,0.6490850505807417,0.6051105282877481,0.7101236418134131,0.7074319970026227
+autoencoder,solo_colonne_del_target,solo le 18 colonne renali (esami + diagnosi scritte),0.9921378793555636,0.987695766204571,0.9947995503934056,0.7133098538778568
+autoencoder,tutte,tutte le 188 colonne,0.8401858373922817,0.8083327088797302,0.8722967403521918,0.7133098538778568
+autoencoder,senza_le_14_assenti_in_G,senza le 14 diagnosi scritte (restano gli esami grezzi),0.6698448857249906,0.6208467590857999,0.7295316597976771,0.7133098538778568
+autoencoder,senza_colonne_del_target,senza nessuna delle 18,0.644867740726864,0.5897489696515548,0.7141850880479581,0.7133098538778568

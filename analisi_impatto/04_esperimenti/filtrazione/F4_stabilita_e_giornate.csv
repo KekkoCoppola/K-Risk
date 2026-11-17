@@ -1,0 +1,16 @@
+schema,seme,auroc
+5 fold stratificati,0,0.8764814999944461
+5 fold stratificati,1,0.8663882316786445
+5 fold stratificati,2,0.8594236543851659
+5 fold stratificati,3,0.8791399617151892
+5 fold stratificati,4,0.8716718317837981
+5 fold stratificati,5,0.8519147959315909
+5 fold stratificati,6,0.8599346122089299
+5 fold stratificati,7,0.8700463934893606
+5 fold stratificati,8,0.8733324447110311
+5 fold stratificati,9,0.8630966265675853
+5 fold raggruppati per giornata,0,0.844146755973208
+5 fold raggruppati per giornata,1,0.8433210777507488
+5 fold raggruppati per giornata,2,0.8525035082067973
+5 fold raggruppati per giornata,3,0.8598568577574874
+5 fold raggruppati per giornata,4,0.8596272969960863
