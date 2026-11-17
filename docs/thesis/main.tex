@@ -12,6 +12,9 @@
 \usepackage{titlesec}
 \usepackage{fancyhdr}
 \usepackage{parskip}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{amsmath}
 \usetikzlibrary{shapes.geometric, arrows.meta, positioning}
 \usepackage[italian]{babel}
 
@@ -319,6 +322,272 @@ Rispetto ai punteggi per l'albuminuria~\cite{muntner_development_2011,bragg-gres
 
 \chapter{Metodologia}
 
+Il capitolo descrive la procedura che porta dal file di dati grezzi ai modelli valutati. L'esposizione procede dal generale al particolare. La Sezione~\ref{sec:quadro} presenta la procedura nel suo insieme; la Sezione~\ref{sec:dataset} descrive i dati e i vincoli che impongono; le Sezioni~\ref{sec:preelaborazione} e ~\ref{sec:caratteristiche} documentano la preparazione del dato e le variabili in ingresso; la Sezione~\ref{sec:modellazione} presenta i modelli e la loro ottimizzazione; la Sezione~\ref{sec:validazione} i protocolli di validazione; la Sezione~\ref{sec:verifiche} le verifiche sul comportamento dei modelli; la Sezione~\ref{sec:riproducibilità} i dettagli di riproducibilità. Parametri e numerosità sono quelli del codice e dei file di configurazione del repository. I risultati sono riportati nel Capitolo 4.
+
+\section{Quadro d'insieme delle procedure}
+\label{sec:quadro}
+
+La procedura trasforma un file tabellare di 5.922 soggetti e 190 colonne in previsione su soggetti non visti durante l'addestramento, e poi in modelli finali valutati su tre livelli: la validazione incrociata sul training, un insieme di test interno aperto una sola volta e una popolazione esterna. Lo schema è riportato nella Figura~\ref{fig:pipeline}.
+
+Nella fase primordiale del progetto sono state fissate tre regole d'oro valide per l'intera procedura:
+\begin{enumerate}
+	\item Gli esami renali servono soltanto a costruire l'etichetta: nessuna variabile che misuri direttamente la funzione renale entra fra i predittori.
+	\item Ogni operazione che stima parametri dai dati (standardizzazione, imputazione, bilanciamento, ottimizzazione, soglie) è stimata solo sulla parte di addestramento della partizione in uso per evitare il \textit{leakage}~\cite{kapoor_leakage_2023}.
+	\item Ogni fase è stata scritta nel file di configurazione e registrata con un commit prima del codice e dei calcoli. Le analisi decise dopo aver visto dei risultati sono dichiarate esplorative (Tabella~\ref{tab:registro}).
+ \end{enumerate}
+ 
+ \begin{figure}[H]
+ 	\centering
+ 	\begin{tikzpicture}[
+ 		font=\sffamily\scriptsize,
+ 		node distance=3.5mm and 6mm,
+ 		main/.style={rectangle, draw=blue!50!black, fill=blue!5, thick, rounded corners=3pt,
+ 			text width=6.3cm, align=left, inner sep=4pt},
+ 		side/.style={rectangle, draw=gray!60!black, fill=gray!8, dashed, rounded corners=3pt,
+ 			text width=4.3cm, align=left, inner sep=4pt},
+ 		arr/.style={-Stealth, thick, gray!60!black}
+ 		]
+ 		\node[main] (n1) {\textbf{Dati grezzi} (\S\ref{sec:origine})\\
+ 			5.922 soggetti $\times$ 190 colonne, file Excel\\
+ 			esclusi 121 soggetti senza creatinina, ACR, età o sesso\\
+ 			$\Rightarrow$ 5.801 soggetti eleggibili};
+ 		\node[main, below=of n1] (n2) {\textbf{Etichetta KDIGO} (\S\ref{sec:etichetta})\\
+ 			eGFR con CKD-EPI 2021; $y=1$ se ACR $\geq 30$ o eGFR $<60$\\
+ 			$\Rightarrow$ $y$ (567 positivi) e livello di rischio (4 classi)};
+ 		\node[main, below=of n2] (n3) {\textbf{Separazione del test} (\S\ref{sec:split})\\
+ 			75/25, stratificata su livello KDIGO $\times$ diabete, seme 42\\
+ 			$\Rightarrow$ \texttt{train.csv} (4.350) e \texttt{test.csv} (1.451)};
+ 		\node[main, below=of n3] (n4) {\textbf{Selezione e codifica} (\S\ref{sec:codifica}, \S\ref{sec:caratteristiche})\\
+ 			da 190 a 74 variabili; codifiche senza stato\\
+ 			$\Rightarrow$ matrice $X$ di $4.350 \times 74$};
+ 		\node[main, below=of n4] (n5) {\textbf{Fold e imputazione} (\S\ref{sec:imputazione}, \S\ref{sec:partizionamento})\\
+ 			CV annidata $5 \times 5$; standardizzazione, moda e MissForest stimati nel fold\\
+ 			$\Rightarrow$ 31 matrici imputate per insieme di variabili};
+ 		\node[main, below=of n5] (n6) {\textbf{Addestramento} (\S\ref{sec:modelli}, \S\ref{sec:ottimizzazione})\\
+ 			5 modelli, Optuna con 100 tentativi, metrica PR-AUC\\
+ 			$\Rightarrow$ previsioni out-of-fold per 4.350 soggetti};
+ 		\node[main, below=of n6] (n7) {\textbf{Valutazione} (\S\ref{sec:soglia}, \S\ref{sec:metriche}, \S\ref{sec:test-statistici})\\
+ 			soglia a sensibilità 0,90, 4 fasce, confronto con i livelli KDIGO\\
+ 			$\Rightarrow$ tabelle, soglie e fasce congelate};
+ 		\node[main, below=of n7] (n8) {\textbf{Modello finale} (\S\ref{sec:ottimizzazione})\\
+ 			riaddestramento sull'intero training\\
+ 			$\Rightarrow$ modelli serializzati};
+ 		
+ 		\node[side, right=of n3] (s0) {\textbf{Test chiuso}\\ nessuna analisi lo legge fino a \S\ref{sec:conferma-test}};
+ 		\node[side, right=of n5] (s1) {\textbf{Bilanciamento} (\S\ref{sec:bilanciamento})\\ solo nel training del fold; ricalibrazione di Platt};
+ 		\node[side, right=of n6] (s2) {\textbf{Modelli esplorativi e non supervisionati} (\S\ref{sec:esplorativi}, \S\ref{sec:nonsup})};
+ 		\node[side, right=of n7] (s3) {\textbf{Verifiche} (\S\ref{sec:verifiche})\\ sensibilità, controlli positivi, SHAP};
+ 		\node[side, right=of n8] (s4) {\textbf{Conferma sul test} (\S\ref{sec:conferma-test})\\ una sola esecuzione};
+ 		\node[side, below=of s4] (s5) {\textbf{Validazione esterna} (\S\ref{sec:val-esterna})\\ NHANES 2005--2018, senza riaddestramento};
+ 		
+ 		\foreach \a/\b in {n1/n2, n2/n3, n3/n4, n4/n5, n5/n6, n6/n7, n7/n8}
+ 		\draw[arr] (\a) -- (\b);
+ 		\draw[arr, dashed] (n3) -- (s0);
+ 		\draw[arr, dashed] (s0.east) -- ++(0.3,0) |- (s4.east);
+ 		\draw[arr, dashed] (n5) -- (s1);
+ 		\draw[arr, dashed] (s1) -- (n6.north east);
+ 		\draw[arr, dashed] (n6) -- (s2);
+ 		\draw[arr, dashed] (n7) -- (s3);
+ 		\draw[arr] (n8) -- (s4);
+ 		\draw[arr] (s4) -- (s5);
+ 	\end{tikzpicture}
+ 	\caption{Schema della procedura. A sinistra il flusso principale: ogni blocco indica l'operazione, l'artefatto prodotto e la sezione che lo descrive. A destra, tratteggiati, i rami di bilanciamento, verifica e validazione. L'insieme di test viene separato al terzo passo e non è più letto fino alla conferma finale.}
+ 	\label{fig:pipeline}
+ \end{figure}
+\begin{table}[H]
+	\centering
+	\small
+	\caption{Registro delle analisi: momento in cui è stato fissato il protocollo e dati usati. \enquote{Registrata} indica un protocollo scritto in configurazione e committato prima dei calcoli; \enquote{post-hoc} un'analisi decisa dopo aver visto risultati precedenti, con protocollo comunque scritto prima dei propri calcoli.}
+	\label{tab:registro}
+	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}X l >{\raggedright\arraybackslash}p{3.2cm} l@{}}
+		\toprule
+		Analisi & Data (2026) & Stato & Sezione \\
+		\midrule
+		Etichetta, split, preprocessing & 17--18/09 & registrata (regola di imputazione rivista dopo i primi risultati) & \ref{sec:preelaborazione} \\
+		Modelli e valutazione (domande 1--4) & 19/09 & registrata & \ref{sec:modelli}, \ref{sec:metriche} \\
+		Profondità di XGBoost & 19/09 & post-hoc & \ref{sec:verifiche} \\
+		Bilanciamento delle classi & 19/09 & registrata & \ref{sec:bilanciamento} \\
+		Sottogruppo diabetico & 20/09 & registrata & \ref{sec:diabetici} \\
+		Tetto di prestazione (candidati, diagnostiche) & 21--22/09 & post-hoc & \ref{sec:esplorativi}, \ref{sec:verifiche} \\
+		Utilità clinica e calibrazione & 22/09 & post-hoc & \ref{sec:utilita} \\
+		Conferma sull'insieme di test & 22/09 & registrata, eseguita una volta & \ref{sec:conferma-test} \\
+		Audit dell'etichetta & 23/09 & post-hoc & \ref{sec:verifiche} \\
+		Bersaglio continuo dell'albuminuria & 25/09 & post-hoc & \ref{sec:esplorativi} \\
+		Famiglie di modelli, modelli senza soglia, stacking & 29/09 & post-hoc & \ref{sec:esplorativi} \\
+		Non supervisionato, NHANES, mortalità & [DATO MANCANTE NEL REPO: data e protocollo] & post-hoc & \ref{sec:nonsup}, \ref{sec:val-esterna} \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\section{Dataset e vincoli strutturali}
+\label{sec:dataset}
+
+\subsection{Origine e formato}
+\label{sec:origine}
+
+I dati provengono dal dataset pubblico descritto da Li e colleghi~\cite{li_bimodal_2026}, archiviato su Zenodo (record )\texttt{10.5281/zenodo.18270337}, versione 10) con licenza CC BY 4.9. Il file \texttt{Dataset for diabetes research.xlsx} contiene 5.922 righe e 190 colonne; la sua impronta SHA-256 è registrata in \texttt{data/README.md}. Secondo l'articolo, i dati sono stati raccolti nel reparto di Diabetologia ed Endocrinologia dello Shangai Sixth People's Hospital fra febbraio e aprile 2012, in 39 giornate di raccolta; la colonna \texttt{GAnum} fa riferimento al gruppo etnico Jinuo~\cite{jiang_jinuo_2016}. Il dizionario delle variabili, nella \textit{Supplementary Information} dell'articolo, riporta per ogni colonna l'etichetta e i codici, ma non l'unità di misura. 
+
+Ogni soggetto ha una sola rilevazione: il dataset è trasversale e non contiene informazioni di follow-up.
+
+\subsection{Popolazione analizzabile e sbilanciamento}
+
+L'etichetta richiede creatinina sierica (\texttt{SCRE}), rapporto albumina/creatinina urinario (\texttt{UMAUCR}), età e sesso. I 121 soggetti privi di almeno una di queste informazioni sono esclusi, perchè il loro stato non è calcolabile. Restano 5.801 soggetti, di età compresa fra 18 e 91 anni (mediana 39), di cui il 53,1\% donne e 351 con diabete.
+
+I positivi sono 567 (9,77\%). Di questi, 509 hanno ACR $\geq 30$~mg/g (33 dei quali anche eGFR $< 60$) e 58 soltanto eGFR $< 60$: nove positivi su dieci sono definiti dall'albuminuria. La distribuzione nei livelli di rischio KDIGO~\cite{stevens_kdigo_2024} è riportata nella Tabella~\ref{tab:livelli} e nella Figura~\ref{fig:heatmap}.
+
+\chapter{Metodologia}
+\label{cap:metodologia}
+
+Il capitolo descrive la procedura che porta dal file di dati grezzi ai modelli valutati. L'esposizione procede dal generale al particolare. La Sezione~\ref{sec:quadro} presenta la procedura nel suo insieme; la Sezione~\ref{sec:dataset} descrive i dati e i vincoli che impongono; le Sezioni~\ref{sec:preelaborazione} e~\ref{sec:caratteristiche} documentano la preparazione del dato e le variabili in ingresso; la Sezione~\ref{sec:modellazione} presenta i modelli e la loro ottimizzazione; la Sezione~\ref{sec:validazione} i protocolli di validazione; la Sezione~\ref{sec:verifiche} le verifiche sul comportamento dei modelli; la Sezione~\ref{sec:riproducibilita} i dettagli di riproducibilità. Parametri e numerosità sono quelli del codice e dei file di configurazione del repository. I risultati sono riportati nel Capitolo~4.
+
+%==============================================================
+\section{Quadro d'insieme della procedura}
+\label{sec:quadro}
+
+La procedura trasforma un file tabellare di 5.922 soggetti e 190 colonne in previsioni su soggetti non visti durante l'addestramento, e poi in modelli finali valutati su tre livelli: la validazione incrociata sul training, un insieme di test interno aperto una sola volta e una popolazione esterna. Lo schema è riportato nella Figura~\ref{fig:pipeline}.
+
+Tre regole valgono per l'intera procedura. La prima riguarda gli input. Gli esami renali servono soltanto a costruire l'etichetta: nessuna variabile che misuri direttamente la funzione renale entra fra i predittori. La seconda riguarda il \textit{leakage}~\cite{kapoor_leakage_2023}. Ogni operazione che stima parametri dai dati (standardizzazione, imputazione, bilanciamento, ottimizzazione, soglie) è stimata solo sulla parte di addestramento della partizione in uso. La terza riguarda il protocollo. Ogni fase è stata scritta nel file di configurazione \texttt{configs/config.yaml} e registrata con un commit prima del codice e dei calcoli. Le analisi decise dopo aver visto dei risultati sono dichiarate esplorative (Tabella~\ref{tab:registro}).
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[
+		font=\sffamily\scriptsize,
+		node distance=3.5mm and 6mm,
+		main/.style={rectangle, draw=blue!50!black, fill=blue!5, thick, rounded corners=3pt,
+			text width=6.3cm, align=left, inner sep=4pt},
+		side/.style={rectangle, draw=gray!60!black, fill=gray!8, dashed, rounded corners=3pt,
+			text width=4.3cm, align=left, inner sep=4pt},
+		arr/.style={-Stealth, thick, gray!60!black}
+		]
+		\node[main] (n1) {\textbf{Dati grezzi} (\S\ref{sec:origine})\\
+			5.922 soggetti $\times$ 190 colonne, file Excel\\
+			esclusi 121 soggetti senza creatinina, ACR, età o sesso\\
+			$\Rightarrow$ 5.801 soggetti eleggibili};
+		\node[main, below=of n1] (n2) {\textbf{Etichetta KDIGO} (\S\ref{sec:etichetta})\\
+			eGFR con CKD-EPI 2021; $y=1$ se ACR $\geq 30$ o eGFR $<60$\\
+			$\Rightarrow$ $y$ (567 positivi) e livello di rischio (4 classi)};
+		\node[main, below=of n2] (n3) {\textbf{Separazione del test} (\S\ref{sec:split})\\
+			75/25, stratificata su livello KDIGO $\times$ diabete, seme 42\\
+			$\Rightarrow$ \texttt{train.csv} (4.350) e \texttt{test.csv} (1.451)};
+		\node[main, below=of n3] (n4) {\textbf{Selezione e codifica} (\S\ref{sec:codifica}, \S\ref{sec:caratteristiche})\\
+			da 190 a 74 variabili; codifiche senza stato\\
+			$\Rightarrow$ matrice $X$ di $4.350 \times 74$};
+		\node[main, below=of n4] (n5) {\textbf{Fold e imputazione} (\S\ref{sec:imputazione}, \S\ref{sec:partizionamento})\\
+			CV annidata $5 \times 5$; standardizzazione, moda e MissForest stimati nel fold\\
+			$\Rightarrow$ 31 matrici imputate per insieme di variabili};
+		\node[main, below=of n5] (n6) {\textbf{Addestramento} (\S\ref{sec:modelli}, \S\ref{sec:ottimizzazione})\\
+			5 modelli, Optuna con 100 tentativi, metrica PR-AUC\\
+			$\Rightarrow$ previsioni out-of-fold per 4.350 soggetti};
+		\node[main, below=of n6] (n7) {\textbf{Valutazione} (\S\ref{sec:soglia}, \S\ref{sec:metriche}, \S\ref{sec:test-statistici})\\
+			soglia a sensibilità 0,90, 4 fasce, confronto con i livelli KDIGO\\
+			$\Rightarrow$ tabelle, soglie e fasce congelate};
+		\node[main, below=of n7] (n8) {\textbf{Modello finale} (\S\ref{sec:ottimizzazione})\\
+			riaddestramento sull'intero training\\
+			$\Rightarrow$ modelli serializzati};
+		
+		\node[side, right=of n3] (s0) {\textbf{Test chiuso}\\ nessuna analisi lo legge fino a \S\ref{sec:conferma-test}};
+		\node[side, right=of n5] (s1) {\textbf{Bilanciamento} (\S\ref{sec:bilanciamento})\\ solo nel training del fold; ricalibrazione di Platt};
+		\node[side, right=of n6] (s2) {\textbf{Modelli esplorativi e non supervisionati} (\S\ref{sec:esplorativi}, \S\ref{sec:nonsup})};
+		\node[side, right=of n7] (s3) {\textbf{Verifiche} (\S\ref{sec:verifiche})\\ sensibilità, controlli positivi, SHAP};
+		\node[side, right=of n8] (s4) {\textbf{Conferma sul test} (\S\ref{sec:conferma-test})\\ una sola esecuzione};
+		\node[side, below=of s4] (s5) {\textbf{Validazione esterna} (\S\ref{sec:val-esterna})\\ NHANES 2005--2018, senza riaddestramento};
+		
+		\foreach \a/\b in {n1/n2, n2/n3, n3/n4, n4/n5, n5/n6, n6/n7, n7/n8}
+		\draw[arr] (\a) -- (\b);
+		\draw[arr, dashed] (n3) -- (s0);
+		\draw[arr, dashed] (s0.east) -- ++(0.3,0) |- (s4.east);
+		\draw[arr, dashed] (n5) -- (s1);
+		\draw[arr, dashed] (s1) -- (n6.north east);
+		\draw[arr, dashed] (n6) -- (s2);
+		\draw[arr, dashed] (n7) -- (s3);
+		\draw[arr] (n8) -- (s4);
+		\draw[arr] (s4) -- (s5);
+	\end{tikzpicture}
+	\caption{Schema della procedura. A sinistra il flusso principale: ogni blocco indica l'operazione, l'artefatto prodotto e la sezione che lo descrive. A destra, tratteggiati, i rami di bilanciamento, verifica e validazione. L'insieme di test viene separato al terzo passo e non è più letto fino alla conferma finale.}
+	\label{fig:pipeline}
+\end{figure}
+
+\begin{table}[H]
+	\centering
+	\small
+	\caption{Registro delle analisi: momento in cui è stato fissato il protocollo e dati usati. \enquote{Registrata} indica un protocollo scritto in configurazione e committato prima dei calcoli; \enquote{post-hoc} un'analisi decisa dopo aver visto risultati precedenti, con protocollo comunque scritto prima dei propri calcoli.}
+	\label{tab:registro}
+	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}X l >{\raggedright\arraybackslash}p{3.2cm} l@{}}
+		\toprule
+		Analisi & Data (2026) & Stato & Sezione \\
+		\midrule
+		Etichetta, split, preprocessing & 17--18/09 & registrata (regola di imputazione rivista dopo i primi risultati) & \ref{sec:preelaborazione} \\
+		Modelli e valutazione (domande 1--4) & 19/09 & registrata & \ref{sec:modelli}, \ref{sec:metriche} \\
+		Profondità di XGBoost & 19/09 & post-hoc & \ref{sec:verifiche} \\
+		Bilanciamento delle classi & 19/09 & registrata & \ref{sec:bilanciamento} \\
+		Sottogruppo diabetico & 20/09 & registrata & \ref{sec:diabetici} \\
+		Tetto di prestazione (candidati, diagnostiche) & 21--22/09 & post-hoc & \ref{sec:esplorativi}, \ref{sec:verifiche} \\
+		Utilità clinica e calibrazione & 22/09 & post-hoc & \ref{sec:utilita} \\
+		Conferma sull'insieme di test & 22/09 & registrata, eseguita una volta & \ref{sec:conferma-test} \\
+		Audit dell'etichetta & 23/09 & post-hoc & \ref{sec:verifiche} \\
+		Bersaglio continuo dell'albuminuria & 25/09 & post-hoc & \ref{sec:esplorativi} \\
+		Famiglie di modelli, modelli senza soglia, stacking & 29/09 & post-hoc & \ref{sec:esplorativi} \\
+		Non supervisionato, NHANES, mortalità & [DATO MANCANTE NEL REPO: data e protocollo] & post-hoc & \ref{sec:nonsup}, \ref{sec:val-esterna} \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+%==============================================================
+\section{Dataset e vincoli strutturali}
+\label{sec:dataset}
+
+\subsection{Origine e formato}
+\label{sec:origine}
+
+I dati provengono dal dataset pubblico descritto da Li e colleghi~\cite{li_bimodal_2026}, archiviato su Zenodo (record \texttt{10.5281/zenodo.18270337}, versione 10) con licenza CC BY 4.0. Il file \texttt{Dataset for diabetes research.xlsx} contiene 5.922 righe e 190 colonne; la sua impronta SHA-256 è registrata in \texttt{data/README.md}. Secondo l'articolo, i dati sono stati raccolti nel reparto di Diabetologia ed Endocrinologia dello Shanghai Sixth People's Hospital fra febbraio e aprile 2012, in 39 giornate di raccolta; la colonna \texttt{GAnum} fa riferimento al gruppo etnico Jinuo~\cite{jiang_jinuo_2016}. Il dizionario delle variabili, nella \textit{Supplementary Information} dell'articolo, riporta per ogni colonna l'etichetta e i codici, ma non l'unità di misura.
+
+Ogni soggetto ha una sola rilevazione: il dataset è trasversale e non contiene informazioni di follow-up.
+
+\subsection{Popolazione analizzabile e sbilanciamento}
+
+L'etichetta richiede creatinina sierica (\texttt{SCRE}), rapporto albumina/creatinina urinario (\texttt{UMAUCR}), età e sesso. I 121 soggetti privi di almeno una di queste informazioni sono esclusi, perché il loro stato non è calcolabile. Restano 5.801 soggetti, di età compresa fra 18 e 91 anni (mediana 39), di cui il 53,1\% donne e 351 con diabete.
+
+I positivi sono 567 (9,77\%). Di questi, 509 hanno ACR $\geq 30$~mg/g (33 dei quali anche eGFR $< 60$) e 58 soltanto eGFR $< 60$: nove positivi su dieci sono definiti dall'albuminuria. La distribuzione nei livelli di rischio KDIGO~\cite{stevens_kdigo_2024} è riportata nella Tabella~\ref{tab:livelli} e nella Figura~\ref{fig:heatmap}.
+
+\begin{table}[H]
+	\centering
+	\small
+	\caption{Soggetti eleggibili per livello di rischio KDIGO, nell'intera coorte e fra i diabetici. Il livello basso coincide con $y=0$, gli altri tre con $y=1$.}
+	\label{tab:livelli}
+	\begin{tabular}{@{}lrr@{}}
+		\toprule
+		Livello KDIGO & Coorte & Diabetici \\
+		\midrule
+		Basso & 5.234 & 260 \\
+		Moderato & 473 & 70 \\
+		Alto & 67 & 15 \\
+		Molto alto & 27 & 6 \\
+		\midrule
+		Totale & 5.801 & 351 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.75\textwidth]{../analytics/dataset/01_kdigo_heatmap.png}
+	\caption{Soggetti eleggibili nelle celle della classificazione KDIGO (categorie di filtrazione G1--G5 per categorie di albuminuria A1--A3), colorate per livello di rischio. La massa dei positivi sta nelle celle G1--G2 con A2: il bersaglio è dominato dall'albuminuria con filtrazione conservata, mentre i livelli alto e molto alto contano insieme 94 soggetti.}
+	\label{fig:heatmap}
+\end{figure}
+
+\subsection{Criticità dei dati di partenza}
+\label{sec:criticita}
+
+Prima di descrivere la procedura conviene dichiarare i limiti dei dati, perché motivano molte delle scelte.
+
+\begin{enumerate}
+	\item \textbf{Origine ospedaliera.}
+
+
+\begin{flushleft}
+	
+\end{flushleft}
+
 \chapter{Risultati ottenuti}
 
 \chapter{Conclusioni e sviluppi futuri}
@@ -338,3 +607,4 @@ Rispetto ai punteggi per l'albuminuria~\cite{muntner_development_2011,bragg-gres
 \addcontentsline{toc}{chapter}{\listtablename}
 \clearpage
 \end{document}
+
