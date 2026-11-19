@@ -227,7 +227,7 @@ Tutte le conclusioni sono state sottoposte all'insieme di test, aperto una sola 
 Il resto dell'elaborato è organizzato in quattro capitoli.
 
 \textbf{Capitolo 2, Stato dell'arte.} La malattia renale cronica e i criteri KDIGO, i modelli di rischio con e senza esami renali, il machine learning supervisionato e non supervisionato, il problema delle classi sbilanciate, il \textit{leakage} e le misure per valutare un modello clinico anche su coorte esterna.
-
+ 
 \textbf{Capitolo 3, Metodologia.} Il dataset e la costruzione dell'etichetta, la selezione delle variabili e il trattamento dei valori mancanti, i modelli e il protocollo di validazione, le tecniche di bilanciamento, le analisi esplorative, i modelli non supervisionati, la conferma sull'insieme di test, la validazione esterna e il prototipo interattivo.
 
 \textbf{Capitolo 4, Risultati ottenuti.} I risultati sui marcatori KDIGO e sui due criteri separati, il confronto con la pratica, il confronto fra modello non supervisionato e KDIGO, la verifica sulla seconda popolazione e il confronto con lo stato dell'arte.
@@ -322,127 +322,9 @@ Rispetto ai punteggi per l'albuminuria~\cite{muntner_development_2011,bragg-gres
 
 \chapter{Metodologia}
 
-Il capitolo descrive la procedura che porta dal file di dati grezzi ai modelli valutati. L'esposizione procede dal generale al particolare. La Sezione~\ref{sec:quadro} presenta la procedura nel suo insieme; la Sezione~\ref{sec:dataset} descrive i dati e i vincoli che impongono; le Sezioni~\ref{sec:preelaborazione} e ~\ref{sec:caratteristiche} documentano la preparazione del dato e le variabili in ingresso; la Sezione~\ref{sec:modellazione} presenta i modelli e la loro ottimizzazione; la Sezione~\ref{sec:validazione} i protocolli di validazione; la Sezione~\ref{sec:verifiche} le verifiche sul comportamento dei modelli; la Sezione~\ref{sec:riproducibilità} i dettagli di riproducibilità. Parametri e numerosità sono quelli del codice e dei file di configurazione del repository. I risultati sono riportati nel Capitolo 4.
-
-\section{Quadro d'insieme delle procedure}
-\label{sec:quadro}
-
-La procedura trasforma un file tabellare di 5.922 soggetti e 190 colonne in previsione su soggetti non visti durante l'addestramento, e poi in modelli finali valutati su tre livelli: la validazione incrociata sul training, un insieme di test interno aperto una sola volta e una popolazione esterna. Lo schema è riportato nella Figura~\ref{fig:pipeline}.
-
-Nella fase primordiale del progetto sono state fissate tre regole d'oro valide per l'intera procedura:
-\begin{enumerate}
-	\item Gli esami renali servono soltanto a costruire l'etichetta: nessuna variabile che misuri direttamente la funzione renale entra fra i predittori.
-	\item Ogni operazione che stima parametri dai dati (standardizzazione, imputazione, bilanciamento, ottimizzazione, soglie) è stimata solo sulla parte di addestramento della partizione in uso per evitare il \textit{leakage}~\cite{kapoor_leakage_2023}.
-	\item Ogni fase è stata scritta nel file di configurazione e registrata con un commit prima del codice e dei calcoli. Le analisi decise dopo aver visto dei risultati sono dichiarate esplorative (Tabella~\ref{tab:registro}).
- \end{enumerate}
- 
- \begin{figure}[H]
- 	\centering
- 	\begin{tikzpicture}[
- 		font=\sffamily\scriptsize,
- 		node distance=3.5mm and 6mm,
- 		main/.style={rectangle, draw=blue!50!black, fill=blue!5, thick, rounded corners=3pt,
- 			text width=6.3cm, align=left, inner sep=4pt},
- 		side/.style={rectangle, draw=gray!60!black, fill=gray!8, dashed, rounded corners=3pt,
- 			text width=4.3cm, align=left, inner sep=4pt},
- 		arr/.style={-Stealth, thick, gray!60!black}
- 		]
- 		\node[main] (n1) {\textbf{Dati grezzi} (\S\ref{sec:origine})\\
- 			5.922 soggetti $\times$ 190 colonne, file Excel\\
- 			esclusi 121 soggetti senza creatinina, ACR, età o sesso\\
- 			$\Rightarrow$ 5.801 soggetti eleggibili};
- 		\node[main, below=of n1] (n2) {\textbf{Etichetta KDIGO} (\S\ref{sec:etichetta})\\
- 			eGFR con CKD-EPI 2021; $y=1$ se ACR $\geq 30$ o eGFR $<60$\\
- 			$\Rightarrow$ $y$ (567 positivi) e livello di rischio (4 classi)};
- 		\node[main, below=of n2] (n3) {\textbf{Separazione del test} (\S\ref{sec:split})\\
- 			75/25, stratificata su livello KDIGO $\times$ diabete, seme 42\\
- 			$\Rightarrow$ \texttt{train.csv} (4.350) e \texttt{test.csv} (1.451)};
- 		\node[main, below=of n3] (n4) {\textbf{Selezione e codifica} (\S\ref{sec:codifica}, \S\ref{sec:caratteristiche})\\
- 			da 190 a 74 variabili; codifiche senza stato\\
- 			$\Rightarrow$ matrice $X$ di $4.350 \times 74$};
- 		\node[main, below=of n4] (n5) {\textbf{Fold e imputazione} (\S\ref{sec:imputazione}, \S\ref{sec:partizionamento})\\
- 			CV annidata $5 \times 5$; standardizzazione, moda e MissForest stimati nel fold\\
- 			$\Rightarrow$ 31 matrici imputate per insieme di variabili};
- 		\node[main, below=of n5] (n6) {\textbf{Addestramento} (\S\ref{sec:modelli}, \S\ref{sec:ottimizzazione})\\
- 			5 modelli, Optuna con 100 tentativi, metrica PR-AUC\\
- 			$\Rightarrow$ previsioni out-of-fold per 4.350 soggetti};
- 		\node[main, below=of n6] (n7) {\textbf{Valutazione} (\S\ref{sec:soglia}, \S\ref{sec:metriche}, \S\ref{sec:test-statistici})\\
- 			soglia a sensibilità 0,90, 4 fasce, confronto con i livelli KDIGO\\
- 			$\Rightarrow$ tabelle, soglie e fasce congelate};
- 		\node[main, below=of n7] (n8) {\textbf{Modello finale} (\S\ref{sec:ottimizzazione})\\
- 			riaddestramento sull'intero training\\
- 			$\Rightarrow$ modelli serializzati};
- 		
- 		\node[side, right=of n3] (s0) {\textbf{Test chiuso}\\ nessuna analisi lo legge fino a \S\ref{sec:conferma-test}};
- 		\node[side, right=of n5] (s1) {\textbf{Bilanciamento} (\S\ref{sec:bilanciamento})\\ solo nel training del fold; ricalibrazione di Platt};
- 		\node[side, right=of n6] (s2) {\textbf{Modelli esplorativi e non supervisionati} (\S\ref{sec:esplorativi}, \S\ref{sec:nonsup})};
- 		\node[side, right=of n7] (s3) {\textbf{Verifiche} (\S\ref{sec:verifiche})\\ sensibilità, controlli positivi, SHAP};
- 		\node[side, right=of n8] (s4) {\textbf{Conferma sul test} (\S\ref{sec:conferma-test})\\ una sola esecuzione};
- 		\node[side, below=of s4] (s5) {\textbf{Validazione esterna} (\S\ref{sec:val-esterna})\\ NHANES 2005--2018, senza riaddestramento};
- 		
- 		\foreach \a/\b in {n1/n2, n2/n3, n3/n4, n4/n5, n5/n6, n6/n7, n7/n8}
- 		\draw[arr] (\a) -- (\b);
- 		\draw[arr, dashed] (n3) -- (s0);
- 		\draw[arr, dashed] (s0.east) -- ++(0.3,0) |- (s4.east);
- 		\draw[arr, dashed] (n5) -- (s1);
- 		\draw[arr, dashed] (s1) -- (n6.north east);
- 		\draw[arr, dashed] (n6) -- (s2);
- 		\draw[arr, dashed] (n7) -- (s3);
- 		\draw[arr] (n8) -- (s4);
- 		\draw[arr] (s4) -- (s5);
- 	\end{tikzpicture}
- 	\caption{Schema della procedura. A sinistra il flusso principale: ogni blocco indica l'operazione, l'artefatto prodotto e la sezione che lo descrive. A destra, tratteggiati, i rami di bilanciamento, verifica e validazione. L'insieme di test viene separato al terzo passo e non è più letto fino alla conferma finale.}
- 	\label{fig:pipeline}
- \end{figure}
-\begin{table}[H]
-	\centering
-	\small
-	\caption{Registro delle analisi: momento in cui è stato fissato il protocollo e dati usati. \enquote{Registrata} indica un protocollo scritto in configurazione e committato prima dei calcoli; \enquote{post-hoc} un'analisi decisa dopo aver visto risultati precedenti, con protocollo comunque scritto prima dei propri calcoli.}
-	\label{tab:registro}
-	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}X l >{\raggedright\arraybackslash}p{3.2cm} l@{}}
-		\toprule
-		Analisi & Data (2026) & Stato & Sezione \\
-		\midrule
-		Etichetta, split, preprocessing & 17--18/09 & registrata (regola di imputazione rivista dopo i primi risultati) & \ref{sec:preelaborazione} \\
-		Modelli e valutazione (domande 1--4) & 19/09 & registrata & \ref{sec:modelli}, \ref{sec:metriche} \\
-		Profondità di XGBoost & 19/09 & post-hoc & \ref{sec:verifiche} \\
-		Bilanciamento delle classi & 19/09 & registrata & \ref{sec:bilanciamento} \\
-		Sottogruppo diabetico & 20/09 & registrata & \ref{sec:diabetici} \\
-		Tetto di prestazione (candidati, diagnostiche) & 21--22/09 & post-hoc & \ref{sec:esplorativi}, \ref{sec:verifiche} \\
-		Utilità clinica e calibrazione & 22/09 & post-hoc & \ref{sec:utilita} \\
-		Conferma sull'insieme di test & 22/09 & registrata, eseguita una volta & \ref{sec:conferma-test} \\
-		Audit dell'etichetta & 23/09 & post-hoc & \ref{sec:verifiche} \\
-		Bersaglio continuo dell'albuminuria & 25/09 & post-hoc & \ref{sec:esplorativi} \\
-		Famiglie di modelli, modelli senza soglia, stacking & 29/09 & post-hoc & \ref{sec:esplorativi} \\
-		Non supervisionato, NHANES, mortalità & [DATO MANCANTE NEL REPO: data e protocollo] & post-hoc & \ref{sec:nonsup}, \ref{sec:val-esterna} \\
-		\bottomrule
-	\end{tabularx}
-\end{table}
-
-\section{Dataset e vincoli strutturali}
-\label{sec:dataset}
-
-\subsection{Origine e formato}
-\label{sec:origine}
-
-I dati provengono dal dataset pubblico descritto da Li e colleghi~\cite{li_bimodal_2026}, archiviato su Zenodo (record )\texttt{10.5281/zenodo.18270337}, versione 10) con licenza CC BY 4.9. Il file \texttt{Dataset for diabetes research.xlsx} contiene 5.922 righe e 190 colonne; la sua impronta SHA-256 è registrata in \texttt{data/README.md}. Secondo l'articolo, i dati sono stati raccolti nel reparto di Diabetologia ed Endocrinologia dello Shangai Sixth People's Hospital fra febbraio e aprile 2012, in 39 giornate di raccolta; la colonna \texttt{GAnum} fa riferimento al gruppo etnico Jinuo~\cite{jiang_jinuo_2016}. Il dizionario delle variabili, nella \textit{Supplementary Information} dell'articolo, riporta per ogni colonna l'etichetta e i codici, ma non l'unità di misura. 
-
-Ogni soggetto ha una sola rilevazione: il dataset è trasversale e non contiene informazioni di follow-up.
-
-\subsection{Popolazione analizzabile e sbilanciamento}
-
-L'etichetta richiede creatinina sierica (\texttt{SCRE}), rapporto albumina/creatinina urinario (\texttt{UMAUCR}), età e sesso. I 121 soggetti privi di almeno una di queste informazioni sono esclusi, perchè il loro stato non è calcolabile. Restano 5.801 soggetti, di età compresa fra 18 e 91 anni (mediana 39), di cui il 53,1\% donne e 351 con diabete.
-
-I positivi sono 567 (9,77\%). Di questi, 509 hanno ACR $\geq 30$~mg/g (33 dei quali anche eGFR $< 60$) e 58 soltanto eGFR $< 60$: nove positivi su dieci sono definiti dall'albuminuria. La distribuzione nei livelli di rischio KDIGO~\cite{stevens_kdigo_2024} è riportata nella Tabella~\ref{tab:livelli} e nella Figura~\ref{fig:heatmap}.
-
-\chapter{Metodologia}
-\label{cap:metodologia}
-
 Il capitolo descrive la procedura che porta dal file di dati grezzi ai modelli valutati. L'esposizione procede dal generale al particolare. La Sezione~\ref{sec:quadro} presenta la procedura nel suo insieme; la Sezione~\ref{sec:dataset} descrive i dati e i vincoli che impongono; le Sezioni~\ref{sec:preelaborazione} e~\ref{sec:caratteristiche} documentano la preparazione del dato e le variabili in ingresso; la Sezione~\ref{sec:modellazione} presenta i modelli e la loro ottimizzazione; la Sezione~\ref{sec:validazione} i protocolli di validazione; la Sezione~\ref{sec:verifiche} le verifiche sul comportamento dei modelli; la Sezione~\ref{sec:riproducibilita} i dettagli di riproducibilità. Parametri e numerosità sono quelli del codice e dei file di configurazione del repository. I risultati sono riportati nel Capitolo~4.
 
-%==============================================================
 \section{Quadro d'insieme della procedura}
-\label{sec:quadro}
 
 La procedura trasforma un file tabellare di 5.922 soggetti e 190 colonne in previsioni su soggetti non visti durante l'addestramento, e poi in modelli finali valutati su tre livelli: la validazione incrociata sul training, un insieme di test interno aperto una sola volta e una popolazione esterna. Lo schema è riportato nella Figura~\ref{fig:pipeline}.
 
@@ -459,38 +341,38 @@ Tre regole valgono per l'intera procedura. La prima riguarda gli input. Gli esam
 			text width=4.3cm, align=left, inner sep=4pt},
 		arr/.style={-Stealth, thick, gray!60!black}
 		]
-		\node[main] (n1) {\textbf{Dati grezzi} (\S\ref{sec:origine})\\
+		\node[main] (n1) {\textbf{Dati grezzi}\\
 			5.922 soggetti $\times$ 190 colonne, file Excel\\
 			esclusi 121 soggetti senza creatinina, ACR, età o sesso\\
 			$\Rightarrow$ 5.801 soggetti eleggibili};
-		\node[main, below=of n1] (n2) {\textbf{Etichetta KDIGO} (\S\ref{sec:etichetta})\\
+		\node[main, below=of n1] (n2) {\textbf{Etichetta KDIGO}\\
 			eGFR con CKD-EPI 2021; $y=1$ se ACR $\geq 30$ o eGFR $<60$\\
 			$\Rightarrow$ $y$ (567 positivi) e livello di rischio (4 classi)};
-		\node[main, below=of n2] (n3) {\textbf{Separazione del test} (\S\ref{sec:split})\\
+		\node[main, below=of n2] (n3) {\textbf{Separazione del test}\\
 			75/25, stratificata su livello KDIGO $\times$ diabete, seme 42\\
 			$\Rightarrow$ \texttt{train.csv} (4.350) e \texttt{test.csv} (1.451)};
-		\node[main, below=of n3] (n4) {\textbf{Selezione e codifica} (\S\ref{sec:codifica}, \S\ref{sec:caratteristiche})\\
+		\node[main, below=of n3] (n4) {\textbf{Selezione e codifica}\\
 			da 190 a 74 variabili; codifiche senza stato\\
 			$\Rightarrow$ matrice $X$ di $4.350 \times 74$};
-		\node[main, below=of n4] (n5) {\textbf{Fold e imputazione} (\S\ref{sec:imputazione}, \S\ref{sec:partizionamento})\\
+		\node[main, below=of n4] (n5) {\textbf{Fold e imputazione}\\
 			CV annidata $5 \times 5$; standardizzazione, moda e MissForest stimati nel fold\\
 			$\Rightarrow$ 31 matrici imputate per insieme di variabili};
-		\node[main, below=of n5] (n6) {\textbf{Addestramento} (\S\ref{sec:modelli}, \S\ref{sec:ottimizzazione})\\
+		\node[main, below=of n5] (n6) {\textbf{Addestramento}\\
 			5 modelli, Optuna con 100 tentativi, metrica PR-AUC\\
 			$\Rightarrow$ previsioni out-of-fold per 4.350 soggetti};
-		\node[main, below=of n6] (n7) {\textbf{Valutazione} (\S\ref{sec:soglia}, \S\ref{sec:metriche}, \S\ref{sec:test-statistici})\\
+		\node[main, below=of n6] (n7) {\textbf{Valutazione}\\
 			soglia a sensibilità 0,90, 4 fasce, confronto con i livelli KDIGO\\
 			$\Rightarrow$ tabelle, soglie e fasce congelate};
-		\node[main, below=of n7] (n8) {\textbf{Modello finale} (\S\ref{sec:ottimizzazione})\\
+		\node[main, below=of n7] (n8) {\textbf{Modello finale}\\
 			riaddestramento sull'intero training\\
 			$\Rightarrow$ modelli serializzati};
 		
-		\node[side, right=of n3] (s0) {\textbf{Test chiuso}\\ nessuna analisi lo legge fino a \S\ref{sec:conferma-test}};
-		\node[side, right=of n5] (s1) {\textbf{Bilanciamento} (\S\ref{sec:bilanciamento})\\ solo nel training del fold; ricalibrazione di Platt};
-		\node[side, right=of n6] (s2) {\textbf{Modelli esplorativi e non supervisionati} (\S\ref{sec:esplorativi}, \S\ref{sec:nonsup})};
-		\node[side, right=of n7] (s3) {\textbf{Verifiche} (\S\ref{sec:verifiche})\\ sensibilità, controlli positivi, SHAP};
-		\node[side, right=of n8] (s4) {\textbf{Conferma sul test} (\S\ref{sec:conferma-test})\\ una sola esecuzione};
-		\node[side, below=of s4] (s5) {\textbf{Validazione esterna} (\S\ref{sec:val-esterna})\\ NHANES 2005--2018, senza riaddestramento};
+		\node[side, right=of n3] (s0) {\textbf{Test chiuso}\\ nessuna analisi lo legge fino alla conferma finale};
+		\node[side, right=of n5] (s1) {\textbf{Bilanciamento}\\ solo nel training del fold; ricalibrazione di Platt};
+		\node[side, right=of n6] (s2) {\textbf{Modelli esplorativi e non supervisionati}};
+		\node[side, right=of n7] (s3) {\textbf{Verifiche}\\ sensibilità, controlli positivi, SHAP};
+		\node[side, right=of n8] (s4) {\textbf{Conferma sul test}\\ una sola esecuzione};
+		\node[side, below=of s4] (s5) {\textbf{Validazione esterna}\\ NHANES 2005--2018, senza riaddestramento};
 		
 		\foreach \a/\b in {n1/n2, n2/n3, n3/n4, n4/n5, n5/n6, n6/n7, n7/n8}
 		\draw[arr] (\a) -- (\b);
@@ -503,7 +385,7 @@ Tre regole valgono per l'intera procedura. La prima riguarda gli input. Gli esam
 		\draw[arr] (n8) -- (s4);
 		\draw[arr] (s4) -- (s5);
 	\end{tikzpicture}
-	\caption{Schema della procedura. A sinistra il flusso principale: ogni blocco indica l'operazione, l'artefatto prodotto e la sezione che lo descrive. A destra, tratteggiati, i rami di bilanciamento, verifica e validazione. L'insieme di test viene separato al terzo passo e non è più letto fino alla conferma finale.}
+	\caption{Schema della procedura. A sinistra il flusso principale: ogni blocco indica l'operazione e l'artefatto prodotto. A destra, tratteggiati, i rami di bilanciamento, verifica e validazione. L'insieme di test viene separato al terzo passo e non è più letto fino alla conferma finale.}
 	\label{fig:pipeline}
 \end{figure}
 
@@ -512,29 +394,27 @@ Tre regole valgono per l'intera procedura. La prima riguarda gli input. Gli esam
 	\small
 	\caption{Registro delle analisi: momento in cui è stato fissato il protocollo e dati usati. \enquote{Registrata} indica un protocollo scritto in configurazione e committato prima dei calcoli; \enquote{post-hoc} un'analisi decisa dopo aver visto risultati precedenti, con protocollo comunque scritto prima dei propri calcoli.}
 	\label{tab:registro}
-	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}X l >{\raggedright\arraybackslash}p{3.2cm} l@{}}
+	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}p{2.3cm} >{\raggedright\arraybackslash}p{4.2cm}@{}}
 		\toprule
-		Analisi & Data (2026) & Stato & Sezione \\
+		Analisi & Data (2026) & Stato \\
 		\midrule
-		Etichetta, split, preprocessing & 17--18/09 & registrata (regola di imputazione rivista dopo i primi risultati) & \ref{sec:preelaborazione} \\
-		Modelli e valutazione (domande 1--4) & 19/09 & registrata & \ref{sec:modelli}, \ref{sec:metriche} \\
-		Profondità di XGBoost & 19/09 & post-hoc & \ref{sec:verifiche} \\
-		Bilanciamento delle classi & 19/09 & registrata & \ref{sec:bilanciamento} \\
-		Sottogruppo diabetico & 20/09 & registrata & \ref{sec:diabetici} \\
-		Tetto di prestazione (candidati, diagnostiche) & 21--22/09 & post-hoc & \ref{sec:esplorativi}, \ref{sec:verifiche} \\
-		Utilità clinica e calibrazione & 22/09 & post-hoc & \ref{sec:utilita} \\
-		Conferma sull'insieme di test & 22/09 & registrata, eseguita una volta & \ref{sec:conferma-test} \\
-		Audit dell'etichetta & 23/09 & post-hoc & \ref{sec:verifiche} \\
-		Bersaglio continuo dell'albuminuria & 25/09 & post-hoc & \ref{sec:esplorativi} \\
-		Famiglie di modelli, modelli senza soglia, stacking & 29/09 & post-hoc & \ref{sec:esplorativi} \\
-		Non supervisionato, NHANES, mortalità & [DATO MANCANTE NEL REPO: data e protocollo] & post-hoc & \ref{sec:nonsup}, \ref{sec:val-esterna} \\
+		Etichetta, split, preprocessing & 17--18/09 & registrata (regola di imputazione rivista dopo i primi risultati) \\
+		Modelli e valutazione (domande 1--4) & 19/09 & registrata \\
+		Profondità di XGBoost & 19/09 & post-hoc \\
+		Bilanciamento delle classi & 19/09 & registrata \\
+		Sottogruppo diabetico & 20/09 & registrata \\
+		Tetto di prestazione (candidati, diagnostiche) & 21--22/09 & post-hoc \\
+		Utilità clinica e calibrazione & 22/09 & post-hoc \\
+		Conferma sull'insieme di test & 22/09 & registrata, eseguita una volta \\
+		Audit dell'etichetta & 23/09 & post-hoc \\
+		Bersaglio continuo dell'albuminuria & 25/09 & post-hoc \\
+		Famiglie di modelli, modelli senza soglia, stacking & 29/09 & post-hoc \\
+		Non supervisionato, NHANES, mortalità & [DATO MANCANTE NEL REPO: data e protocollo] & post-hoc \\
 		\bottomrule
 	\end{tabularx}
 \end{table}
 
-%==============================================================
 \section{Dataset e vincoli strutturali}
-\label{sec:dataset}
 
 \subsection{Origine e formato}
 \label{sec:origine}
@@ -576,17 +456,118 @@ I positivi sono 567 (9,77\%). Di questi, 509 hanno ACR $\geq 30$~mg/g (33 dei qu
 \end{figure}
 
 \subsection{Criticità dei dati di partenza}
-\label{sec:criticita}
 
 Prima di descrivere la procedura conviene dichiarare i limiti dei dati, perché motivano molte delle scelte.
 
 \begin{enumerate}
-	\item \textbf{Origine ospedaliera.}
-
-
-\begin{flushleft}
 	
-\end{flushleft}
+	\item \textbf{Unità non documentate.} Sulle 4.350 righe del training vale esattamente $\texttt{UMAUCR} = 176{,}8 \cdot \texttt{UmALB}/\texttt{UCRE}$, ma le unità di \texttt{UmALB} e \texttt{UCRE} non sono documentate. Se la creatinina urinaria fosse in mg/dL il fattore corretto sarebbe 100, e la soglia di 30~mg/g corrisponderebbe a $\texttt{UMAUCR} \geq 53{,}04$. L'effetto è misurato con un'analisi di sensibilità (Sezione~\ref{sec:sensibilita}).
+	
+	\item \textbf{Colonna \texttt{GFR} non standard.} I valori presenti nella colonna \texttt{GFR} non sono riconducibili ad alcuna equazione nota (CKD-EPI 2009 e 2021, MDRD, MDRD cinese, Cockcroft-Gault). L'eGFR è quindi ricalcolato mediante CKD-EPI 2021 basata sulla sola creatinina, senza coefficiente etnico~\cite{inker_new_2021,stevens_kdigo_2024}.
+	
+	\item \textbf{Codice 9 per \enquote{sconosciuto}.} In 26 colonne il dizionario usa 9 come valore mancante.
+	
+	\item \textbf{Valori mancanti.} Il 38\% dei soggetti del training ha almeno un valore mancante fra le variabili in ingresso.
+	
+	\item \textbf{Struttura per giornata di raccolta.} la prevalenza dei positivi varia fra il 4,5\% e il 24,5\% nelle 39 giornate. Nelle giornate con creatinina urinaria mediana più bassa la quota di ACR $\geq 30$ cresce, mentre l'albumina urinaria non segue lo stesso andamento (Figura~\ref{fig:ucre-giornata}). La giornata non entra fra i predittori.
+	
+	\item \textbf{Sbilanciamento e livelli gravi rari.} I positivi sono il 9,77\% e il livello molto alto conta 27 soggetti. Il problema guida la separazione del test e le tecniche di bilanciamento.
+\end{enumerate}
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=\textwidth]{../analytics/phase_d/03_urine_creatinine_by_day.png}
+		\caption{Giornate di raccolta del training (area del punto proporzionale ai soggetti). A sinistra, la quota di soggetti con ACR $\geq 30$ diminuisce al crescere della creatinina urinaria mediana della giornata (rho di Spearman $-0{,}70$); a destra, l'albumina urinaria mediana non mostra la stessa relazione ($+0{,}16$). Parte della variazione dell'ACR fra giornate dipende quindi dal denominatore del rapporto e non dall'albuminuria.}
+		\label{fig:ucre-giornata}
+	\end{figure}
+	
+\subsection{Popolazione esterna}
+
+La coorte Jinuo~\cite{li_bimodal_2026} non consente due verifiche: osservare se il comportamento dei modelli si ripete in una popolazione diversa e legare il punteggio a un esito successivo alla misura. Per entrambe si utilizza la National Health and Nutrition Examination Survey (NHANES) ~\cite{nhanes_cdc,nhanes_cdc_data}, indagine trasversale ripetuta che raccoglie esami di laboratorio, misure antropometriche, pressione arteriosa e anamnesi, e i cui partecipanti adulti sono collegati ai registri di morte. Area geografica, struttura d'età e procedure di laboratorio differiscono da quelle degli Jinuo; proprio questa distanza la rende adatta come banco di prova esterno.
+
+\section{Pre-elaborazione e preparazione del dato}
+
+\subsection{Costruzione dell'etichetta}
+
+Il dataset non contiene un'etichetta affidabile della malattia renale, quindi l'etichetta va costruita dagli esami renali secondo la definizione KDIGO~\cite{stevens_kdigo_2024}. Per la filtrazione si usa l'equazione CKD-EPI 2021, priva del coefficiente etnico~\cite{inker_new_2021}:
+\begin{equation}
+	\mathrm{eGFR} = 142 \cdot \min\!\left(\frac{S_{cr}}{\kappa},1\right)^{\alpha} \cdot \max\!\left(\frac{S_{cr}}{\kappa},1\right)^{-1{,}200} \cdot 0{,}9938^{\,\text{età}} \cdot \delta_F ,
+	\label{eq:ckdepi}
+\end{equation}
+dove $S_{cr}$ è la creatinina sierica in mg/dL (\texttt{SCRE}, in \si{\micro\mole\per\liter}, divisa per 88,4), $\kappa = 0{,}7$ e $\alpha = -0{,}241$ nelle donne, $\kappa = 0{,}9$ e $\alpha = -0{,}302$ negli uomini, e $\delta_F = 1{,}012$ nelle donne e 1 negli uomini. L'etichetta è
+\begin{equation}
+	y = \mathbf{1}\left[\,\mathrm{ACR} \geq 30 \ \lor \ \mathrm{eGFR} < 60\,\right].
+	\label{eq:target}
+\end{equation}
+
+Il livello di rischio segue la mappa KDIGO: \emph{basso} per G1--G2 con A1; \emph{moderato} per G1--G2 con A2 e per G3a con A1; \emph{alto} per G1--G2 con A3, G3a con A2 e G3b con A1; \emph{molto alto} in tutte le altre celle. Il livello non è mai un bersaglio di addestramento. Serve per stratificare lo split, valutare i modelli e per pesare o generare esempi in solamente due tecniche di bilanciamento.
+
+Sono state scartate tre alternative.
+\begin{itemize}
+	\item \textbf{La colonna \texttt{DN}}, coincide con la sola concentrazione di albumina urinaria $\geq 30$ (455 casi su 456), ignora la filtrazione e non corrisponde alla definizione KDIGO.
+	
+	\item \textbf{Il bersaglio a quattro classi}, perchè il livello molto alto conta solamente 27 soggetti.
+\end{itemize}
+
+\subsection{Separazione dell'insieme di test}
+
+L'insieme di test viene separato prima di qualsiasi stima che impari dai dati. Deve conservare la prevalenza reale e i livelli KDIGO veri dei soggetti, perché su di esso si verificano le conclusioni.
+
+La separazione è un holdout 75/25 stratificato su otto strati (quattro livelli KDIGO per due stati di diabete), con seme 42. La proporzione è stata scelta in base al numero di eventi nel test, che dovrebbe essere almeno 100~\cite{collins_tripodai_2024} (Tabella~\ref{tab:proporzioni}). La proporzione 80/20 lascerebbe nel test 5 casi molto alti e 18 diabetici positivi; la 70/30 toglierebbe al training 28 positivi rispetto a quella scelta.
+
+\begin{table}[H]
+	\centering
+	\small
+	\caption{Numerosità del test per tre proporzioni di split, a parità di seme e stratificazione.}
+	\label{tab:proporzioni}
+	\begin{tabular}{@{}lrrrrr@{}}
+		\toprule
+		Split & Test & Positivi test & Positivi training & Molto alto test & Diabetici positivi test \\
+		\midrule
+		80/20 & 1.161 & 113 & 454 & 5 & 18 \\
+		75/25 & 1.451 & 142 & 425 & 6 & 23 \\
+		70/30 & 1.741 & 170 & 397 & 8 & 27 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+La stratificazione sul livello KDIGO, e non sul solo bersaglio binario, serve a garantire la presenza dei casi gravi in entrambi gli insiemi. In 1.000 split stratificati sul solo bersaglio, i casi molto alti finiti nel test variano da 1 a 14; in 1.000 split non stratificati, da 0 a 15 (Figura~\ref{fig:stratificazione}). 
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{../analytics/split/04_stratification_simulation.png}
+	\caption{Simulazione di 1.000 split 75/25. A sinistra, split non stratificati: il numero di positivi nel test varia ampiamente pur restando sopra la soglia di 100 eventi. A destra, split stratificati sul solo bersaglio: i casi molto alti nel test variano da 1 a 14. Lo split adottato (linea blu) ne contiene sempre 6.}
+	\label{fig:stratificazione}
+\end{figure}
+
+L'equilibrio fra i due insiemi è verificato con la differenza media standardizzata.
+
+\begin{equation}
+	\mathrm{SMD} = \frac{\lvert \bar{x}_{\text{train}} - \bar{x}_{\text{test}} \rvert}{\sqrt{(s^2_{\text{train}} + s^2_{\text{test}})/2}} ,
+\end{equation}
+su bersaglio, diabete e 15 variabili cliniche. Tutti i valori sono inferiori a 0,1, con un massimo di 0,059 per la pressione sistolica.
+
+Sono state scartate tre alternative. La separazione temporale è priva di significato, perché le 39 giornate coprono circa due mesi. La separazione per giornate intere (validazione \textit{internal-external}) non è stata eseguita ed è dichiarata come limite. La sola validazione incrociata senza test è stata esclusa perché serve un metro fisso e comune a tutte le tecniche. Lo split è stato rifatto dopo l'abbandono di \texttt{DN}: la versione precedente, stratificata su quella colonna, collocava nel test 15 dei 27 casi molto alti. Il file \texttt{test.csv} viene letto soltanto dal rapporto descrittivo dello split e dal modulo di conferma finale (Sezione~\ref{sec:conferma-test}).
+
+\subsection{Codifica}
+
+Il codice distingue tre tipi di codifica:
+\begin{itemize}
+	\item \texttt{HypertenHis}, che nei dati vale soltanto 1 o vuoto: il vuoto è codificato come 0, con 147 \enquote{si} nel training.
+	
+	\item \texttt{Gender}, da 1/2 a 0 = maschio e 1 = femmina.
+	
+	\item \texttt{Smoking}, \texttt{Drinking} e \texttt{Tea}, da 1/2/3 a 0/1/2, come variabili ordinali.
+\end{itemize}
+
+Nessuna variabile è codificata one-hot, questo tipo di codifica permetterebbe alle tecniche di generazione sintetica di produrre combinazioni impossibili.
+
+\subsection{Standardizzazione e imputazione}
+
+L'analisi dei soli casi completi eliminerebbe il 38\% dei soggetti del training e introdurrebbe distorsione se i dati non mancano completamente a caso. Le variabili con più del 15\% di valori mancanti sono escluse; le altre vengono imputate. Il valore massimo ammesso è del 13,1\%(\texttt{Tea});
+
+La pipeline di pre-processing adotta un'architettura a due stadi stimata rigorosamente all'interno di ciascun fold di addestramento per prevenire qualsiasi forma di leakage. Nel primo stadio le 60 variabili continue sono standardizzate mediante algoritmo \texttt{z-score} con parametri di posizione e scala stimati sui soli casi osservati, mentre le restanti feature categoriche sono state imputate mediante una tecnica di imputazione per moda. Nel secondo stadio, sull'intera matrice a 74 feature è stato applicato l'imputatore iterativo \texttt{MissForest}. Non sono stati inclusi indicatori espliciti di missingness per scongiurare fenomeni di \textit{shortcut learning} e \textit{confounding}, aggiungerne creerebbe una correlazione spuria fra il lotto di campionamento e il target.
+
 
 \chapter{Risultati ottenuti}
 
