@@ -15,6 +15,7 @@
 \usepackage{booktabs}
 \usepackage{tabularx}
 \usepackage{amsmath}
+\usepackage{url}
 \usetikzlibrary{shapes.geometric, arrows.meta, positioning}
 \usepackage[italian]{babel}
 
@@ -341,38 +342,38 @@ Tre regole valgono per l'intera procedura. La prima riguarda gli input. Gli esam
 			text width=4.3cm, align=left, inner sep=4pt},
 		arr/.style={-Stealth, thick, gray!60!black}
 		]
-		\node[main] (n1) {\textbf{Dati grezzi}\\
-			5.922 soggetti $\times$ 190 colonne, file Excel\\
-			esclusi 121 soggetti senza creatinina, ACR, età o sesso\\
-			$\Rightarrow$ 5.801 soggetti eleggibili};
-		\node[main, below=of n1] (n2) {\textbf{Etichetta KDIGO}\\
-			eGFR con CKD-EPI 2021; $y=1$ se ACR $\geq 30$ o eGFR $<60$\\
-			$\Rightarrow$ $y$ (567 positivi) e livello di rischio (4 classi)};
-		\node[main, below=of n2] (n3) {\textbf{Separazione del test}\\
-			75/25, stratificata su livello KDIGO $\times$ diabete, seme 42\\
-			$\Rightarrow$ \texttt{train.csv} (4.350) e \texttt{test.csv} (1.451)};
-		\node[main, below=of n3] (n4) {\textbf{Selezione e codifica}\\
-			da 190 a 74 variabili; codifiche senza stato\\
-			$\Rightarrow$ matrice $X$ di $4.350 \times 74$};
-		\node[main, below=of n4] (n5) {\textbf{Fold e imputazione}\\
-			CV annidata $5 \times 5$; standardizzazione, moda e MissForest stimati nel fold\\
-			$\Rightarrow$ 31 matrici imputate per insieme di variabili};
-		\node[main, below=of n5] (n6) {\textbf{Addestramento}\\
-			5 modelli, Optuna con 100 tentativi, metrica PR-AUC\\
-			$\Rightarrow$ previsioni out-of-fold per 4.350 soggetti};
-		\node[main, below=of n6] (n7) {\textbf{Valutazione}\\
-			soglia a sensibilità 0,90, 4 fasce, confronto con i livelli KDIGO\\
-			$\Rightarrow$ tabelle, soglie e fasce congelate};
-		\node[main, below=of n7] (n8) {\textbf{Modello finale}\\
-			riaddestramento sull'intero training\\
-			$\Rightarrow$ modelli serializzati};
-		
-		\node[side, right=of n3] (s0) {\textbf{Test chiuso}\\ nessuna analisi lo legge fino alla conferma finale};
-		\node[side, right=of n5] (s1) {\textbf{Bilanciamento}\\ solo nel training del fold; ricalibrazione di Platt};
-		\node[side, right=of n6] (s2) {\textbf{Modelli esplorativi e non supervisionati}};
-		\node[side, right=of n7] (s3) {\textbf{Verifiche}\\ sensibilità, controlli positivi, SHAP};
-		\node[side, right=of n8] (s4) {\textbf{Conferma sul test}\\ una sola esecuzione};
-		\node[side, below=of s4] (s5) {\textbf{Validazione esterna}\\ NHANES 2005--2018, senza riaddestramento};
+	\node[main] (n1) {\textbf{Dati grezzi} (\S\ref{sec:origine})\\
+		5.922 soggetti $\times$ 190 colonne, file Excel\\
+		esclusi 121 soggetti senza creatinina, ACR, età o sesso\\
+		$\Rightarrow$ 5.801 soggetti eleggibili};
+	\node[main, below=of n1] (n2) {\textbf{Etichetta KDIGO} (\S\ref{sec:etichetta})\\
+		eGFR con CKD-EPI 2021; $y=1$ se ACR $\geq 30$ o eGFR $<60$\\
+		$\Rightarrow$ $y$ (567 positivi) e livello di rischio (4 classi)};
+	\node[main, below=of n2] (n3) {\textbf{Separazione del test} (\S\ref{sec:split})\\
+		75/25, stratificata su livello KDIGO $\times$ diabete, seme 42\\
+		$\Rightarrow$ \texttt{train.csv} (4.350) e \texttt{test.csv} (1.451)};
+	\node[main, below=of n3] (n4) {\textbf{Selezione e codifica} (\S\ref{sec:codifica}, \S\ref{sec:caratteristiche})\\
+		da 190 a 74 variabili; codifiche senza stato\\
+		$\Rightarrow$ matrice $X$ di $4.350 \times 74$};
+	\node[main, below=of n4] (n5) {\textbf{Fold e imputazione} (\S\ref{sec:imputazione}, \S\ref{sec:partizionamento})\\
+		CV annidata $5 \times 5$; standardizzazione, moda e MissForest stimati nel fold\\
+		$\Rightarrow$ 31 matrici imputate per insieme di variabili};
+	\node[main, below=of n5] (n6) {\textbf{Addestramento} (\S\ref{sec:modelli}, \S\ref{sec:ottimizzazione})\\
+		5 modelli, Optuna con 100 tentativi, metrica PR-AUC\\
+		$\Rightarrow$ previsioni out-of-fold per 4.350 soggetti};
+	\node[main, below=of n6] (n7) {\textbf{Valutazione} (\S\ref{sec:soglia}, \S\ref{sec:metriche}, \S\ref{sec:test-statistici})\\
+		soglia a sensibilità 0,90, 4 fasce, confronto con i livelli KDIGO\\
+		$\Rightarrow$ tabelle, soglie e fasce congelate};
+	\node[main, below=of n7] (n8) {\textbf{Modello finale} (\S\ref{sec:ottimizzazione})\\
+		riaddestramento sull'intero training\\
+		$\Rightarrow$ modelli serializzati};
+	
+	\node[side, right=of n3] (s0) {\textbf{Test chiuso}\\ nessuna analisi lo legge fino a \S\ref{sec:conferma-test}};
+	\node[side, right=of n5] (s1) {\textbf{Bilanciamento} (\S\ref{sec:bilanciamento})\\ solo nel training del fold; ricalibrazione di Platt};
+	\node[side, right=of n6] (s2) {\textbf{Modelli esplorativi e non supervisionati} (\S\ref{sec:esplorativi}, \S\ref{sec:nonsup})};
+	\node[side, right=of n7] (s3) {\textbf{Verifiche} (\S\ref{sec:verifiche})\\ sensibilità, controlli positivi, SHAP};
+	\node[side, right=of n8] (s4) {\textbf{Conferma sul test} (\S\ref{sec:conferma-test})\\ una sola esecuzione};
+	\node[side, below=of s4] (s5) {\textbf{Validazione esterna} (\S\ref{sec:val-esterna})\\ NHANES 2005--2018, senza riaddestramento};
 		
 		\foreach \a/\b in {n1/n2, n2/n3, n3/n4, n4/n5, n5/n6, n6/n7, n7/n8}
 		\draw[arr] (\a) -- (\b);
@@ -385,7 +386,7 @@ Tre regole valgono per l'intera procedura. La prima riguarda gli input. Gli esam
 		\draw[arr] (n8) -- (s4);
 		\draw[arr] (s4) -- (s5);
 	\end{tikzpicture}
-	\caption{Schema della procedura. A sinistra il flusso principale: ogni blocco indica l'operazione e l'artefatto prodotto. A destra, tratteggiati, i rami di bilanciamento, verifica e validazione. L'insieme di test viene separato al terzo passo e non è più letto fino alla conferma finale.}
+\caption{Schema della procedura. A sinistra il flusso principale: ogni blocco indica l'operazione, l'artefatto prodotto e la sezione che lo descrive. A destra, tratteggiati, i rami di bilanciamento, verifica e validazione. L'insieme di test viene separato al terzo passo e non è più letto fino alla conferma finale.}
 	\label{fig:pipeline}
 \end{figure}
 
@@ -409,7 +410,7 @@ Tre regole valgono per l'intera procedura. La prima riguarda gli input. Gli esam
 		Audit dell'etichetta & 23/09 & post-hoc \\
 		Bersaglio continuo dell'albuminuria & 25/09 & post-hoc \\
 		Famiglie di modelli, modelli senza soglia, stacking & 29/09 & post-hoc \\
-		Non supervisionato, NHANES, mortalità & [DATO MANCANTE NEL REPO: data e protocollo] & post-hoc \\
+		Non supervisionato, NHANES, mortalità & 09--10/11 & post-hoc \\
 		\bottomrule
 	\end{tabularx}
 \end{table}
@@ -483,7 +484,62 @@ Prima di descrivere la procedura conviene dichiarare i limiti dei dati, perché 
 	
 \subsection{Popolazione esterna}
 
-La coorte Jinuo~\cite{li_bimodal_2026} non consente due verifiche: osservare se il comportamento dei modelli si ripete in una popolazione diversa e legare il punteggio a un esito successivo alla misura. Per entrambe si utilizza la National Health and Nutrition Examination Survey (NHANES) ~\cite{nhanes_cdc,nhanes_cdc_data}, indagine trasversale ripetuta che raccoglie esami di laboratorio, misure antropometriche, pressione arteriosa e anamnesi, e i cui partecipanti adulti sono collegati ai registri di morte. Area geografica, struttura d'età e procedure di laboratorio differiscono da quelle degli Jinuo; proprio questa distanza la rende adatta come banco di prova esterno.
+La coorte di sviluppo non consente due verifiche: osservare se il comportamento dei modelli si ripete in una popolazione diversa e collegare il punteggio a un esito successivo alla misura. Per entrambe si usa la \textit{National Health and Nutrition Examination Survey} (NHANES)~\cite{nhanes_cdc,nhanes_cdc_data}, un'indagine trasversale ripetuta che raccoglie esami di laboratorio, misure antropometriche, pressione arteriosa e anamnesi, e i cui partecipanti adulti sono collegati ai registri di morte. Area geografica, struttura d'età e procedure di laboratorio differiscono da quelle della coorte di sviluppo, ed è proprio questa distanza a renderla adatta come banco di prova esterno.
+
+\paragraph{Cicli e file.} Si usano sette cicli biennali consecutivi, dal 2005--2006 (suffisso \texttt{D}) al 2017--2018 (suffisso \texttt{J}). Per ogni ciclo si leggono i dodici file in formato SAS transport della Tabella~\ref{tab:nhanes-file} e il file pubblico di mortalità collegata, aggiornamento 2019, a larghezza fissa: 91 file in tutto. I record si uniscono tramite l'identificativo \texttt{SEQN} a partire dal file demografico. Chi non ha uno degli esami predittori resta nel campione con il valore mancante.
+
+\begin{table}[H]
+	\centering
+	\small
+	\caption{File e variabili NHANES usati per ciascun ciclo.}
+	\label{tab:nhanes-file}
+	\begin{tabularx}{\textwidth}{@{}l >{\raggedright\arraybackslash}p{5.2cm} >{\raggedright\arraybackslash}X@{}}
+		\toprule
+		File & Variabili & Contenuto \\
+		\midrule
+		\texttt{DEMO} & \texttt{RIAGENDR}, \texttt{RIDAGEYR}, \texttt{RIDEXPRG}, \texttt{WTMEC2YR} & sesso, età, gravidanza, peso campionario \\
+		\texttt{ALB\_CR} & \texttt{URXUMA}, \texttt{URXUCR}, \texttt{URDACT} & albumina e creatinina urinarie, ACR \\
+		\texttt{BIOPRO} & \texttt{LBXSCR}, \texttt{LBXSUA} & creatinina sierica, acido urico \\
+		\texttt{CBC} & \texttt{LBXHGB} & emoglobina \\
+		\texttt{BMX} & \texttt{BMXBMI}, \texttt{BMXWAIST} & BMI, circonferenza vita \\
+		\texttt{BPX} & \texttt{BPXSY1}--\texttt{4}, \texttt{BPXDI1}--\texttt{4} & pressione sistolica e diastolica \\
+		\texttt{GHB}, \texttt{GLU} & \texttt{LBXGH}, \texttt{LBXGLU} & HbA1c, glicemia a digiuno \\
+		\texttt{TRIGLY}, \texttt{HDL} & \texttt{LBXTR}, \texttt{LBDHDD} & trigliceridi, colesterolo HDL \\
+		\texttt{DIQ}, \texttt{BPQ} & \texttt{DIQ010}, \texttt{BPQ020} & diabete e ipertensione diagnosticati, riferiti dal partecipante \\
+		mortalità & \texttt{eligstat}, \texttt{mortstat}, \texttt{ucod}, \texttt{permth} & eleggibilità al collegamento, stato in vita, causa principale, mesi di follow-up \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\paragraph{Criteri di inclusione.} I criteri, fissati nel piano prima dei risultati, si applicano nell'ordine della Tabella~\ref{tab:nhanes-inclusione}. Le numerosità iniziale e finale sono salvate dal codice; quelle intermedie derivano dall'applicazione in sequenza degli stessi filtri.
+
+\begin{table}[H]
+	\centering
+	\small
+	\caption{Selezione del campione NHANES.}
+	\label{tab:nhanes-inclusione}
+	\begin{tabular}{@{}clr@{}}
+		\toprule
+		Passo & Criterio & Soggetti \\
+		\midrule
+		-- & partecipanti dei sette cicli & 70.190 \\
+		1 & età $\geq 20$ anni & 39.749 \\
+		2 & esclusione della gravidanza (\texttt{RIDEXPRG} $=1$) & 39.041 \\
+		3 & eleggibili al collegamento con la mortalità (\texttt{eligstat} $=1$) & 38.924 \\
+		4 & albumina, creatinina urinaria e ACR $>0$ & 36.450 \\
+		5 & eGFR calcolabile & 34.494 \\
+		6 & tempo di follow-up e stato in vita presenti & 34.494 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+\paragraph{Armonizzazione.} Per il ciclo 2005--2006 la creatinina sierica è ricalibrata con la correzione del CDC, $S_{cr}^{\mathrm{cal}} = -0{,}016 + 0{,}978\,S_{cr}$. Nei cicli 2005--2008 il file non contiene l'ACR, che si calcola come $100 \cdot \texttt{URXUMA}/\texttt{URXUCR}$ (mg/g), la stessa formula del CDC. L'eGFR segue l'Equazione~\eqref{eq:ckdepi}, con la creatinina già in mg/dL. Le pressioni sono la media delle letture disponibili (fino a quattro) con valore positivo. L'etichetta segue l'Equazione~\eqref{eq:target} e interessa il 17,6\% del campione.
+
+\paragraph{Pesi campionari.} La domanda riguarda discriminazione e associazione dentro il campione, non la prevalenza nella popolazione statunitense: le analisi principali non sono pesate. Il peso \texttt{WTMEC2YR} entra solo in una sensibilità del modello di Cox, senza riscalarlo sui sette cicli e senza strati né unità primarie di campionamento; per questo la sensibilità è dichiarata non valida. I risultati descrivono il campione, non la popolazione.
+
+\paragraph{Follow-up.} Il tempo di osservazione ha mediana 87 mesi; la chiusura del follow-up è il 31 dicembre 2019. Nel campione si contano 3.590 morti, di cui 1.102 per cause cardiovascolari.
+
+\paragraph{Limiti.} Diabete e ipertensione sono riferiti dal partecipante, mentre nella coorte di sviluppo la variabile \texttt{DM} non coincide con la sola diagnosi nota. L'ACR deriva da una sola misura. Nei file pubblici il NCHS sostituisce alcuni tempi e alcune cause di morte con valori sintetici, per tutela della riservatezza.
 
 \section{Pre-elaborazione e preparazione del dato}
 
@@ -502,11 +558,11 @@ dove $S_{cr}$ è la creatinina sierica in mg/dL (\texttt{SCRE}, in \si{\micro\mo
 
 Il livello di rischio segue la mappa KDIGO: \emph{basso} per G1--G2 con A1; \emph{moderato} per G1--G2 con A2 e per G3a con A1; \emph{alto} per G1--G2 con A3, G3a con A2 e G3b con A1; \emph{molto alto} in tutte le altre celle. Il livello non è mai un bersaglio di addestramento. Serve per stratificare lo split, valutare i modelli e per pesare o generare esempi in solamente due tecniche di bilanciamento.
 
-Sono state scartate tre alternative.
+Sono state scartate due alternative.
 \begin{itemize}
 	\item \textbf{La colonna \texttt{DN}}, coincide con la sola concentrazione di albumina urinaria $\geq 30$ (455 casi su 456), ignora la filtrazione e non corrisponde alla definizione KDIGO.
 	
-	\item \textbf{Il bersaglio a quattro classi}, perchè il livello molto alto conta solamente 27 soggetti.
+	\item \textbf{Il bersaglio a quattro classi}, perché il livello molto alto conta solamente 27 soggetti.
 \end{itemize}
 
 \subsection{Separazione dell'insieme di test}
@@ -547,7 +603,7 @@ L'equilibrio fra i due insiemi è verificato con la differenza media standardizz
 \end{equation}
 su bersaglio, diabete e 15 variabili cliniche. Tutti i valori sono inferiori a 0,1, con un massimo di 0,059 per la pressione sistolica.
 
-Sono state scartate tre alternative. La separazione temporale è priva di significato, perché le 39 giornate coprono circa due mesi. La separazione per giornate intere (validazione \textit{internal-external}) non è stata eseguita ed è dichiarata come limite. La sola validazione incrociata senza test è stata esclusa perché serve un metro fisso e comune a tutte le tecniche. Lo split è stato rifatto dopo l'abbandono di \texttt{DN}: la versione precedente, stratificata su quella colonna, collocava nel test 15 dei 27 casi molto alti. Il file \texttt{test.csv} viene letto soltanto dal rapporto descrittivo dello split e dal modulo di conferma finale (Sezione~\ref{sec:conferma-test}).
+Sono state scartate tre alternative. La separazione temporale è priva di significato, perché le 39 giornate coprono circa due mesi. La separazione per giornate intere (validazione \textit{internal-external}) non è stata eseguita ed è dichiarata come limite. La sola validazione incrociata senza test è stata esclusa perché serve un metro fisso e comune a tutte le tecniche. Lo split è stato rifatto dopo l'abbandono di \texttt{DN}: la versione precedente, stratificata su quella colonna, collocava nel test 15 dei 27 casi molto alti. Il file \texttt{test.csv} viene letto soltanto dal rapporto descrittivo dello split e dal modulo di conferma finale.
 
 \subsection{Codifica}
 
@@ -566,7 +622,129 @@ Nessuna variabile è codificata one-hot, questo tipo di codifica permetterebbe a
 
 L'analisi dei soli casi completi eliminerebbe il 38\% dei soggetti del training e introdurrebbe distorsione se i dati non mancano completamente a caso. Le variabili con più del 15\% di valori mancanti sono escluse; le altre vengono imputate. Il valore massimo ammesso è del 13,1\%(\texttt{Tea});
 
-La pipeline di pre-processing adotta un'architettura a due stadi stimata rigorosamente all'interno di ciascun fold di addestramento per prevenire qualsiasi forma di leakage. Nel primo stadio le 60 variabili continue sono standardizzate mediante algoritmo \texttt{z-score} con parametri di posizione e scala stimati sui soli casi osservati, mentre le restanti feature categoriche sono state imputate mediante una tecnica di imputazione per moda. Nel secondo stadio, sull'intera matrice a 74 feature è stato applicato l'imputatore iterativo \texttt{MissForest}. Non sono stati inclusi indicatori espliciti di missingness per scongiurare fenomeni di \textit{shortcut learning} e \textit{confounding}, aggiungerne creerebbe una correlazione spuria fra il lotto di campionamento e il target.
+La pipeline di pre-processing adotta un'architettura a due stadi stimata rigorosamente all'interno di ciascun fold di addestramento per prevenire qualsiasi forma di leakage. Nel primo stadio le 60 variabili continue sono standardizzate mediante algoritmo \texttt{z-score} con parametri di posizione e scala stimati sui soli casi osservati, mentre le restanti feature categoriche sono state imputate mediante una tecnica di imputazione per moda. Nel secondo stadio, sull'intera matrice a 74 feature è stato applicato l'imputatore iterativo \texttt{MissForest}. Non sono stati inclusi indicatori espliciti di missingness per scongiurare fenomeni di \textit{shortcut learning} e \textit{confounding}, aggiungerne creerebbe una correlazione spuria fra il lotto di campionamento e il target, facendo imparare al modello la giornata di raccolta e non la persona.
+
+Sono stati confrontati quattro candidati, in ordine di complessità crescente:
+\begin{itemize}
+	\item mediana;
+	\item $k$ vicini con $k = 5$
+	\item MICE, implementato con \texttt{IterativeImputer} di scikit-learn e regressione bayesiana, 10 iterazioni, una sola imputazione;
+	\item una variante di MissForest, implementata con \texttt{IterativeImputer} ed \texttt{ExtraTreesRegressor}: 50 alberi, \texttt{min\_samples\_leaf} = 5, $\sqrt{p}$ variabili per divisione, 5 iterazioni, colonne complete usate solo come predittori.
+\end{itemize}
+
+Il confronto valuta i metodi su cinque fold stratificati per livello KDIGO (seme 42) secondo due criteri: l'errore di ricostruzione su un 10\% di dati mascherati (RMSE e MAE standardizzati) e la prestazione predittiva a valle (PR-AUC e AUC di una regressione logica fissa). Poiché le prestazioni a valle risultano indistinguibili, la selezione adotta la regola dell'errore standard~\cite{hastie_elements_2009} applicata all'RMSE, privilegiando la fedeltà di ricostruzione sui dati osservati.
+
+La scelta finale, dopo i confronti, ha visto vincitore il MissForest. La differenza di RMSE fa $k$ vicini e MissForest è $+0{,}060 \pm 0{,}010$, con MissForest migliore in 5 fold su 5, mentre la differenza di PR-AUC ($+0{,}0014 \pm 0{,}0015$) non è significativa. Inoltre una ricostruzione con meno errori aiuta le tecniche di bilanciamento o generazione sintetica nella replica di artefatti fedeli.
+
+\begin{table}[H]
+	\centering
+	\small
+	\caption{Confronto dei metodi di imputazione sull'insieme principale (5 fold sul training, media $\pm$ errore standard). RMSE in unità standardizzate sui valori nascosti; PR-AUC di una regressione logistica fissa addestrata sui dati imputati.}
+	\label{tab:imputazione}
+	\begin{tabular}{@{}lccccr@{}}
+		\toprule
+		Metodo & RMSE & MAE & PR-AUC & AUC & Tempo (s) \\
+		\midrule
+		Mediana & $1{,}038 \pm 0{,}047$ & 0,678 & $0{,}252 \pm 0{,}030$ & 0,693 & 1 \\
+		$k$ vicini & $0{,}793 \pm 0{,}057$ & 0,505 & $0{,}259 \pm 0{,}032$ & 0,695 & 11 \\
+		MICE & $1{,}252 \pm 0{,}135$ & 0,318 & $0{,}257 \pm 0{,}032$ & 0,697 & 70 \\
+		MissForest & $0{,}734 \pm 0{,}066$ & 0,442 & $0{,}257 \pm 0{,}031$ & 0,696 & 305 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+\section{Caratteristiche in ingresso}
+
+Il nucleo di questa fase è la scelta di quali colonne del dataset possano entrare nel modello. Ogni colonna è assegnata in configurazione a esattamente un gruppo per la valutazione, un test automatico impedisce l'ingresso in input al modello di colonne non valutate.
+
+\subsection{Variabili ammesse}
+
+Le variabili ammesse sono 74, di cui 60 numeriche e 14 categoriche (Tabella~\ref{tab:variabili}). Il dizionario del dataset non riporta le unità di misura. Il dizionario del dataset non riporta le unità di misura; la loro conformità agli standard del Sistema Internazionale clinico è stata verificata empiricamente mediante dodici formule fisiologiche note (tra cui \texttt{BMI}, \texttt{HOMA-IR}, \texttt{FIB-4} e indici eritrocitari), tutte coincidenti con i valori attesi (rapporto mediano tra osservato e atteso pari a 1).
+
+\begin{table}[H]
+	\centering
+	\small
+	\caption{Le 74 variabili in ingresso, raggruppate per famiglia (N = numerica, C = categorica o ordinale).}
+	\label{tab:variabili}
+	\begin{tabularx}{\textwidth}{@{}l >{\raggedright\arraybackslash}X c r@{}}
+		\toprule
+		Famiglia & Variabili & Tipo & n \\
+		\midrule
+		Anagrafica & \texttt{Age}, \texttt{Gender} & N, C & 2 \\
+		Antropometria e composizione corporea & \texttt{Height}, \texttt{Weight}, \texttt{BMI}, \texttt{waist1}, \texttt{hip}, \texttt{WHR}, \texttt{Fat} & N & 7 \\
+		Parametri emodinamici & \texttt{HR}, \texttt{Bpsys}, \texttt{Bpdia} & N & 3 \\
+		Metabolismo glucidico e insulinico & \texttt{FPG}, \texttt{PG2h}, \texttt{HbA1c}, \texttt{GA}, \texttt{FINS}, \texttt{INS2h}, \texttt{FCP}, \texttt{CP2h}, \texttt{HomaIR}, \texttt{ISIGutt} & N & 10 \\
+		Lipidi & \texttt{CHOL}, \texttt{TG}, \texttt{HDL}, \texttt{LDL} & N & 4 \\
+		Funzione epatica e proteine & \texttt{ALT}, \texttt{AST}, \texttt{ASTALT}, \texttt{GGT}, \texttt{ALP}, \texttt{TBIL}, \texttt{DBIL}, \texttt{TP}, \texttt{ALB}, \texttt{AG}, \texttt{FIB4} & N & 11 \\
+		Acido urico & \texttt{SUA} & N & 1 \\
+		Emocromo & \texttt{WBC}, \texttt{RBC}, \texttt{HGB}, \texttt{HCT}, \texttt{MCV}, \texttt{MCH}, \texttt{MCHC}, \texttt{RDWCV}, \texttt{RDWSD}, \texttt{PLT}, \texttt{MPV}, \texttt{PDW}, \texttt{PCT}, \texttt{NEUT}, \texttt{NEUTcount}, \texttt{LYMPH}, \texttt{LYMPHcount}, \texttt{MONO}, \texttt{MONOcount}, \texttt{EO}, \texttt{EOcount}, \texttt{BASO}, \texttt{BASOcount} & N & 23 \\
+		Anamnesi & \texttt{DM}, \texttt{DMhis}, \texttt{DMfamilyHistory}, \texttt{HypertenHis} & C & 4 \\
+		Complicanze microvascolari non renali & \texttt{DRyd}, \texttt{cataract}, \texttt{MADPN}, \texttt{TFDPN} & C & 4 \\
+		Stili di vita & \texttt{Smoking}, \texttt{Drinking}, \texttt{Tea} & C & 3 \\
+		Sierologia & \texttt{HbsAg}, \texttt{HCVAb} & C & 2 \\
+		\midrule
+		Totale & & & 74 \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\subsection{Variabili escluse}
+
+Le 116 colonne escluse sono riportate per motivo nella Tabella~\ref{tab:esclusioni} e nella Figura~\ref{fig:mappa-colonne}.
+
+\begin{table}[H]
+	\centering
+	\small
+	\caption{Colonne escluse dall'ingresso, per motivo.}
+	\label{tab:esclusioni}
+	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.1cm} r >{\raggedright\arraybackslash}X@{}}
+		\toprule
+		Motivo & n & Esempi e ragione \\
+		\midrule
+		Leakage del bersaglio & 16 & \texttt{SCRE}, \texttt{UMAUCR}, \texttt{UmALB}, \texttt{UCRE}, \texttt{GFR}, \texttt{DN} e i flag derivati: il bersaglio è calcolato da queste colonne o ne è una copia (\texttt{EUGFR90UACR01} è il bersaglio calcolato con il \texttt{GFR} originale) \\
+		Esami e diagnosi renali & 2 & \texttt{BUN}, \texttt{RF}: violano il principio \enquote{senza esami renali}; \texttt{RF} è la diagnosi già nota \\
+		Amministrative & 5 & \texttt{NO}, \texttt{Data}, \texttt{filter}, \texttt{GAnum}, \texttt{GAstudy}: non descrivono il soggetto; \texttt{Data} porterebbe l'effetto della giornata \\
+		Non documentate & 3 & \texttt{VAR00001} senza etichetta; \texttt{ALT.1}, che vale $\sqrt{\texttt{ALT}}$ con zeri al posto dei mancanti; \texttt{DF}, con codifica incoerente con il dizionario \\
+		Vuote o di sottogruppo & 22 & colonne con oltre il 50\% di mancanti, costanti, o compilate solo da fumatori e bevitori \\
+		Questionario di conoscenza & 7 & misurano la conoscenza del diabete, non lo stato di salute \\
+		Derivati a soglia & 37 & categorizzazioni di variabili continue già presenti (\texttt{BMI25}, \texttt{Anemia}, \texttt{AgeGroup}, \dots): multicollinearità e soggetti incoerenti nella generazione sintetica \\
+		Misure duplicate & 1 & \texttt{Waist2}, seconda misura della vita ($r = 0{,}86$ con \texttt{waist1}) \\
+		Combinazioni lineari & 2 & $\texttt{IDBIL} = \texttt{TBIL} - \texttt{DBIL}$; $\texttt{GLO} = \texttt{TP} - \texttt{ALB}$ \\
+		Comorbidità con codice 9 & 15 & dopo la ricodifica di 9 come mancante superano il 15\% di mancanti; il composito cardiovascolare ha il 25,4\% di mancanti e prevalenza del bersaglio piatta (10,1\% contro 9,1\%) \\
+		Indici instabili & 1 & $\texttt{Homa}\beta = 20 \cdot \texttt{FINS}/(\texttt{FPG} - 3{,}5)$: diverge per glicemie vicine a 3,5 (9 valori oltre 1.000 nel training) \\
+		Mancanti oltre il 15\% & 5 & \texttt{leg}, \texttt{LC}, \texttt{LCcount}, \texttt{ALY}, \texttt{ALYcount} \\
+		\midrule
+		Totale & 116 & \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.85\textwidth]{../analytics/preprocessing/01_column_map.png}
+	\caption{Destinazione delle 190 colonne del dataset. Le esclusioni più numerose riguardano i derivati a soglia e le colonne vuote, che non portano informazione nuova; quelle per leakage sono 16 e comprendono tutte le grandezze da cui è calcolato il bersaglio.}
+	\label{fig:mappa-colonne}
+\end{figure}
+
+Sono stati invece tenuti gli indici clinici continui non lineari, che non si ricavano con una somma dalle altre colonne: \texttt{BMI}, \texttt{WHR}, \texttt{HomaIR}, \texttt{ISIGutt}, \texttt{FIB4} e \texttt{ASTALT}.
+
+\subsection{Controllo del leakage residuo}
+
+Escludere le colonne note non basta: un predittore non renale potrebbe trasportare il bersaglio in modo indiretto. Sono state quindi previste due difese. La prima è un'asserzione nel codice: la selezione si interrompe se fra le variabili compare una colonna di leakage, un esame renale o una colonna con codice 9. La seconda è il calcolo, sul solo training, dell'AUC univariata di ogni variabile rispetto al bersaglio, con soglia di allarme a 0,75. Il valore massimo è 0,653 (\texttt{Age}), seguito da \texttt{ALP} (0,631), \texttt{FIB4} (0,623) e \texttt{Bpsys} (0,610) (Figura~\ref{fig:auc-univariata}).
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.7\textwidth]{../analytics/preprocessing/02_univariate_auc.png}
+	\caption{AUC univariata sul training delle prime 12 variabili in ingresso (blu) e delle colonne renali escluse (arancione). Le colonne da cui è calcolato il bersaglio si avvicinano a 1, mentre nessuna variabile in ingresso supera la soglia di allarme di 0,75.}
+	\label{fig:auc-univariata}
+\end{figure}
+
+\subsection{Variabili conseguenza}
+
+Sette variabili ammesse possono essere alterate dalla malattia renale stessa e agire quindi come suoi effetti: \texttt{HGB}, \texttt{RBC} e \texttt{HCT} (anemia), \texttt{SUA} (ridotta escrezione), \texttt{ALB}, \texttt{TP} e \texttt{GA}. Non sono leaker di definzione e restano nell'insieme principale. Per verificare che le prestazioni non dipendano da loro si usa l'insieme di sensibilità \texttt{no\_consequence}, che le esclude e conta quindi 67 variabili.
+
+\subsection{Parametri inattivi o non vincolanti}
+
 
 
 \chapter{Risultati ottenuti}
