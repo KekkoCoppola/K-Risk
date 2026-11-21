@@ -15,6 +15,7 @@
 \usepackage{booktabs}
 \usepackage{tabularx}
 \usepackage{amsmath}
+\usepackage{dsfont}
 \usepackage{url}
 \usetikzlibrary{shapes.geometric, arrows.meta, positioning}
 \usepackage[italian]{babel}
@@ -323,7 +324,7 @@ Rispetto ai punteggi per l'albuminuria~\cite{muntner_development_2011,bragg-gres
 
 \chapter{Metodologia}
 
-Il capitolo descrive la procedura che porta dal file di dati grezzi ai modelli valutati. L'esposizione procede dal generale al particolare. La Sezione~\ref{sec:quadro} presenta la procedura nel suo insieme; la Sezione~\ref{sec:dataset} descrive i dati e i vincoli che impongono; le Sezioni~\ref{sec:preelaborazione} e~\ref{sec:caratteristiche} documentano la preparazione del dato e le variabili in ingresso; la Sezione~\ref{sec:modellazione} presenta i modelli e la loro ottimizzazione; la Sezione~\ref{sec:validazione} i protocolli di validazione; la Sezione~\ref{sec:verifiche} le verifiche sul comportamento dei modelli; la Sezione~\ref{sec:riproducibilita} i dettagli di riproducibilità. Parametri e numerosità sono quelli del codice e dei file di configurazione del repository. I risultati sono riportati nel Capitolo~4.
+Il capitolo descrive la procedura che porta dal file di dati grezzi ai modelli valutati, partendo dal generale e scendendo nel particolare. Si apre con una visione d'insieme della procedura, poi descrive i dati e i vincoli che impongono. Seguono la preparazione del dato e le variabili in ingresso, quindi i modelli e la loro ottimizzazione. Vengono poi i protocolli di validazione e le verifiche sul comportamento dei modelli. Il capitolo si chiude con i dettagli di riproducibilità. Parametri e numerosità sono quelli del codice e dei file di configurazione del repository. I risultati sono riportati nel capitolo successivo.
 
 \section{Quadro d'insieme della procedura}
 
@@ -342,38 +343,38 @@ Tre regole valgono per l'intera procedura. La prima riguarda gli input. Gli esam
 			text width=4.3cm, align=left, inner sep=4pt},
 		arr/.style={-Stealth, thick, gray!60!black}
 		]
-	\node[main] (n1) {\textbf{Dati grezzi} (\S\ref{sec:origine})\\
-		5.922 soggetti $\times$ 190 colonne, file Excel\\
-		esclusi 121 soggetti senza creatinina, ACR, età o sesso\\
-		$\Rightarrow$ 5.801 soggetti eleggibili};
-	\node[main, below=of n1] (n2) {\textbf{Etichetta KDIGO} (\S\ref{sec:etichetta})\\
-		eGFR con CKD-EPI 2021; $y=1$ se ACR $\geq 30$ o eGFR $<60$\\
-		$\Rightarrow$ $y$ (567 positivi) e livello di rischio (4 classi)};
-	\node[main, below=of n2] (n3) {\textbf{Separazione del test} (\S\ref{sec:split})\\
-		75/25, stratificata su livello KDIGO $\times$ diabete, seme 42\\
-		$\Rightarrow$ \texttt{train.csv} (4.350) e \texttt{test.csv} (1.451)};
-	\node[main, below=of n3] (n4) {\textbf{Selezione e codifica} (\S\ref{sec:codifica}, \S\ref{sec:caratteristiche})\\
-		da 190 a 74 variabili; codifiche senza stato\\
-		$\Rightarrow$ matrice $X$ di $4.350 \times 74$};
-	\node[main, below=of n4] (n5) {\textbf{Fold e imputazione} (\S\ref{sec:imputazione}, \S\ref{sec:partizionamento})\\
-		CV annidata $5 \times 5$; standardizzazione, moda e MissForest stimati nel fold\\
-		$\Rightarrow$ 31 matrici imputate per insieme di variabili};
-	\node[main, below=of n5] (n6) {\textbf{Addestramento} (\S\ref{sec:modelli}, \S\ref{sec:ottimizzazione})\\
-		5 modelli, Optuna con 100 tentativi, metrica PR-AUC\\
-		$\Rightarrow$ previsioni out-of-fold per 4.350 soggetti};
-	\node[main, below=of n6] (n7) {\textbf{Valutazione} (\S\ref{sec:soglia}, \S\ref{sec:metriche}, \S\ref{sec:test-statistici})\\
-		soglia a sensibilità 0,90, 4 fasce, confronto con i livelli KDIGO\\
-		$\Rightarrow$ tabelle, soglie e fasce congelate};
-	\node[main, below=of n7] (n8) {\textbf{Modello finale} (\S\ref{sec:ottimizzazione})\\
-		riaddestramento sull'intero training\\
-		$\Rightarrow$ modelli serializzati};
-	
-	\node[side, right=of n3] (s0) {\textbf{Test chiuso}\\ nessuna analisi lo legge fino a \S\ref{sec:conferma-test}};
-	\node[side, right=of n5] (s1) {\textbf{Bilanciamento} (\S\ref{sec:bilanciamento})\\ solo nel training del fold; ricalibrazione di Platt};
-	\node[side, right=of n6] (s2) {\textbf{Modelli esplorativi e non supervisionati} (\S\ref{sec:esplorativi}, \S\ref{sec:nonsup})};
-	\node[side, right=of n7] (s3) {\textbf{Verifiche} (\S\ref{sec:verifiche})\\ sensibilità, controlli positivi, SHAP};
-	\node[side, right=of n8] (s4) {\textbf{Conferma sul test} (\S\ref{sec:conferma-test})\\ una sola esecuzione};
-	\node[side, below=of s4] (s5) {\textbf{Validazione esterna} (\S\ref{sec:val-esterna})\\ NHANES 2005--2018, senza riaddestramento};
+		\node[main] (n1) {\textbf{Dati grezzi}\\
+			5.922 soggetti $\times$ 190 colonne, file Excel\\
+			esclusi 121 soggetti senza creatinina, ACR, età o sesso\\
+			$\Rightarrow$ 5.801 soggetti eleggibili};
+		\node[main, below=of n1] (n2) {\textbf{Etichetta KDIGO}\\
+			eGFR con CKD-EPI 2021; $y=1$ se ACR $\geq 30$ o eGFR $<60$\\
+			$\Rightarrow$ $y$ (567 positivi) e livello di rischio (4 classi)};
+		\node[main, below=of n2] (n3) {\textbf{Separazione del test}\\
+			75/25, stratificata su livello KDIGO $\times$ diabete, seme 42\\
+			$\Rightarrow$ \texttt{train.csv} (4.350) e \texttt{test.csv} (1.451)};
+		\node[main, below=of n3] (n4) {\textbf{Selezione e codifica}\\
+			da 190 a 74 variabili; codifiche senza stato\\
+			$\Rightarrow$ matrice $X$ di $4.350 \times 74$};
+		\node[main, below=of n4] (n5) {\textbf{Fold e imputazione}\\
+			CV annidata $5 \times 5$; standardizzazione, moda e MissForest stimati nel fold\\
+			$\Rightarrow$ 31 matrici imputate per insieme di variabili};
+		\node[main, below=of n5] (n6) {\textbf{Addestramento}\\
+			5 modelli, Optuna con 100 tentativi, metrica PR-AUC\\
+			$\Rightarrow$ previsioni out-of-fold per 4.350 soggetti};
+		\node[main, below=of n6] (n7) {\textbf{Valutazione}\\
+			soglia a sensibilità 0,90, 4 fasce, confronto con i livelli KDIGO\\
+			$\Rightarrow$ tabelle, soglie e fasce congelate};
+		\node[main, below=of n7] (n8) {\textbf{Modello finale}\\
+			riaddestramento sull'intero training\\
+			$\Rightarrow$ modelli serializzati};
+		
+		\node[side, right=of n3] (s0) {\textbf{Test chiuso}\\ nessuna analisi lo legge fino alla conferma sul test};
+		\node[side, right=of n5] (s1) {\textbf{Bilanciamento}\\ solo nel training del fold; ricalibrazione di Platt};
+		\node[side, right=of n6] (s2) {\textbf{Modelli esplorativi e non supervisionati}};
+		\node[side, right=of n7] (s3) {\textbf{Verifiche}\\ sensibilità, controlli positivi, SHAP};
+		\node[side, right=of n8] (s4) {\textbf{Conferma sul test}\\ una sola esecuzione};
+		\node[side, below=of s4] (s5) {\textbf{Validazione esterna}\\ NHANES 2005--2018, senza riaddestramento};
 		
 		\foreach \a/\b in {n1/n2, n2/n3, n3/n4, n4/n5, n5/n6, n6/n7, n7/n8}
 		\draw[arr] (\a) -- (\b);
@@ -386,7 +387,7 @@ Tre regole valgono per l'intera procedura. La prima riguarda gli input. Gli esam
 		\draw[arr] (n8) -- (s4);
 		\draw[arr] (s4) -- (s5);
 	\end{tikzpicture}
-\caption{Schema della procedura. A sinistra il flusso principale: ogni blocco indica l'operazione, l'artefatto prodotto e la sezione che lo descrive. A destra, tratteggiati, i rami di bilanciamento, verifica e validazione. L'insieme di test viene separato al terzo passo e non è più letto fino alla conferma finale.}
+	\caption{Schema della procedura. A sinistra il flusso principale: ogni blocco indica l'operazione e l'artefatto prodotto. A destra, tratteggiati, i rami di bilanciamento, verifica e validazione. L'insieme di test viene separato al terzo passo e non è più letto fino alla conferma finale.}
 	\label{fig:pipeline}
 \end{figure}
 
@@ -418,7 +419,7 @@ Tre regole valgono per l'intera procedura. La prima riguarda gli input. Gli esam
 \section{Dataset e vincoli strutturali}
 
 \subsection{Origine e formato}
-\label{sec:origine}
+
 
 I dati provengono dal dataset pubblico descritto da Li e colleghi~\cite{li_bimodal_2026}, archiviato su Zenodo (record \texttt{10.5281/zenodo.18270337}, versione 10) con licenza CC BY 4.0. Il file \texttt{Dataset for diabetes research.xlsx} contiene 5.922 righe e 190 colonne; la sua impronta SHA-256 è registrata in \texttt{data/README.md}. Secondo l'articolo, i dati sono stati raccolti nel reparto di Diabetologia ed Endocrinologia dello Shanghai Sixth People's Hospital fra febbraio e aprile 2012, in 39 giornate di raccolta; la colonna \texttt{GAnum} fa riferimento al gruppo etnico Jinuo~\cite{jiang_jinuo_2016}. Il dizionario delle variabili, nella \textit{Supplementary Information} dell'articolo, riporta per ogni colonna l'etichetta e i codici, ma non l'unità di misura.
 
@@ -462,7 +463,7 @@ Prima di descrivere la procedura conviene dichiarare i limiti dei dati, perché 
 
 \begin{enumerate}
 	
-	\item \textbf{Unità non documentate.} Sulle 4.350 righe del training vale esattamente $\texttt{UMAUCR} = 176{,}8 \cdot \texttt{UmALB}/\texttt{UCRE}$, ma le unità di \texttt{UmALB} e \texttt{UCRE} non sono documentate. Se la creatinina urinaria fosse in mg/dL il fattore corretto sarebbe 100, e la soglia di 30~mg/g corrisponderebbe a $\texttt{UMAUCR} \geq 53{,}04$. L'effetto è misurato con un'analisi di sensibilità (Sezione~\ref{sec:sensibilita}).
+	\item \textbf{Unità non documentate.} Sulle 4.350 righe del training vale esattamente $\texttt{UMAUCR} = 176{,}8 \cdot \texttt{UmALB}/\texttt{UCRE}$, ma le unità di \texttt{UmALB} e \texttt{UCRE} non sono documentate. Se la creatinina urinaria fosse in mg/dL il fattore corretto sarebbe 100, e la soglia di 30~mg/g corrisponderebbe a $\texttt{UMAUCR} \geq 53{,}04$. L'effetto è misurato con un'analisi di sensibilità.
 	
 	\item \textbf{Colonna \texttt{GFR} non standard.} I valori presenti nella colonna \texttt{GFR} non sono riconducibili ad alcuna equazione nota (CKD-EPI 2009 e 2021, MDRD, MDRD cinese, Cockcroft-Gault). L'eGFR è quindi ricalcolato mediante CKD-EPI 2021 basata sulla sola creatinina, senza coefficiente etnico~\cite{inker_new_2021,stevens_kdigo_2024}.
 	
@@ -743,8 +744,203 @@ Escludere le colonne note non basta: un predittore non renale potrebbe trasporta
 
 Sette variabili ammesse possono essere alterate dalla malattia renale stessa e agire quindi come suoi effetti: \texttt{HGB}, \texttt{RBC} e \texttt{HCT} (anemia), \texttt{SUA} (ridotta escrezione), \texttt{ALB}, \texttt{TP} e \texttt{GA}. Non sono leaker di definzione e restano nell'insieme principale. Per verificare che le prestazioni non dipendano da loro si usa l'insieme di sensibilità \texttt{no\_consequence}, che le esclude e conta quindi 67 variabili.
 
-\subsection{Parametri inattivi o non vincolanti}
+\section{Modelli e ottimizzazione}
 
+\subsection{Modelli}
+
+I modelli sono stati scelti per famiglia e per ruolo, in ordine di complessità crescente. (Tabella~\ref{tab:modelli}).
+
+\begin{table}[H]
+	\centering
+	\small
+	\caption{Modelli delle fasi confermative.}
+	\label{tab:modelli}
+	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3cm} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}p{3.6cm}@{}}
+		\toprule
+		Modello & Ruolo & Implementazione \\
+		\midrule
+		Classificatore di maggioranza & soglia minima e controllo di coerenza: AUC 0,5 e PR-AUC pari alla prevalenza & \texttt{DummyClassifier}, strategia \texttt{prior} \\
+		Logistica SCORED & punteggio clinico con i predittori di SCORED~\cite{bang_screening_2007} disponibili: \texttt{Age}, \texttt{Gender}, \texttt{HGB}, \texttt{Bpsys}, \texttt{DM}; coefficienti ristimati & \texttt{LogisticRegression}, nessuna penalizzazione \\
+		Logistica penalizzata & modello lineare di riferimento sulle 74 variabili & \texttt{LogisticRegression}, solver \texttt{saga}, elastic net \\
+		Random Forest & insieme di alberi per bagging~\cite{breiman_random_2001} & \texttt{RandomForestClassifier} \\
+		XGBoost & insieme di alberi per gradient boosting~\cite{chen_xgboost_2016} & \texttt{XGBClassifier}, \texttt{tree\_method=hist} \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+Ogni modello ha un ruolo preciso.
+\begin{itemize}
+	\item \textbf{Logistica SCORED.} SCORED è stato scelto perché è il punteggio per la malattia renale occulta più validato esternamente~\cite{echouffo-tcheugui_risk_2012}. Rispetto all'originale, l'età è continua, l'emoglobina sostituisce il flag di anemia e la pressione sistolica misurata sostituisce l'ananmesi di ipertensione. Malattia cardiovascolare, scompenso, arteriopatia periferica e proteinuria non sono disponibili. Con circa 85 eventi per variabile (425/5) non serve penalizzazione.
+	
+	\item \textbf{Logistica penalizzata.} Con 74 variabili gli eventi per variabile scendono a circa 5,7 (circa 4,6 nei fold di training), sotto la soglia convenzionale di 10~\cite{collins_tripodai_2024}: da qui la penalizzazione. Nei confronti a basso rischio di distorsione la regressione logistica non è inferiore al machine learning~\cite{christodoulou_systematic_2019}.
+	
+	\item \textbf{Random Forest e xGBoost.} Sono due insiemi di alberi, uno per famiglia, e misurano il contributo delle relazioni non lineari e delle interazioni.
+\end{itemize}
+
+Nelle fasi confermative sono stati esclusi LightGBM e CatBoost, ripresi poi nell'analisi esplorativa successiva insieme ad altri come $k$ vicini, SVM, reti neurali e modelli tabellari.
+
+\subsection{Ottimizzazione degli iperparametri}
+
+Gli iperparametri sono scelti con Optuna, campionatore TPE con seme 32 e interruzione anticipata \texttt{MedianPruner}. L'obiettivo è la PR-AUC media (\textit{average precision}) sui 5 fold interni di ciascun fold esterno; dopo ogni fold interno il valore parziale viene comunicato all'interruttore. il budget è di 100 tentativi per modello e per fold esterno, uguale per tutti i modelli e fissato prima dei risultati; gli spazi sono riportati nella tabella~\ref{tab:spazi}.
+
+Il modello finale vincitore dei round di ottimizzazione ripete la ricerca usando i 5 fold esterni come validazione incrociata dell'intero training, e viene poi riaddestrato su tutti i 4.350 soggetti. L'insieme \texttt{no\_consequence} non è ottimizzato: riusa gli iperparametri dell'insieme principale fold per fold, così che l'analisi di sensibilità cambi soltanto le variabili.
+
+\begin{table}[H]
+	\centering
+	\small
+	\caption{Spazi di ricerca degli iperparametri (scala logaritmica dove indicato). Il classificatore di maggioranza e la logistica SCORED non hanno iperparametri.}
+	\label{tab:spazi}
+	\begin{tabularx}{\textwidth}{@{}l l >{\raggedright\arraybackslash}X@{}}
+		\toprule
+		Modello & Iperparametro & Intervallo \\
+		\midrule
+		Logistica penalizzata & \texttt{C} & $10^{-4}$--10 (log) \\
+		& \texttt{l1\_ratio} & 0--1 (0 = L2, 1 = L1) \\
+		\midrule
+		Random Forest & \texttt{n\_estimators} & 100--1000 \\
+		& \texttt{max\_depth} & 3--25 \\
+		& \texttt{min\_samples\_split} & 2--50 \\
+		& \texttt{min\_samples\_leaf} & 1--20 \\
+		& \texttt{max\_features} & sqrt, log2, 0,25, 0,5, 0,75 \\
+		& \texttt{criterion} & gini, entropy \\
+		\midrule
+		XGBoost & \texttt{n\_estimators} & 200--1200 \\
+		& \texttt{learning\_rate} & 0,01--0,3 (log) \\
+		& \texttt{max\_depth} & 3--12 (1--12 nell'analisi di sensibilità e nel bilanciamento) \\
+		& \texttt{subsample} & 0,6--1,0 \\
+		& \texttt{colsample\_bytree} & 0,5--1,0 \\
+		& \texttt{reg\_alpha}, \texttt{reg\_lambda} & 0--5 \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\subsection{Soglia e fasce di rischio}
+
+Dalla probabilità stimata dal modello derivano una classe e una fascia di rischio. In uno screening un falso negativo è un caso mancato, mentre un falso positivo è un esame in più. La soglia che determina il target dalla probabilità ha, quindi, un compito molto importante. Si sceglie la soglia più alta con sensibilità almeno pari a 0,90 sulle previsioni out-of-fold:
+\begin{equation}
+	t^{*} = s_{(k)}, \qquad k = \lceil 0{,}90 \cdot n_{+} \rceil ,
+\end{equation}
+dove $s_{(1)} \geq s_{(2)} \geq \dots$ sono le probabilità dei positivi in ordine decrescente; un soggetto è positivo se $p \geq t^{*}$. La soglia di Youden è scartata perché assume costi uguali per i due errori. Le sensibilità 0,80, 0,85 e 0,95 sono riportate come punti operativi descrittivi.
+
+Le fasce sono quattro, ricavate dai quantili delle probabilità con le stesse proporzioni dei livelli KDIGO nel training (90,2\%, 8,1\%, 1,1\% e 0,5\%); un valore pari al limite va nella fascia superiore. Soglia e fasce dipendono solo dall'ordinamento delle previsioni: restano quindi confrontabili quando il bilanciamento sposta le probabilità. Una volta stimate in validazione incrociata vengono congelate, e non sono mai ristimate sul test o sui sottogruppi.
+
+\subsection{Trattamento dello sbilanciamento}
+
+Con il 9,77\% di positivi la letteratura suggerisce spesso di riequilibrare le classi, ma con modelli forti il riequilibrio non migliora la discriminazione e peggiora la calibrazione~\cite{van_den_goorbergh_harm_2022}. La domanda è quindi se il bilanciamento faccia riconoscere più casi gravi. Sono confrontate sei tecniche principali e due esplorative (Tabella~\ref{tab:bilanciamento}).
+
+\begin{table}[H]
+	\centering
+	\small
+	\caption{Tecniche di bilanciamento. Il rapporto finale fra positivi e negativi delle tecniche di campionamento è 1:1.}
+	\label{tab:bilanciamento}
+	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.3cm} >{\raggedright\arraybackslash}X@{}}
+		\toprule
+		Tecnica & Definizione \\
+		\midrule
+		Pesi di classe & $w_i = n / (2\, n_{y_i})$: le due classi pesano uguale, media dei pesi 1 \\
+		Pesi per livello KDIGO & fra i positivi peso proporzionale al costo del livello (moderato 1, alto 2, molto alto 3), poi riscalato perché positivi e negativi pesino $n/2$ ciascuno \\
+		Sottocampionamento & rimozione casuale di negativi fino a 1:1 \\
+		Sovracampionamento & duplicazione casuale di positivi fino a 1:1 \\
+		SMOTE-NC & interpolazione fra vicini con $k = 5$~\cite{chawla_smote_2002}; le 14 categoriche trattate come nominali \\
+		SMOTE-NC per livello & generazione dentro ciascun livello positivo, $k = \min(5, n_\ell - 1)$, quote proporzionali alle numerosità con il metodo del resto più grande \\
+		CTGAN (esplorativa) & rete generativa condizionata sulla classe~\cite{xu_modeling_2019}, 300 epoche, lotti da 500, addestrata sull'intero training del fold \\
+		CTGAN per livello (esplorativa) & come sopra, condizionata sul livello KDIGO \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+Ogni tecnica è applicata solo alla parte di addestramento di ciascun fold, interno ed esterno, e del training intero; la validazione resta sempre composta da soggetti reali. Il livello KDIGO serve solo per i pesi e la generazione non entra mai fra le variabili. I dati sintetici sono generati una volta per tecnica e per fold, con seme $42 +100\,o + (i + 14)$ per il fold interno e $i$ del fold esterno $o$ (con $o = 5$ e $i$ assente per il training intero), e salvati con un'impronta di controllo. Tutti i modelli vedono così gli stessi dati.
+
+L'ottimizzazione usa 30 tentativi per fold, e il primo tentativo è l'ottimo della fase senza bilanciamento per lo stesso fold. Il budget è motivato dai registri della fase precedente: a 30 tentativi la PR-AUC interna dista in mediana fra 0,0004 e 0,005 dal valore a 100, meno della variabilità fra i fold. 
+
+Poiché il bilanciamento distorce le probabilità~\cite{dal_pozzolo_calibrating_2015,van_den_goorbergh_harm_2022}, si applica una ricalibrazione di Platt annidata~\cite{platt_probabilities_2000}:
+
+\begin{equation}
+	p' = \sigma\!\left(a + b \cdot \operatorname{logit}(\tilde p)\right), \qquad \tilde p = \min\!\left(\max(p, 10^{-6}),\, 1 - 10^{-6}\right),
+\end{equation}
+con $a$ e $b$ stimati sulle previsioni delle righe interne \emph{reali} del fold, prodotte dal modello addestrato sui dati bilanciati. Con pochi eventi Platt è preferibile alla regressione isotonica ~\cite{niculescu-mizil_predicting_2005}. Le probabilità ricalibrate servono per la calibrazione e per le probabilità medie per livello. L'esito primario e le metriche di ordinamento restano sulle probabilità grezze.
+
+\subsection{Modelli esplorativi}
+
+Dopo le prime fasi sopracitate, una serie di analisi esplorative ha cercato di stabilire se si potesse ottenere una discriminazione migliore. La regola di decisione è stata fissata prima dei calcoli. Un candidato migliora se, contro il riferimento con AUROC media sui fold più alta, soddisfa tre condizioni:
+\begin{itemize}
+	\item differenza di AUROC $\geq 0{,}01$;
+	\item limite inferiore dell'intervallo al 95\% maggiore di zero;
+	\item p di Holm $< 0{,}05$ fra i candidati.
+\end{itemize}
+I candidati sono riassunti nella Tabella~\ref{tab:esplorativi}.
+
+\begin{table}[H]
+	\centering
+	\small
+	\caption{Modelli esplorativi. Salvo diversa indicazione: stessi fold, Optuna con TPE e \texttt{MedianPruner}, 30 tentativi, PR-AUC sui fold interni.}
+	\label{tab:esplorativi}
+	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.6cm} >{\raggedright\arraybackslash}X@{}}
+		\toprule
+		Candidato & Descrizione \\
+		\midrule
+		Media dei riferimenti & media delle probabilità out-of-fold di logistica penalizzata, Random Forest e XGBoost \\
+		XGBoost con mancanti nativi & dati non imputati e non scalati \\
+		XGBoost con spazio allargato & in più \texttt{min\_child\_weight} 1--50 (log) e \texttt{gamma} 0--5; 100 tentativi \\
+		XGBoost senza interruzione & spazio della sezione bilanciamento senza \texttt{MedianPruner} \\
+		Logistica tutta standardizzata & anche le categoriche standardizzate \\
+		Bersaglio scomposto & un XGBoost per l'albuminuria e uno per eGFR $<60$; $p = 1 - (1-p_A)(1-p_G)$ \\
+		CatBoost & \texttt{iterations} 200--1200, \texttt{learning\_rate} 0,01--0,3, \texttt{depth} 1--8, \texttt{l2\_leaf\_reg} 1--10 \\
+		LightGBM & \texttt{n\_estimators} 100--1200, \texttt{num\_leaves} 2--64, \texttt{min\_child\_samples} 5--100, campionamenti e regolarizzazioni come XGBoost \\
+		EBM & iperparametri predefiniti \\
+		TabPFN v2 & nessuna ottimizzazione, esecuzione su CPU \\
+		Tri-ensemble su 21 variabili & media dei tre riferimenti addestrati sulle prime 21 variabili, scelte \emph{dentro} ogni fold per rango medio di coefficienti e SHAP \\
+		Bersaglio continuo & \texttt{XGBRegressor} su $\log(\texttt{UMAUCR})$; probabilità per ACR $\geq 30$ con logistica sulla stima, stimata sulle previsioni interne \\
+		Undici famiglie nuove & Extra Trees, gradient boosting a istogrammi, SVM a kernel RBF, $k$ vicini, Naive Bayes, analisi discriminante lineare e quadratica, MLP, AdaBoost, logistica su spline (GAM), logistica con tutte le interazioni a coppie \\
+		ACR e creatinina continui & regressori su $\log(\texttt{UMAUCR})$ e $\log(\texttt{SCRE})$; la soglia entra solo nel calcolo finale della probabilità (Equazione~\ref{eq:combinato}) \\
+		Margine KDIGO & un solo bersaglio continuo, la distanza dalla soglia in larghezze di categoria \\
+		Stacking e media dei ranghi & meta-modello logistico L2 sulle previsioni out-of-fold di tutti i modelli; media dei ranghi senza parametri \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+Nei modelli senza soglia la condizione eGFR $< 60$ è riscritta come $S_{cr} > S_{60}(\text{età}, \text{sesso})$, la creatinina a cui l'Equazione~\eqref{eq:ckdepi} vale 60. Nel ramo $S_{cr}/\kappa \geq 1$ l'equazione si inverte in forma chiusa:
+\begin{equation}
+	S_{60} = \kappa \left( \frac{142 \cdot 0{,}9938^{\,\text{età}} \cdot \delta_F}{60} \right)^{1/1{,}2} .
+\end{equation}
+Dette $\mu_A(x)$ e $\mu_C(x)$ le stime dei due regressori ed $(e_{A,i}, e_{C,i})_{i=1}^{m}$ le coppie di residui out-of-fold interni, la probabilità del bersaglio composito si ottiene dalla distribuzione empirica congiunta dei residui, senza ipotesi di normalità né di indipendenza:
+\begin{equation}
+	p(x) = 1 - \frac{1}{m} \sum_{i=1}^{m} \mathds{1}\!\left[\mu_A(x) + e_{A,i} < \log 30 \ \land\ \mu_C(x) + e_{C,i} < \log S_{60}(x)\right].
+	\label{eq:combinato}
+\end{equation}
+Sono state provate tre varianti: un LightGBM per bersaglio; la stessa coppia con residui riscalati da un modello della varianza per soggetto (LightGBM su $\log e^2$ con 200 alberi, learning rate 0,05, 7 foglie, almeno 100 campioni per foglia); una rete neurale con due uscite e strati condivisi. Il margine KDIGO è
+\begin{equation}
+	M = \max\!\left( \frac{\log \mathrm{ACR} - \log 30}{\log 10},\ \frac{\log S_{cr} - \log S_{60}}{\log(60/45)/1{,}2} \right),
+\end{equation}
+positivo se e solo se $y = 1$. Le due unità di misura sono la larghezza della categoria A2 e quella di G3a.
+
+Lo stacking usa il \textit{cross-fitting}: il meta-modello del fold $k$ è stimato sulle previsioni e sulle etichette degli altri quattro fold, con \texttt{C} scelto per PR-AUC in una validazione a 5 fold su quelle righe. Ricalibrazione e soglie seguono la stessa logica. La prima valutazione ha mostrato che alcuni modelli producono punteggi su scale diverse fra fold (gradient boosting a istogrammi: AUROC aggregata 0,620 contro 0,695 di media dei fold). Si è quindi deciso, dopo averla vista, di trasformare ogni punteggio nel suo percentile dentro il proprio fold esterno, $r/(n+1)$, prima di ricalibrazione, stacking e media dei ranghi. La correzione è dichiarata; i confronti con il riferimento non cambiano, perché usano le AUROC dei singoli fold.
+
+\subsection{Modelli non supervisionati}
+
+Per verificare che cosa emerga dai dati senza l'etichetta e senza le soglie KDIGO sono stati addestrati due metodi non supervisionati: $k$-means~\cite{lloyd_least_1982} e un autoencoder~\cite{hinton_reducing_2006}. Sono stati applicati a insiemi di variabili con e senza esami renali, e da ciascun modello si ricava un punteggio continuo, confrontato solo a posteriori con la definizione KDIGO e con la sola età. L'etichetta non entra mai nell'addestramento. Gli impieghi sono due e dichiarano ciascuno il proprio tipo. Anche qui il dataset input è stato diviso in vari split rappresentati nella Tabella~\ref{tab:insiemi-nonsup}.
+
+\begin{table}[H]
+	\centering
+	\small
+	\caption{Insiemi di variabili delle analisi non supervisionate.}
+	\label{tab:insiemi-nonsup}
+	\begin{tabularx}{\textwidth}{@{}l >{\raggedright\arraybackslash}X r l@{}}
+		\toprule
+		Insieme & Colonne & $p$ & Tipo \\
+		\midrule
+		Split G & le 74 ammesse più \texttt{SCRE}, \texttt{UmALB}, \texttt{UCRE}, \texttt{BUN} grezze & 78 & esplicativo \\
+		Split T & tutte le colonne del file, esclusa \texttt{CDSMS} (vuota) & 189 & esplicativo; contiene il bersaglio già calcolato \\
+		Ammesse & le 74 della Tabella~\ref{tab:variabili} & 74 & predittivo \\
+		Comuni & le 14 della Tabella~\ref{tab:variabili-comuni} & 14 & predittivo, trasportato su NHANES \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+
+\paragraph{Dati e preelaborazione.} L'analisi predittiva usa i 4.350 soggetti del training e gli stessi 5 fold esterni della Random Forest dell'insieme principale. Dentro ogni fold i mancanti sono sostituiti con la mediana e le colonne standardizzate con media e deviazione standard del fold di addestramento; un'ipertensione non compilata vale 0. Negli split G e T si applicano, dentro il fold: $\log(1+x)$ alle continue con asimmetria superiore a 1 (dopo uno spostamento se compaiono valori non positivi), standardizzazione delle numeriche, moda per le categoriche, MissForest con la configurazione della sezione imputazione, standardizzazione finale ed eliminazione delle colonne a varianza nulla; la validazione è $5 \times 1$ sui fold esterni. Per il trasporto su NHANES il $k$-means è stimato una sola volta sui 4.350 soggetti del training, e mediane e standardizzazione della coorte di sviluppo sono applicate a NHANES.
+
+\paragraph{Limiti.} Il punteggio misura l'atipicità rispetto al gruppo più numeroso, non la malattia. Il numero di gruppi è fissato, non ottimizzato. Lo split T contiene il bersaglio già calcolato e ha valore solo esplicativo.
 
 
 \chapter{Risultati ottenuti}
