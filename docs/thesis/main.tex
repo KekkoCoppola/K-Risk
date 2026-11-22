@@ -942,6 +942,51 @@ Per verificare che cosa emerga dai dati senza l'etichetta e senza le soglie KDIG
 
 \paragraph{Limiti.} Il punteggio misura l'atipicità rispetto al gruppo più numeroso, non la malattia. Il numero di gruppi è fissato, non ottimizzato. Lo split T contiene il bersaglio già calcolato e ha valore solo esplicativo.
 
+\section{Protocolli di validazione e verifica}
+
+\subsection{Partizionamento e prevenzione del leakage}
+
+La validazione è articolata su tre livelli:
+\begin{enumerate}
+	\item \textbf{Validazione incrociata sul training set}.
+	\item \textbf{Validazione su test set}.
+	\item \textbf{Popolazione esterna}.
+\end{enumerate}
+
+Il training set è diviso in 5 fold detti "esterni" con \texttt{StratifiedKFold}, stratificati su livello KDIGO. Ciascun training set di questi fold è a sua volta diviso in 5 fold, chiamati "interni". Questi ultimi servono all'ottimizzazione, i fold esterni invece producono una previsione per ogni soggetto da un modello che non lo ha mai visto (previsioni out-of-fold). Questa scelta è stata presa perché ottimizzare e valutare sugli stessi fold renderebbe le stime ottimistiche~\cite{varma_bias_2006,cawley_over-fitting_2010}.
+
+\subsection{Metriche}
+
+Le metriche sono calcolate sulle previsioni out-of-fold.
+\begin{itemize}
+	\item \textbf{AUROC}, con intervallo di DeLong [CIT: DeLong et al.\ 1988].
+	\item \textbf{PR-AUC}, stimata come \textit{average precision}, con intervallo sulla scala logit [CIT: Boyd et al.\ 2013]:
+	\begin{equation}
+		\operatorname{logit}(\mathrm{AP}) \pm z_{0{,}975}\,\tau, \qquad \tau = \frac{1}{\sqrt{n_{+}\,\mathrm{AP}\,(1-\mathrm{AP})}} .
+	\end{equation}
+	Entrambe sono riportate sulle previsioni aggregate e come media dei 5 fold: la differenza fra le due segnala modelli con probabilità poco coerenti fra un fold e l'altro [CIT: Forman \& Scholz 2010].
+	\item \textbf{Misure alla soglia}: precisione, sensibilità, specificità e quota di soggetti da esaminare, con intervalli di Wilson [CIT: Brown, Cai \& DasGupta 2001], raccomandati quando i casi sono pochi, come i 21 molto alti.
+\end{itemize}
+
+Queste metriche rispondono alla domanda se il modello riconosca i marcatori di malattia renale. Altre misure sono state adottate per verificare se il rischio stimato dal modello rispetti la gravità clinica.
+\begin{itemize}
+	\item \textbf{Probabilità media per livello}, con il test di Jonckheere-Terpstra unilaterale e approssimazione normale corretta per i pareggi [CIT: Hollander, Wolfe \& Chicken 2014]. Con 4.350 soggetti il p-value è piccolo per qualunque modello sensato, quindi si riporta anche la dimensione dell'effetto: la concordanza $C = \mathrm{JT} / \sum_{\ell < \ell'} n_\ell n_{\ell'}$, cioè la quota di coppie di soggetti di livelli diversi ordinate come KDIGO (pareggi contati 1/2, 0,5 = nessuna tendenza).
+	\item \textbf{Sensibilità per livello}, alla soglia fissata.
+	\item \textbf{Accordo fra fasce e livelli}, con kappa pesato a pesi lineari [CIT: Cohen 1968], perché i livelli sono ordinali e i pesi quadratici tratterebbero la scala come a intervalli. Con marginali uguali, garantite dalla costruzione delle fasce, la componente di disaccordo sistematico si annulla.
+\end{itemize}
+Per kappa, probabilità medie e concordanza gli intervalli vengono da 2.000 campioni bootstrap percentile stratificati sul livello KDIGO, con le fasce ristimate a ogni campione.
+
+La calibrazione è descritta da intercetta, pendenza, Brier score e rapporto fra osservati e attesi [CIT: Van Calster et al.\ 2019], con una curva flessibile ottenuta da una regressione logistica su una spline cubica ristretta del logit della probabilità (4 nodi ai quantili 5, 35, 65 e 95\%) e da punti ai decili. L'utilità clinica è misurata con il net benefit [CIT: Vickers \& Elkin 2006]:
+\begin{equation}
+	\mathrm{NB}(t) = \frac{\mathrm{VP}}{n} - \frac{\mathrm{FP}}{n}\cdot\frac{t}{1-t}, \qquad \mathrm{NB}_{\text{tutti}}(t) = \pi - (1-\pi)\,\frac{t}{1-t},
+\end{equation}
+dove $\pi$ è la prevalenza; gli esami inutili evitati ogni 100 soggetti valgono $100\,(\mathrm{NB} - \mathrm{NB}_{\text{tutti}}) / [t/(1-t)]$. In linea con~\cite{van_calster_evaluation_2025}, MCC, F1 e accuratezza bilanciata sono riportate solo in forma descrittiva, perché sono misure improprie a una soglia clinica.
+
+\subsection{Test statistici}
+
+I modelli sono con
+
+
 
 \chapter{Risultati ottenuti}
 
