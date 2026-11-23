@@ -328,9 +328,9 @@ Il capitolo descrive la procedura che porta dal file di dati grezzi ai modelli v
 
 \section{Quadro d'insieme della procedura}
 
-La procedura trasforma un file tabellare di 5.922 soggetti e 190 colonne in previsioni su soggetti non visti durante l'addestramento, e poi in modelli finali valutati su tre livelli: la validazione incrociata sul training, un insieme di test interno aperto una sola volta e una popolazione esterna. Lo schema è riportato nella Figura~\ref{fig:pipeline}.
+La procedura trasforma un file tabellare di 5.922 soggetti e 190 colonne in previsioni su soggetti non visti durante l'addestramento. I modelli con le 74 variabili ammesse sono valutati in validazione incrociata e confermati una sola volta su un insieme di test interno. I modelli con le 14 variabili comuni a NHANES, sviluppati dopo l'apertura del test, sono valutati in validazione incrociata e poi sulla popolazione esterna, senza passare dal test. Lo schema è riportato nella Figura~\ref{fig:pipeline}.
 
-Tre regole valgono per l'intera procedura. La prima riguarda gli input. Gli esami renali servono soltanto a costruire l'etichetta: nessuna variabile che misuri direttamente la funzione renale entra fra i predittori. La seconda riguarda il \textit{leakage}~\cite{kapoor_leakage_2023}. Ogni operazione che stima parametri dai dati (standardizzazione, imputazione, bilanciamento, ottimizzazione, soglie) è stimata solo sulla parte di addestramento della partizione in uso. La terza riguarda il protocollo. Le analisi decise dopo aver visto dei risultati sono dichiarate esplorative (Tabella~\ref{tab:registro}).
+Tre regole valgono per l'intera procedura. La prima riguarda gli input. Nelle analisi \emph{predittive} gli esami renali servono soltanto a costruire l'etichetta, e nessuna variabile che misuri la funzione renale entra fra i predittori. Nelle analisi \emph{esplicative}, che studiano come ragiona il modello rispetto alla definizione clinica, le variabili renali sono ammesse, e la loro prestazione non stima una capacità predittiva. La seconda riguarda il \textit{leakage}~\cite{kapoor_leakage_2023}. Ogni operazione che stima parametri dai dati (standardizzazione, imputazione, bilanciamento, ottimizzazione) è stimata solo sulla parte di addestramento della partizione in uso. La soglia di classificazione è un'eccezione dichiarata: nei modelli principali è scelta sulle stesse previsioni out-of-fold su cui si misurano le prestazioni alla soglia, mentre sull'insieme di test arriva già fissata. La terza riguarda il protocollo. Le analisi decise dopo aver visto dei risultati sono dichiarate esplorative (Tabella~\ref{tab:registro}).
 
 \begin{figure}[H]
 	\centering
@@ -385,7 +385,6 @@ Tre regole valgono per l'intera procedura. La prima riguarda gli input. Gli esam
 		\draw[arr, dashed] (n6) -- (s2);
 		\draw[arr, dashed] (n7) -- (s3);
 		\draw[arr] (n8) -- (s4);
-		\draw[arr] (s4) -- (s5);
 	\end{tikzpicture}
 	\caption{Schema della procedura. A sinistra il flusso principale: ogni blocco indica l'operazione e l'artefatto prodotto. A destra, tratteggiati, i rami di bilanciamento, verifica e validazione. L'insieme di test viene separato al terzo passo e non è più letto fino alla conferma finale.}
 	\label{fig:pipeline}
@@ -394,14 +393,14 @@ Tre regole valgono per l'intera procedura. La prima riguarda gli input. Gli esam
 \begin{table}[H]
 	\centering
 	\small
-	\caption{Registro delle analisi: momento in cui è stato fissato il protocollo e dati usati. \enquote{Registrata} indica un protocollo definito prima dell'esecuzione dei calcoli; \enquote{post-hoc} un'analisi decisa dopo aver visto risultati precedenti, con protocollo comunque scritto prima dei propri calcoli.}
+	\caption{Registro delle analisi: momento in cui è stato fissato il protocollo e dati usati. \enquote{Registrata} indica un protocollo definito prima dell'esecuzione dei calcoli; \enquote{post-hoc} un'analisi decisa dopo aver visto risultati precedenti, con protocollo scritto prima dei propri calcoli salvo dove indicato.}
 	\label{tab:registro}
 	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}p{2.3cm} >{\raggedright\arraybackslash}p{4.2cm}@{}}
 		\toprule
 		Analisi & Data (2026) & Stato \\
 		\midrule
 		Etichetta, split, preprocessing & 17--18/09 & registrata (regola di imputazione rivista dopo i primi risultati) \\
-		Modelli e valutazione (domande 1--4) & 19/09 & registrata \\
+		Modelli e valutazione & 19/09 & registrata \\
 		Profondità di XGBoost & 19/09 & post-hoc \\
 		Bilanciamento delle classi & 19/09 & registrata \\
 		Sottogruppo diabetico & 20/09 & registrata \\
@@ -418,10 +417,12 @@ Tre regole valgono per l'intera procedura. La prima riguarda gli input. Gli esam
 
 \section{Dataset e vincoli strutturali}
 
+Questa sezione descrive da dove vengono i dati, quali soggetti sono analizzabili e quali limiti del file condizionano le scelte successive.
+
 \subsection{Origine e formato}
 
 
-I dati provengono dal dataset pubblico descritto da Li e colleghi~\cite{li_bimodal_2026}, archiviato su Zenodo (record \texttt{10.5281/zenodo.18270337}, versione 10) con licenza CC BY 4.0. Il file contiene 5.922 righe e 190 colonne. Secondo l'articolo, i dati sono stati raccolti nel reparto di Diabetologia ed Endocrinologia dello Shanghai Sixth People's Hospital fra febbraio e aprile 2012, in 39 giornate di raccolta. La popolazione appartiene al gruppo etnico Jinuo~\cite{jiang_jinuo_2016}. Il dizionario delle variabili, nella \textit{Supplementary Information} dell'articolo, riporta per ogni colonna l'etichetta e i codici, ma non l'unità di misura.
+I dati provengono dal dataset pubblico descritto da Li e colleghi~\cite{li_bimodal_2026}, archiviato su Zenodo (record \texttt{10.5281/zenodo.18270337}, versione 10) con licenza CC BY 4.0. Il file contiene 5.922 righe e 190 colonne. Secondo l'articolo, i dati provengono dal reparto di Diabetologia ed Endocrinologia dello Shanghai Sixth People's Hospital e sono stati raccolti fra febbraio e aprile 2012. L'articolo parla di pazienti diabetici, ma il diabete riguarda solo il 6,1\% dei soggetti eleggibili. Il file corrisponde infatti a un'indagine di popolazione sugli adulti di etnia Jinuo condotta dallo stesso reparto~\cite{jiang_jinuo_2016}. Nel file la raccolta occupa 39 giornate, dal 10 febbraio al 7 aprile 2012. Il dizionario delle variabili, nella \textit{Supplementary Information} dell'articolo, riporta per ogni colonna l'etichetta e i codici, ma non l'unità di misura.
 
 Ogni soggetto ha una sola rilevazione: il dataset è trasversale e non contiene informazioni di follow-up.
 
@@ -463,7 +464,7 @@ Prima di descrivere la procedura conviene dichiarare i limiti dei dati, perché 
 
 \begin{enumerate}
 	
-	\item \textbf{Unità non documentate.} Sulle 4.350 righe del training vale esattamente $\texttt{UMAUCR} = 176{,}8 \cdot \texttt{UmALB}/\texttt{UCRE}$, ma le unità di \texttt{UmALB} e \texttt{UCRE} non sono documentate. Se la creatinina urinaria fosse in mg/dL il fattore corretto sarebbe 100, e la soglia di 30~mg/g corrisponderebbe a $\texttt{UMAUCR} \geq 53{,}04$. L'effetto è misurato con un'analisi di sensibilità.
+	\item \textbf{Unità non documentate.} Sulle 4.350 righe del training vale, a meno dell'arrotondamento, $\texttt{UMAUCR} = 176{,}8 \cdot \texttt{UmALB}/\texttt{UCRE}$, ma le unità di \texttt{UmALB} e \texttt{UCRE} non sono documentate. Se la creatinina urinaria fosse in mg/dL il fattore corretto sarebbe 100, e la soglia di 30~mg/g corrisponderebbe a $\texttt{UMAUCR} \geq 53{,}04$. L'effetto è misurato con un'analisi di sensibilità.
 	
 	\item \textbf{Colonna \texttt{GFR} non standard.} I valori presenti nella colonna \texttt{GFR} non sono riconducibili ad alcuna equazione nota (CKD-EPI 2009 e 2021, MDRD, MDRD cinese, Cockcroft-Gault). L'eGFR è quindi ricalcolato mediante CKD-EPI 2021 basata sulla sola creatinina, senza coefficiente etnico~\cite{inker_new_2021,stevens_kdigo_2024}.
 	
@@ -487,7 +488,7 @@ Prima di descrivere la procedura conviene dichiarare i limiti dei dati, perché 
 
 La coorte di sviluppo non consente due verifiche: osservare se il comportamento dei modelli si ripete in una popolazione diversa e collegare il punteggio a un esito successivo alla misura. Per entrambe si usa la \textit{National Health and Nutrition Examination Survey} (NHANES)~\cite{nhanes_cdc,nhanes_cdc_data}, un'indagine trasversale ripetuta che raccoglie esami di laboratorio, misure antropometriche, pressione arteriosa e anamnesi, e i cui partecipanti adulti sono collegati ai registri di morte. Area geografica, struttura d'età e procedure di laboratorio differiscono da quelle della coorte di sviluppo, ed è proprio questa distanza a renderla adatta come banco di prova esterno.
 
-\paragraph{Cicli e file.} Si usano sette cicli biennali consecutivi, dal 2005--2006 (suffisso \texttt{D}) al 2017--2018 (suffisso \texttt{J}). Per ogni ciclo si leggono i dodici file in formato SAS transport della Tabella~\ref{tab:nhanes-file} e il file pubblico di mortalità collegata, aggiornamento 2019, a larghezza fissa: 91 file in tutto. I record si uniscono tramite l'identificativo \texttt{SEQN} a partire dal file demografico. Chi non ha uno degli esami predittori resta nel campione con il valore mancante.
+\paragraph{Cicli e file.} Si usano sette cicli biennali consecutivi, dal 2005--2006 (suffisso \texttt{D}) al 2017--2018 (suffisso \texttt{J}). Per ogni ciclo si leggono i dodici file in formato SAS transport della Tabella~\ref{tab:nhanes-file} e il file pubblico di mortalità collegata, aggiornamento 2019, a larghezza fissa: 91 file in tutto. I record si uniscono tramite l'identificativo \texttt{SEQN} a partire dal file demografico. Chi non ha uno degli esami predittori resta nel campione con il valore mancante. Glicemia a digiuno e trigliceridi sono misurati solo nel sottocampione a digiuno e mancano nel 51,6\% e nel 52,1\% dei soggetti. La Random Forest tratta i mancanti in modo nativo; per $k$-means sono sostituiti con la mediana della coorte di sviluppo.
 
 \begin{table}[H]
 	\centering
@@ -536,13 +537,15 @@ La coorte di sviluppo non consente due verifiche: osservare se il comportamento 
 
 \paragraph{Armonizzazione.} Per il ciclo 2005--2006 la creatinina sierica è ricalibrata con la correzione del CDC, $S_{cr}^{\mathrm{cal}} = -0{,}016 + 0{,}978\,S_{cr}$. Nei cicli 2005--2008 il file non contiene l'ACR, che si calcola come rapporto fra albumina e creatinina urinarie moltiplicato per 100 (mg/g), la stessa formula del CDC. L'eGFR segue l'Equazione~\eqref{eq:ckdepi}, con la creatinina già in mg/dL. Le pressioni sono la media delle letture disponibili (fino a quattro) con valore positivo. L'etichetta segue l'Equazione~\eqref{eq:target} e interessa il 17,6\% del campione.
 
-\paragraph{Pesi campionari.} La domanda riguarda discriminazione e associazione dentro il campione, non la prevalenza nella popolazione statunitense: le analisi principali non sono pesate. Il peso campionario dell'esame medico entra solo in una sensibilità del modello di Cox, senza riscalarlo sui sette cicli e senza strati né unità primarie di campionamento; per questo la sensibilità è dichiarata non valida. I risultati descrivono il campione, non la popolazione.
+\paragraph{Pesi campionari.} La domanda riguarda discriminazione e associazione dentro il campione, non la prevalenza nella popolazione statunitense: le analisi principali non sono pesate. I risultati descrivono il campione, non la popolazione.
 
 \paragraph{Follow-up.} Il tempo di osservazione ha mediana 87 mesi; la chiusura del follow-up è il 31 dicembre 2019. Nel campione si contano 3.590 morti, di cui 1.102 per cause cardiovascolari.
 
-\paragraph{Limiti.} Diabete e ipertensione sono riferiti dal partecipante, mentre nella coorte di sviluppo la variabile del diabete non coincide con la sola diagnosi nota. L'ACR deriva da una sola misura. Nei file pubblici il NCHS sostituisce alcuni tempi e alcune cause di morte con valori sintetici, per tutela della riservatezza.
+\paragraph{Limiti.} Diabete e ipertensione sono riferiti dal partecipante, mentre nella coorte di sviluppo la variabile del diabete non coincide con la sola diagnosi nota. L'anamnesi di ipertensione è compilata solo nel 3,4\% della coorte di sviluppo, e la regola R-a vi esamina l'8,7\% dei soggetti, contro il 40,0\% di NHANES. L'ACR deriva da una sola misura. Nei file pubblici il NCHS sostituisce alcuni tempi e alcune cause di morte con valori sintetici, per tutela della riservatezza.
 
 \section{Pre-elaborazione e preparazione del dato}
+
+Prima di addestrare un modello servono un'etichetta, un insieme di test separato e una matrice di variabili completa; le sottosezioni seguono quest'ordine.
 
 \subsection{Costruzione dell'etichetta}
 
@@ -570,7 +573,7 @@ Sono state scartate due alternative.
 
 L'insieme di test viene separato prima di qualsiasi stima che impari dai dati. Deve conservare la prevalenza reale e i livelli KDIGO veri dei soggetti, perché su di esso si verificano le conclusioni.
 
-La separazione è un holdout 75/25 stratificato su otto strati (quattro livelli KDIGO per due stati di diabete), con seme 42. La proporzione è stata scelta in base al numero di eventi nel test, che dovrebbe essere almeno 100~\cite{collins_tripodai_2024} (Tabella~\ref{tab:proporzioni}). La proporzione 80/20 lascerebbe nel test 5 casi molto alti e 18 diabetici positivi; la 70/30 toglierebbe al training 28 positivi rispetto a quella scelta.
+La separazione è un holdout 75/25 stratificato su otto strati (quattro livelli KDIGO per due stati di diabete), con seme 42. La proporzione è stata scelta in base al numero di eventi nel test, che dovrebbe essere almeno 100 (Tabella~\ref{tab:proporzioni}). La proporzione 80/20 lascerebbe nel test 5 casi molto alti e 18 diabetici positivi; la 70/30 toglierebbe al training 28 positivi rispetto a quella scelta.
 
 \begin{table}[H]
 	\centering
@@ -624,9 +627,7 @@ Sono stati confrontati quattro candidati, in ordine di complessità crescente:
 	\item una variante di MissForest basata su alberi estremamente casuali: 50 alberi, almeno 5 soggetti per foglia, $\sqrt{p}$ variabili per divisione, 5 iterazioni, colonne complete usate solo come predittori.
 \end{itemize}
 
-Il confronto valuta i metodi su cinque fold stratificati per livello KDIGO (seme 42) secondo due criteri: l'errore di ricostruzione su un 10\% di dati mascherati (RMSE e MAE standardizzati) e la prestazione predittiva a valle (PR-AUC e AUC di una regressione logica fissa). Poiché le prestazioni a valle risultano indistinguibili, la selezione adotta la regola dell'errore standard~\cite{hastie_elements_2009} applicata all'RMSE, privilegiando la fedeltà di ricostruzione sui dati osservati.
-
-La scelta finale, dopo i confronti, ha visto vincitore il MissForest. La differenza di RMSE fa $k$ vicini e MissForest è $+0{,}060 \pm 0{,}010$, con MissForest migliore in 5 fold su 5, mentre la differenza di PR-AUC ($+0{,}0014 \pm 0{,}0015$) non è significativa. Inoltre una ricostruzione con meno errori aiuta le tecniche di bilanciamento o generazione sintetica nella replica di artefatti fedeli.
+Il confronto valuta i metodi su cinque fold stratificati per livello KDIGO (seme 42) secondo due criteri: l'errore di ricostruzione su un 10\% di dati mascherati (RMSE e MAE standardizzati) e la prestazione predittiva a valle (PR-AUC e AUC di una regressione logica fissa). Poiché le prestazioni a valle risultano indistinguibili, la scelta guarda alla ricostruzione. La regola dell'errore standard~\cite{hastie_elements_2009}, rivista dopo i primi risultati (Tabella~\ref{tab:registro}), non separa i due metodi migliori: il $k$ vicini (RMSE 0,793) resta entro un errore standard da MissForest ($0{,}734 \pm 0{,}066$) e, più semplice, sarebbe preferito. Ha deciso quindi il confronto appaiato sugli stessi fold, in cui MissForest ricostruisce meglio in 5 fold su 5, mentre la PR-AUC non cambia in modo apprezzabile. Una ricostruzione più fedele conta soprattutto per il bilanciamento, che genera esempi sintetici dai valori imputati.
 
 \begin{table}[H]
 	\centering
@@ -651,7 +652,7 @@ Il nucleo di questa fase è la scelta di quali colonne del dataset possano entra
 
 \subsection{Variabili ammesse}
 
-Le variabili ammesse sono 74, di cui 60 numeriche e 14 categoriche (Tabella~\ref{tab:variabili}). Il dizionario del dataset non riporta le unità di misura. Il dizionario del dataset non riporta le unità di misura; la loro conformità agli standard del Sistema Internazionale clinico è stata verificata empiricamente mediante dodici formule fisiologiche note (tra cui \texttt{BMI}, (tra cui BMI, HOMA-IR, FIB-4 e indici eritrocitari), tutte coincidenti con i valori attesi (rapporto mediano tra osservato e atteso pari a 1).
+Le variabili ammesse sono 74, di cui 60 numeriche e 14 categoriche (Tabella~\ref{tab:variabili}). Poiché il dizionario non riporta le unità, quelle delle variabili che compaiono in dodici formule note, fra cui BMI, HOMA-IR, FIB-4 e indici eritrocitari, sono state verificate ricalcolando le formule, con un rapporto mediano fra valore osservato e atteso pari a 1.
 
 \begin{table}[H]
 	\centering
@@ -702,7 +703,7 @@ Le 116 colonne escluse sono riportate per motivo nella Tabella~\ref{tab:esclusio
 		Derivati a soglia & 37 & categorizzazioni di variabili continue già presenti (\texttt{BMI25}, \texttt{Anemia}, \texttt{AgeGroup}, \dots): multicollinearità e soggetti incoerenti nella generazione sintetica \\
 		Misure duplicate & 1 & \texttt{Waist2}, seconda misura della vita ($r = 0{,}86$ con \texttt{waist1}) \\
 		Combinazioni lineari & 2 & $\texttt{IDBIL} = \texttt{TBIL} - \texttt{DBIL}$; $\texttt{GLO} = \texttt{TP} - \texttt{ALB}$ \\
-		Comorbidità con codice 9 & 15 & dopo la ricodifica di 9 come mancante superano il 15\% di mancanti; il composito cardiovascolare ha il 25,4\% di mancanti e prevalenza del bersaglio piatta (10,1\% contro 9,1\%) \\
+		Comorbidità con codice 9 & 15 & dopo la ricodifica di 9 come mancante superano il 15\% di mancanti; \\
 		Indici instabili & 1 & $\texttt{Homa}\beta = 20 \cdot \texttt{FINS}/(\texttt{FPG} - 3{,}5)$: diverge per glicemie vicine a 3,5 (9 valori oltre 1.000 nel training) \\
 		Mancanti oltre il 15\% & 5 & \texttt{leg}, \texttt{LC}, \texttt{LCcount}, \texttt{ALY}, \texttt{ALYcount} \\
 		\midrule
@@ -737,6 +738,8 @@ Sette variabili ammesse possono essere alterate dalla malattia renale stessa e a
 
 \section{Modelli e ottimizzazione}
 
+Definiti dati e variabili, restano da scegliere i modelli e il modo di fissarne gli iperparametri.
+
 \subsection{Modelli}
 
 I modelli sono stati scelti per famiglia e per ruolo, in ordine di complessità crescente. (Tabella~\ref{tab:modelli}).
@@ -744,7 +747,7 @@ I modelli sono stati scelti per famiglia e per ruolo, in ordine di complessità 
 \begin{table}[H]
 	\centering
 	\small
-	\caption{Modelli delle fasi confermative.}
+	\caption{Modelli delle analisi registrate.}
 	\label{tab:modelli}
 	\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3cm} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}p{3.6cm}@{}}
 		\toprule
@@ -763,18 +766,18 @@ Ogni modello ha un ruolo preciso.
 \begin{itemize}
 	\item \textbf{Logistica SCORED.} SCORED è stato scelto perché è il punteggio per la malattia renale occulta più validato esternamente~\cite{echouffo-tcheugui_risk_2012}. Rispetto all'originale, l'età è continua, l'emoglobina sostituisce il flag di anemia e la pressione sistolica misurata sostituisce l'anamnesi di ipertensione. Malattia cardiovascolare, scompenso, arteriopatia periferica e proteinuria non sono disponibili. Con circa 85 eventi per variabile (425/5) non serve penalizzazione.
 	
-	\item \textbf{Logistica penalizzata.} Con 74 variabili gli eventi per variabile scendono a circa 5,7 (circa 4,6 nei fold di training), sotto la soglia convenzionale di 10~\cite{collins_tripodai_2024}: da qui la penalizzazione. Nei confronti a basso rischio di distorsione la regressione logistica non è inferiore al machine learning~\cite{christodoulou_systematic_2019}.
+	\item \textbf{Logistica penalizzata.} Con 74 variabili gli eventi per variabile scendono a circa 5,7 (circa 4,6 nei fold di training), sotto la soglia convenzionale di 10: da qui la penalizzazione. Nei confronti a basso rischio di distorsione la regressione logistica non è inferiore al machine learning~\cite{christodoulou_systematic_2019}.
 	
 	\item \textbf{Random Forest e XGBoost.} Sono due insiemi di alberi, uno per famiglia, e misurano il contributo delle relazioni non lineari e delle interazioni.
 \end{itemize}
 
-Nelle fasi confermative si usa un solo modello per famiglia: LightGBM e CatBoost, gradient boosting come XGBoost, sono ripresi nell'analisi esplorativa insieme ad altri come $k$ vicini, SVM, reti neurali e modelli tabellari.
+Nelle analisi registrate si usa un solo modello per famiglia: LightGBM e CatBoost, gradient boosting come XGBoost, sono ripresi nell'analisi esplorativa insieme ad altri come $k$ vicini, SVM, reti neurali e modelli tabellari.
 
 \subsection{Ottimizzazione degli iperparametri}
 
 Gli iperparametri sono scelti con Optuna, campionatore TPE con seme 42 e interruzione anticipata dei tentativi che, dopo lo stesso numero di fold interni, restano sotto la mediana dei precedenti. L'obiettivo è la PR-AUC media (\textit{average precision}) sui 5 fold interni di ciascun fold esterno; dopo ogni fold interno il valore parziale viene comunicato all'interruttore. Il budget è di 100 tentativi per modello e per fold esterno, uguale per tutti i modelli e fissato prima dei risultati; gli spazi sono riportati nella tabella~\ref{tab:spazi}. La PR-AUC guida soltanto la scelta degli iperparametri. Il confronto fra modelli usa l'AUROC, perché la PR-AUC dipende dalla prevalenza~\cite{van_calster_evaluation_2025}.
 
-Il modello finale vincitore dei round di ottimizzazione ripete la ricerca usando i 5 fold esterni come validazione incrociata dell'intero training, e viene poi riaddestrato su tutti i 4.350 soggetti. L'insieme senza variabili-conseguenza non è ottimizzato: riusa gli iperparametri dell'insieme principale fold per fold, così che l'analisi di sensibilità cambi soltanto le variabili.
+Per il modello finale di ciascun algoritmo la ricerca si ripete usando i 5 fold esterni come validazione incrociata dell'intero training, e viene poi riaddestrato su tutti i 4.350 soggetti. L'insieme senza variabili-conseguenza non è ottimizzato: riusa gli iperparametri dell'insieme principale fold per fold, così che l'analisi di sensibilità cambi soltanto le variabili.
 
 \begin{table}[H]
 	\centering
@@ -807,7 +810,7 @@ Il modello finale vincitore dei round di ottimizzazione ripete la ricerca usando
 
 \subsection{Soglia e fasce di rischio}
 
-Dalla probabilità stimata dal modello derivano una classe e una fascia di rischio. In uno screening un falso negativo è un caso mancato, mentre un falso positivo è un esame in più. La soglia che determina il target dalla probabilità ha, quindi, un compito molto importante. Si sceglie la soglia più alta con sensibilità almeno pari a 0,90 sulle previsioni out-of-fold:
+Dalla probabilità stimata dal modello derivano una classe e una fascia di rischio. In uno screening un falso negativo è un caso mancato, mentre un falso positivo è un esame in più. La soglia che determina il target dalla probabilità ha, quindi, un compito molto importante. Si sceglie la soglia più alta con sensibilità almeno pari a 0,90 sulle previsioni out-of-fold, cioè prodotte per ogni soggetto da un modello che non lo ha visto in addestramento:
 \begin{equation}
 	t^{*} = s_{(k)}, \qquad k = \lceil 0{,}90 \cdot n_{+} \rceil ,
 \end{equation}
@@ -817,7 +820,7 @@ Le fasce sono quattro, ricavate dai quantili delle probabilità con le stesse pr
 
 \subsection{Trattamento dello sbilanciamento}
 
-Con il 9,77\% di positivi la letteratura suggerisce spesso di riequilibrare le classi, ma con modelli forti il riequilibrio non migliora la discriminazione e peggiora la calibrazione~\cite{van_den_goorbergh_harm_2022}. La domanda è quindi se il bilanciamento faccia riconoscere più casi gravi. Sono confrontate sei tecniche principali e due esplorative (Tabella~\ref{tab:bilanciamento}).
+Con il 9,77\% di positivi è frequente riequilibrare le classi. Nella regressione logistica, però, il riequilibrio non migliora la discriminazione e peggiora la calibrazione~\cite{van_den_goorbergh_harm_2022}. La domanda è quindi se, con gli insiemi di alberi, il bilanciamento faccia riconoscere più casi gravi, cioè di livello alto o molto alto. Sono confrontate sei tecniche principali e due esplorative (Tabella~\ref{tab:bilanciamento}).
 
 \begin{table}[H]
 	\centering
@@ -892,11 +895,13 @@ I candidati sono riassunti nella Tabella~\ref{tab:esplorativi}.
 
 Nei modelli senza soglia ACR e creatinina sono stimati come valori continui, e la regola KDIGO interviene solo alla fine, per trasformare le due stime in una probabilità del bersaglio composito.
 
-Lo stacking stima il meta-modello di ogni fold sulle previsioni degli altri quattro. Poiché alcuni modelli producevano punteggi su scale diverse fra fold, ogni punteggio è stato trasformato nel suo percentile dentro il fold, una correzione decisa dopo la prima valutazione e dichiarata come tale.
+Lo stacking stima il meta-modello di ogni fold sulle previsioni degli altri quattro. Quelle previsioni vengono però da modelli di base addestrati anche sul fold valutato, perché manca un secondo livello di annidamento, e la stima può essere lievemente ottimistica. Poiché alcuni modelli producevano punteggi su scale diverse fra fold, ogni punteggio è stato trasformato nel suo percentile dentro il fold, una correzione decisa dopo la prima valutazione e dichiarata come tale.
 
 \subsection{Modelli non supervisionati}
 
-Per verificare che cosa emerga dai dati senza l'etichetta e senza le soglie KDIGO sono stati addestrati due metodi non supervisionati: $k$-means~\cite{lloyd_least_1982} e un autoencoder~\cite{hinton_reducing_2006}. Sono stati applicati a insiemi di variabili con e senza esami renali, e da ciascun modello si ricava un punteggio continuo, confrontato solo a posteriori con la definizione KDIGO e con la sola età. L'etichetta non entra mai nell'addestramento. Gli impieghi sono due e dichiarano ciascuno il proprio tipo. Anche qui il dataset input è stato diviso in vari split rappresentati nella Tabella~\ref{tab:insiemi-nonsup}.
+Per verificare che cosa emerga dai dati senza l'etichetta e senza le soglie KDIGO sono stati usati metodi non supervisionati, in due impieghi (Tabella~\ref{tab:insiemi-nonsup}). Il primo è esplicativo: sugli insiemi G e T, che contengono anche gli esami renali, si verifica se emergono i gruppi definiti da KDIGO. Il secondo è predittivo e usa solo variabili ammesse: si misura se il punteggio aiuta a scegliere chi esaminare, nella coorte di sviluppo e in NHANES. L'etichetta non entra mai nell'addestramento.
+
+Sugli insiemi G e T sono stati stimati $k$-means~\cite{lloyd_least_1982}, con il numero di gruppi scelto dalla gap statistic~\cite{tibshirani_estimating_2001} fra 1 e 6, misture gaussiane, una distanza di Mahalanobis robusta, un autoencoder~\cite{hinton_reducing_2006} e, sul solo insieme T, $k$-prototypes. Negli impieghi predittivi si usano $k$-means con 4 gruppi e l'autoencoder. Il punteggio di $k$-means è la distanza dal centro del gruppo più numeroso, quello dell'autoencoder, con strati di 32, 8 e 32 neuroni, l'errore medio di ricostruzione.
 
 \begin{table}[H]
 	\centering
@@ -918,9 +923,11 @@ Per verificare che cosa emerga dai dati senza l'etichetta e senza le soglie KDIG
 
 \paragraph{Dati e preelaborazione.} L'analisi predittiva usa i 4.350 soggetti del training e gli stessi 5 fold esterni della Random Forest dell'insieme principale. Dentro ogni fold i mancanti sono sostituiti con la mediana e le colonne standardizzate con media e deviazione standard del fold di addestramento; un'ipertensione non compilata vale 0. Negli split G e T si applicano, dentro il fold: $\log(1+x)$ alle continue con asimmetria superiore a 1 (dopo uno spostamento se compaiono valori non positivi), standardizzazione delle numeriche, moda per le categoriche, MissForest con la configurazione della sezione imputazione, standardizzazione finale ed eliminazione delle colonne a varianza nulla; la validazione è $5 \times 1$ sui fold esterni. Per il trasporto su NHANES il $k$-means è stimato una sola volta sui 4.350 soggetti del training, e mediane e standardizzazione della coorte di sviluppo sono applicate a NHANES.
 
-\paragraph{Limiti.} Il punteggio misura l'atipicità rispetto al gruppo più numeroso, non la malattia. Il numero di gruppi è fissato, non ottimizzato. Lo split T contiene il bersaglio già calcolato e ha valore solo esplicativo.
+\paragraph{Limiti.} Il punteggio misura l'atipicità rispetto al gruppo più numeroso, non la malattia. Negli impieghi predittivi il numero di gruppi è fissato a 4, senza ottimizzazione. Lo split T contiene il bersaglio già calcolato e ha valore solo esplicativo.
 
 \section{Protocolli di validazione e verifica}
+
+I modelli vanno valutati su soggetti che non hanno contribuito alla loro stima.
 
 \subsection{Partizionamento e prevenzione del leakage}
 
@@ -937,13 +944,13 @@ Il training set è diviso in cinque fold, detti esterni, stratificati sui quattr
 
 Le metriche sono calcolate sulle previsioni out-of-fold.
 \begin{itemize}
-	\item \textbf{AUROC}, con intervallo di DeLong [CIT: DeLong et al.\ 1988].
-	\item \textbf{PR-AUC}, stimata come \textit{average precision}, con intervallo sulla scala logit [CIT: Boyd et al.\ 2013]:
+	\item \textbf{AUROC}, con intervallo di DeLong ~\cite{delong_comparing_1988}.
+	\item \textbf{PR-AUC}, stimata come \textit{average precision}, con intervallo sulla scala logit:
 	\begin{equation}
 		\operatorname{logit}(\mathrm{AP}) \pm z_{0{,}975}\,\tau, \qquad \tau = \frac{1}{\sqrt{n_{+}\,\mathrm{AP}\,(1-\mathrm{AP})}} .
 	\end{equation}
-	Entrambe sono riportate sulle previsioni aggregate e come media dei 5 fold: la differenza fra le due segnala modelli con probabilità poco coerenti fra un fold e l'altro [CIT: Forman \& Scholz 2010].
-	\item \textbf{Misure alla soglia}: precisione, sensibilità, specificità e quota di soggetti da esaminare, con intervalli di Wilson [CIT: Brown, Cai \& DasGupta 2001], raccomandati quando i casi sono pochi, come i 21 molto alti.
+	Entrambe sono riportate sulle previsioni aggregate e come media dei 5 fold: la differenza fra le due segnala modelli con probabilità poco coerenti fra un fold e l'altro.
+	\item \textbf{Misure alla soglia}: precisione, sensibilità, specificità e quota di soggetti da esaminare, con intervalli di Wilson, raccomandati quando i casi sono pochi, come i 21 molto alti.
 \end{itemize}
 
 Queste metriche rispondono alla domanda se il modello riconosca i marcatori di malattia renale. Altre misure sono state adottate per verificare se il rischio stimato dal modello rispetti la gravità clinica.
@@ -952,7 +959,7 @@ Queste metriche rispondono alla domanda se il modello riconosca i marcatori di m
 	\item \textbf{Sensibilità per livello}, alla soglia fissata.
 	\item \textbf{Accordo fra fasce e livelli}, con kappa pesato a pesi lineari~\cite{cohen_weighted_1968}, perché i livelli sono ordinali e i pesi quadratici tratterebbero la scala come a intervalli. Con marginali uguali, garantite dalla costruzione delle fasce, la componente di disaccordo sistematico si annulla.
 \end{itemize}
-Per kappa, probabilità medie e concordanza gli intervalli vengono da 2.000 campioni bootstrap percentile stratificati sul livello KDIGO, con le fasce ristimate a ogni campione.
+Per kappa, probabilità medie e concordanza gli intervalli vengono da 2.000 campioni bootstrap percentile stratificati sul livello KDIGO. Solo dentro questo calcolo le fasce sono ristimate in ogni campione, per includere la loro variabilità negli intervalli.
 
 La calibrazione è descritta da intercetta, pendenza, Brier score e rapporto fra osservati e attesi ~\cite{van_calster_evaluation_2025}, con una curva flessibile ottenuta da una regressione logistica su una spline cubica ristretta del logit della probabilità (4 nodi ai quantili 5, 35, 65 e 95\%) e da punti ai decili. L'utilità clinica è misurata con il net benefit:
 \begin{equation}
@@ -972,9 +979,9 @@ dove $\bar d$ e $s_d^2$ sono media e varianza delle differenze fra i fold, $k = 
 
 La curva di decisione è calcolata per soglie da 0,02 a 0,20 con passo 0,005, un intervallo fissato prima dei calcoli. A 0,02 si accettano 49 esami inutili per ogni caso trovato, a 0,20 quattro. Le soglie 0,05 e 0,07 sono riportate a parte, perché Bragg-Gresham e colleghi le usano per la stessa decisione~\cite{bragg-gresham_using_2025}. Il net benefit è calcolato anche separatamente fra diabetici e non diabetici.
 
-Il secondo confronto riproduce la pratica clinica a parità di esami. Una regola stabilisce quanti soggetti mandare all'esame. Il modello esamina lo stesso numero di soggetti, scelti fra quelli con il punteggio più alto, e si contano i positivi KDIGO trovati da ciascuno. La regola principale, R-a, seleziona chi ha diabete o ipertensione noti: nel training sono 378 soggetti. È la strategia indicata dalle linee guida~\cite{stevens_kdigo_2024,american_diabetes_association_professional_practice_committee_11_2024}, ed è la stessa che Yoo e colleghi hanno usato come confronto per MERWACS~\cite{yoo_merwacs_2026}. Due regole più larghe aggiungono la pressione misurata $\geq 140/90$ (R-b, 929 soggetti) oppure l'età $\geq 60$ anni (723 soggetti). Come ulteriori termini di paragone si usano la sola età, con i più anziani esaminati per primi, e una logistica con età, sesso, diabete e ipertensione.
+Il secondo confronto riproduce la pratica clinica a parità di esami. Una regola stabilisce quanti soggetti mandare all'esame. Il modello esamina lo stesso numero di soggetti, scelti fra quelli con il punteggio più alto, e si contano i positivi KDIGO trovati da ciascuno. La regola principale, R-a, seleziona chi ha diabete o ipertensione noti: nel training sono 378 soggetti. È la strategia indicata dalle linee guida~\cite{stevens_kdigo_2024,american_diabetes_association_professional_practice_committee_11_2024}, ed è la stessa che Yoo e colleghi hanno usato come confronto per MERWACS~\cite{yoo_merwacs_2026}. La Random Forest è stata scelta come modello del confronto dopo un'esplorazione, sugli stessi soggetti, di 71 modelli già salvati contro la stessa regola: nella coorte di sviluppo la stima non è quindi cieca, e la verifica indipendente è quella su NHANES. Due regole più larghe aggiungono la pressione misurata $\geq 140/90$ (R-b, 929 soggetti) oppure l'età $\geq 60$ anni (723 soggetti). Come ulteriori termini di paragone si usano la sola età, con i più anziani esaminati per primi, e una logistica con età, sesso, diabete e ipertensione.
 
-La selezione avviene dentro ciascun fold esterno, e i pareggi di punteggio sono risolti con un ordine casuale fisso. L'esito è la differenza $\Delta N$ fra i positivi trovati dal modello e quelli trovati dalla regola. Il suo intervallo al 95\% viene da 1.000 ricampionamenti bootstrap dei soggetti, a selezioni fisse. Per il confronto principale si aggiunge il test esatto di McNemar sui positivi trovati da uno solo dei due.
+La selezione avviene dentro ciascun fold esterno, e i pareggi di punteggio sono risolti con un ordine casuale fisso. L'esito è la differenza $\Delta N$ fra i positivi trovati dal modello e quelli trovati dalla regola. Il suo intervallo al 95\% viene da 1.000 ricampionamenti bootstrap dei soggetti, a selezioni fisse, che non includono la variabilità della graduatoria. In NHANES la selezione avviene sull'intero campione, perché non ci sono fold. Per il confronto principale si aggiunge il test esatto di McNemar sui positivi trovati da uno solo dei due.
 
 \subsection{Conferma sull'insieme di test}
 
@@ -1000,7 +1007,7 @@ L'insieme di test ci permette di verificare se i modelli e le validazioni fatte 
 
 \subsection{Validazione esterna}
 
-La validazione sulla popolazione NHANES ha l'obiettivo di verificare se il modello riconosce la malattia anche fuori dalla coorte in cui è stato sviluppato. Per questo usa soltanto le 14 variabili presenti in entrambi i dataset (Tabella~\ref{tab:variabili-comuni}). Il modello è una Random Forest~\cite{breiman_random_2001} con 500 alberi e almeno 20 soggetti per foglia, stimata una sola volta sui 4.350 soggetti del training e applicata a NHANES senza ristimare alcun parametro~\cite{ramspek_external_2021}. La validazione interna non basta: SCORED ha perso buona parte della sua discriminazione passando dalla popolazione di sviluppo alla coorte esterna ARIC~\cite{bang_screening_2007}.
+La validazione sulla popolazione NHANES ha l'obiettivo di verificare se il modello riconosce la malattia anche fuori dalla coorte in cui è stato sviluppato. Per questo usa soltanto le 14 variabili presenti in entrambi i dataset (Tabella~\ref{tab:variabili-comuni}). Il modello è una Random Forest~\cite{breiman_random_2001} con iperparametri fissi e prudenti, 500 alberi e almeno 20 soggetti per foglia, non ottimizzati su nessuna delle due coorti. È stimata una sola volta sui 4.350 soggetti del training e applicata a NHANES senza ristimare alcun parametro~\cite{ramspek_external_2021}. La validazione interna non basta: SCORED ha perso buona parte della sua discriminazione passando dalla popolazione di sviluppo alla coorte esterna ARIC~\cite{bang_screening_2007}.
 
 \begin{table}[H]
 	\centering
@@ -1035,7 +1042,7 @@ Il confronto avviene a parità di esami con la regola R-a, che in NHANES usa il 
 
 Nel bersaglio composito i due criteri KDFIGO non pesano allo stesso modo: il 91,1\% dei positivi del training ha l'albuminuria. Questa analisi, decisa dopo i risultati sul composito, isola la filtrazione ridotta (eGFR $< 60$), con 63 positivi nel training e 2.733 in NHANES. Il riferimento è la logistica SCORED della Tabella~\ref{tab:modelli}, con l'età, sesso, emoglobina, pressione sistolica e diabete~\cite{bang_screening_2007}. Il modello vi aggiunge l'acido urico, scelto dopo un'analisi pilota. Si confrontano anche XGBoost~\cite{chen_xgboost_2016}, La Random Forest e una logistica sulle 14 variabili comuni. Tutti i modelli sono stimati una sola volta sul training e applicati a NHANES senza riaddestramento.
 
-L'analisi primaria è la differenza di AUROC fra XGBoost e SCORED, con il test di DeLong per curve appaiate~\cite{delong_comparing_1988}. Si contano poi i casi trovati esaminando il 5, il 10 e il 20\% dei soggetti NHANES con il punteggio più alto. SCORED è stato sviluppato su NHANES 1999--2002~\cite{bang_screening_2007}, quindi in questa popolazione parte avvantaggiato.
+L'analisi primaria è la differenza di AUROC fra XGBoost e SCORED, con il test di DeLong per curve appaiate~\cite{delong_comparing_1988}. Si contano poi i casi trovati esaminando il 5, il 10 e il 20\% dei soggetti NHANES con il punteggio più alto. SCORED è stato sviluppato su NHANES 1999--2002~\cite{bang_screening_2007}. Qui i coefficienti sono ristimati sulla coorte di sviluppo, e il vantaggio riguarda solo la scelta dei predittori.
 
 \section{Spiegabilità e verifiche}
 
@@ -1065,7 +1072,7 @@ Le ultime verifiche controllano che cosa colga davvero il punteggio. Le domande 
 
 \paragraph{Mortalità.} Negli stessi soggetti il punteggio è collegato alla mortalità con un modello di Cox~\cite{cox_regression_1972}. Il modello è aggiustato per età e sesso e, in una seconda versione, anche per l'ACR; l'hazard ratio è espresso per deviazione standard del punteggio. Nelle analisi per causa di morte le altre cause sono censurate, e le cause con meno di 30 eventi sono soltanto descrittive. Le morti per incidente fanno da controllo negativo: un punteggio che colga un rischio clinico non dovrebbe predirle.
 
-Sull'intero campione NHANES lo stesso modello, aggiustato per età, sesso ed eGFR, verifica infine se la mortalità salti in corrispondenza di ACR 30 o cresca in modo graduale. Si confrontano una relazione lineare nel logaritmo dell'ACR, una curva flessibile e un gradino a 30, con il criterio di Akaike.
+Sull'intero campione NHANES lo stesso modello, aggiustato per età, sesso ed eGFR, verifica infine se la mortalità salti in corrispondenza di ACR 30 o cresca in modo graduale. Si confrontano quattro modelli: lineare nel logaritmo dell'ACR, spline cubica ristretta con 4 nodi, lineare più un gradino a 30 e spezzata. Per la regola fissata prima, il gradino esiste solo se migliora di almeno 2 punti il criterio di Akaike del modello lineare.
 
 \section{Limiti del protocollo}
 
@@ -1074,6 +1081,7 @@ Alcuni limiti del protocollo vanno tenuti presenti nella lettura dei risultati.
 	\item \textbf{Una sola partizione a 5 fold.} La ripetizione con altri semi non è stata eseguita, e la potenza dei confronti resta quella descritta nei test statistici.
 	\item \textbf{Casi gravi rari.} Sono 71 nel training e 23 nel test: con questi numeri emergono solo differenze grandi.
 	\item \textbf{Nessuna separazione per giornata.} La validazione non separa le giornate di raccolta, e il test proviene dalla stessa coorte e dallo stesso periodo.
+	\item \textbf{Fattori di rischio noti.} Il punteggio usato per la mortalità combina fattori di rischio cardiovascolare noti; l'associazione, aggiustata per età, sesso e ACR, non dimostra un rischio indipendente da questi fattori.
 \end{itemize}
 
 \section{Riproducibilità}
