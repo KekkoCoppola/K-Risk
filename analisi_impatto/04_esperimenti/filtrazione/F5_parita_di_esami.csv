@@ -1,0 +1,4 @@
+quota,testati,positivi_totali,XGBoost,C3 SCORED-5,più anziani,diff_vs_C3 SCORED-5,ic_basso_vs_C3 SCORED-5,ic_alto_vs_C3 SCORED-5,mcnemar_p_vs_C3 SCORED-5,diff_vs_più anziani,ic_basso_vs_più anziani,ic_alto_vs_più anziani,mcnemar_p_vs_più anziani
+0.05,220,63,26,23,20,3,-4.0,10.0,0.6072387695312499,6,-3.0,15.0,0.28627872467041016
+0.1,435,63,37,29,32,8,0.0,16.0,0.076812744140625,5,-3.0,13.0,0.332305908203125
+0.2,870,63,42,45,44,-3,-11.0,6.0,0.6476058959960938,-2,-10.0,6.0,0.803619384765625

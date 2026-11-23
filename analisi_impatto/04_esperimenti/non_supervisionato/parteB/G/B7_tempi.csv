@@ -1,0 +1,16 @@
+modello,fold,secondi
+lr_penalized,0,127.1
+lr_penalized,1,162.4
+lr_penalized,2,200.1
+lr_penalized,3,190.9
+lr_penalized,4,117.2
+random_forest,0,2654.9
+random_forest,1,2385.5
+random_forest,2,2561.0
+random_forest,3,2853.8
+random_forest,4,2145.3
+xgboost,0,614.7
+xgboost,1,1025.9
+xgboost,2,405.4
+xgboost,3,473.9
+xgboost,4,438.7

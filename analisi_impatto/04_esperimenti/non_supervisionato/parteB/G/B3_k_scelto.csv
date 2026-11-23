@@ -1,0 +1,26 @@
+fold,algoritmo,k_scelto,nota
+0,gmm_uomini,2.0,
+0,gmm_donne,2.0,
+0,kmeans,6.0,
+0,mahalanobis,,MinCovDet
+0,autoencoder,,epoche 14
+1,gmm_uomini,2.0,
+1,gmm_donne,2.0,
+1,kmeans,1.0,
+1,mahalanobis,,MinCovDet
+1,autoencoder,,epoche 13
+2,gmm_uomini,2.0,
+2,gmm_donne,2.0,
+2,kmeans,3.0,
+2,mahalanobis,,MinCovDet
+2,autoencoder,,epoche 13
+3,gmm_uomini,2.0,
+3,gmm_donne,2.0,
+3,kmeans,6.0,
+3,mahalanobis,,MinCovDet
+3,autoencoder,,epoche 13
+4,gmm_uomini,2.0,
+4,gmm_donne,2.0,
+4,kmeans,6.0,
+4,mahalanobis,,MinCovDet
+4,autoencoder,,epoche 15

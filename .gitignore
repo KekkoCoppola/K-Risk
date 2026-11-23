@@ -73,3 +73,27 @@ docs/thesis/main.run.xml
 !README.md
 !README_EN.md
 !data/README.md
+
+#Versioning della testi
+!main.pdf
+# analisi_impatto: versionati solo codice e risultati del filone post-hoc
+# (non supervisionato, confine AI/NHANES/mortalità, filtrazione, parità di testati).
+# Esclusi i giri esplorativi (audit, giro2-5, letteratura, revisioni) e ogni .md tranne il README.
+analisi_impatto/*
+!analisi_impatto/README.md
+!analisi_impatto/codice/
+analisi_impatto/codice/*
+!analisi_impatto/codice/non_supervisionato/
+!analisi_impatto/codice/confine_ai/
+!analisi_impatto/codice/filtrazione/
+!analisi_impatto/codice/impatto/
+# giro2: solo l'elenco dei modelli letto da non_supervisionato/00_passo0_linea_guida.py
+!analisi_impatto/codice/giro2/
+analisi_impatto/codice/giro2/*
+!analisi_impatto/codice/giro2/comune.py
+!analisi_impatto/codice/giro2/01_inventario_previsioni.py
+!analisi_impatto/codice/giro2/out/
+analisi_impatto/codice/giro2/out/*
+!analisi_impatto/codice/giro2/out/01_membri_rashomon.csv
+!analisi_impatto/04_esperimenti/
+analisi_impatto/04_esperimenti/G_fedelta_xai/

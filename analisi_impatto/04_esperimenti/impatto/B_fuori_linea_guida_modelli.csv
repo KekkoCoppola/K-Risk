@@ -1,0 +1,5 @@
+punteggio,auroc_fuori_regola,ic_basso,ic_alto,testati_10pct_fuori_regola,malati_trovati_10pct_fuori_regola,testati_20pct_fuori_regola,malati_trovati_20pct_fuori_regola,testati_regola_pressione,malati_regola_pressione,malati_rf_parita,malati_eta_parita,solo_rf,solo_regola,p_mcnemar,rf_contro_eta_solo_rf,rf_contro_eta_solo_eta,p_mcnemar_rf_contro_eta
+Random Forest,0.6643267347084313,0.6324811610124976,0.696172308404365,398.0,81.0,793.0,130.0,,,,,,,,,,
+solo età,0.6322187404303159,0.5991806046516984,0.6652568762089334,398.0,77.0,793.0,122.0,,,,,,,,,,
+pressione sistolica,0.5707987296076381,0.5371973956706113,0.6044000635446649,398.0,57.0,793.0,92.0,,,,,,,,,,
+regola pressione misurata ≥ 140/90 contro RF a parità (fuori regola),,,,,,,,551.0,64.0,100.0,88.0,61.0,25.0,0.00013037942991199537,37.0,25.0,0.16188140552559763

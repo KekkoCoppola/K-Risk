@@ -1,0 +1,5 @@
+regola,testati,pos_regola,positivi_totali,modelli,modelli_con_piu_positivi,modelli_con_meno_positivi,modelli_ic_sopra_0,modelli_ic_sotto_0,pos_modello_mediana,pos_modello_min,pos_modello_max,pos_unione_mediana,testati_unione_mediana
+R-a_DM,378,98,425,71,63,8,32,5,114.0,66,127,149.0,574.0
+R-a_DMhis,175,54,425,71,61,9,11,3,64.0,31,78,94.0,295.0
+R-b_DM,929,162,425,71,66,5,56,3,196.0,131,214,233.0,1362.0
+R-b_DMhis,787,131,425,71,67,4,65,0,179.0,117,194,214.0,1212.0

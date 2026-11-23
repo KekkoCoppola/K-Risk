@@ -1,0 +1,9 @@
+modello,esito,aggiustamento,n,eventi,HR_per_DS,ic_basso,ic_alto
+"non supervisionato (k-means, nessuna etichetta)",morte,"età, sesso",28433,1844,1.138630909465062,1.0677921539419117,1.21416920250171
+"non supervisionato (k-means, nessuna etichetta)",morte,"età, sesso, log ACR",28433,1844,1.0863855782662148,1.018920492790144,1.1583176832894435
+"non supervisionato (k-means, nessuna etichetta)",morte_cv,"età, sesso",28433,482,1.3792165794855114,1.2025970628815692,1.581775335929824
+"non supervisionato (k-means, nessuna etichetta)",morte_cv,"età, sesso, log ACR",28433,482,1.2800917574737989,1.1166961398179478,1.4673955153274745
+"supervisionato (Random Forest, confronto)",morte,"età, sesso",28433,1844,1.167808949237423,1.0852511290689761,1.256647153262105
+"supervisionato (Random Forest, confronto)",morte,"età, sesso, log ACR",28433,1844,1.087303657218457,1.0095822545631798,1.1710083429627551
+"supervisionato (Random Forest, confronto)",morte_cv,"età, sesso",28433,482,1.4186021993702465,1.2220451345763539,1.6467740373237116
+"supervisionato (Random Forest, confronto)",morte_cv,"età, sesso, log ACR",28433,482,1.2809830800901034,1.1011282230192732,1.490214869779436

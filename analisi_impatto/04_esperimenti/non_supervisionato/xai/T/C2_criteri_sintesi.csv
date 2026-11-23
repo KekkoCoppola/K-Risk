@@ -1,0 +1,12 @@
+configurazione,fold_con_surrogato_fedele,peso_su_target_codificato_fold,peso_su_target_codificato,gruppi_sono_giornate_fold,gruppi_sono_giornate,famiglia_prima_piu_frequente
+autoencoder,4,0,False,0,False,gruppo sparse
+gmm_bic,0,0,False,0,False,gruppo sparse
+gmm_k2,0,0,False,0,False,gruppo sparse
+gmm_k4,0,0,False,0,False,ingressi: emocromo
+kmeans_gap,5,0,False,0,False,gruppo sparse
+kmeans_k2,5,0,False,0,False,gruppo sparse
+kmeans_k4,5,0,False,0,False,gruppo sparse
+kproto_gap,5,0,False,0,False,gruppo sparse
+kproto_k2,5,0,False,0,False,gruppo sparse
+kproto_k4,5,0,False,0,False,gruppo sparse
+mahalanobis,0,0,False,0,False,ingressi: emocromo

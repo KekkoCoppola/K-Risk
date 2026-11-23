@@ -1,0 +1,3 @@
+modello,n_sani_kdigo,pendenza_z_per_raddoppio_acr,ic_basso,ic_alto
+"non supervisionato (k-means, nessuna etichetta)",28433,0.09241931278226284,0.08041647963709109,0.1044221459274346
+"supervisionato (Random Forest, confronto)",28433,0.12024719656625743,0.11094719869006126,0.1295471944424536

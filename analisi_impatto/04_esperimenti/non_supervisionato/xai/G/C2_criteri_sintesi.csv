@@ -1,0 +1,9 @@
+configurazione,fold_con_surrogato_fedele,variabili_del_clinico_fold,variabili_del_clinico,rapporto_acr_fold,rapporto_acr,correzione_egfr_fold,correzione_egfr,bun_prima_di_scre_fold,bun_prima_di_scre,famiglia_prima_piu_frequente
+autoencoder,5,0,False,0,False,0,False,2,False,"anamnesi, abitudini e sesso"
+gmm_bic,4,0,False,0,False,0,False,4,True,emocromo
+gmm_k2,4,0,False,0,False,0,False,4,True,emocromo
+gmm_k4,0,0,False,0,False,0,False,0,False,emocromo
+kmeans_gap,5,0,False,0,False,0,False,3,False,emocromo
+kmeans_k2,5,0,False,0,False,0,False,4,True,emocromo
+kmeans_k4,5,0,False,0,False,0,False,1,False,emocromo
+mahalanobis,0,0,False,0,False,0,False,0,False,emocromo

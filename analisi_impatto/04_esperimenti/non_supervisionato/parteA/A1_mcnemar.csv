@@ -1,0 +1,13 @@
+confronto,modello,regola,solo_modello,solo_altro,p,primario,p_holm
+random_forest vs regola,random_forest,R-a_DM,43,21,0.008146902228698568,True,0.008146902228698568
+random_forest vs regola,random_forest,R-b_DM,74,33,9.18202620626861e-05,False,0.0007345620965014888
+random_forest vs regola,random_forest,R-a_DMhis,38,26,0.16864291143970336,False,0.6855258410995396
+random_forest vs regola,random_forest,R-b_DMhis,84,34,4.724470570017391e-06,False,4.724470570017391e-05
+tabpfn vs regola,tabpfn,R-a_DM,53,33,0.03985362856053515,False,0.27897539992374604
+tabpfn vs regola,tabpfn,R-b_DM,74,30,1.8940835677418383e-05,False,0.00017046752109676545
+tabpfn vs regola,tabpfn,R-a_DMhis,41,27,0.11425430684992327,False,0.6855258410995396
+tabpfn vs regola,tabpfn,R-b_DMhis,89,32,2.1499162517902276e-07,False,2.3649078769692503e-06
+random_forest vs clinico_logistica,random_forest,R-a_DM,33,21,0.13367423536410522,False,0.6855258410995396
+random_forest vs clinico_logistica,random_forest,R-b_DM,38,30,0.39612484029702977,False,1.0
+random_forest vs clinico_logistica,random_forest,R-a_DMhis,29,24,0.5831321542611763,False,1.0
+random_forest vs clinico_logistica,random_forest,R-b_DMhis,32,26,0.5118423084381691,False,1.0

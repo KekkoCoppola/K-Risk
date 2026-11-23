@@ -1,0 +1,101 @@
+fold,configurazione,uscita,fedelta,metrica,fedele
+0,gmm_bic,punteggio,0.7298431556527083,R2,False
+0,gmm_bic,cluster,0.8389994178590051,accuratezza bilanciata,True
+0,gmm_k2,punteggio,0.6774521462874542,R2,False
+0,gmm_k2,cluster,0.8706707787912232,accuratezza bilanciata,True
+0,gmm_k4,punteggio,0.7087709751556841,R2,False
+0,gmm_k4,cluster,0.8699550250230382,accuratezza bilanciata,True
+0,kmeans_gap,punteggio,0.8708380832447766,R2,True
+0,kmeans_gap,cluster,0.9453022352873787,accuratezza bilanciata,True
+0,kmeans_k2,punteggio,0.8443886695714052,R2,True
+0,kmeans_k2,cluster,0.9655824425645398,accuratezza bilanciata,True
+0,kmeans_k4,punteggio,0.8630632738846,R2,True
+0,kmeans_k4,cluster,0.9568347420577091,accuratezza bilanciata,True
+0,mahalanobis,punteggio,0.4435662126326202,R2,False
+0,autoencoder,punteggio,0.8448678933951732,R2,True
+0,kproto_gap,punteggio,0.889942117751332,R2,True
+0,kproto_gap,cluster,0.9121384818379354,accuratezza bilanciata,True
+0,kproto_k2,punteggio,0.8510826981024283,R2,True
+0,kproto_k2,cluster,0.9507149718303143,accuratezza bilanciata,True
+0,kproto_k4,punteggio,0.8784143021903595,R2,True
+0,kproto_k4,cluster,0.9297193832370629,accuratezza bilanciata,True
+1,gmm_bic,punteggio,0.6049802634969945,R2,False
+1,gmm_bic,cluster,0.8829017846256869,accuratezza bilanciata,True
+1,gmm_k2,punteggio,0.7640688357266144,R2,False
+1,gmm_k2,cluster,0.9093419922374214,accuratezza bilanciata,True
+1,gmm_k4,punteggio,0.7306590301925914,R2,False
+1,gmm_k4,cluster,0.8779842975894562,accuratezza bilanciata,True
+1,kmeans_gap,punteggio,0.8179579188322322,R2,True
+1,kmeans_gap,cluster,,accuratezza bilanciata,False
+1,kmeans_k2,punteggio,0.8176533451049687,R2,True
+1,kmeans_k2,cluster,0.9606204935714333,accuratezza bilanciata,True
+1,kmeans_k4,punteggio,0.8138628420478836,R2,True
+1,kmeans_k4,cluster,0.944277662739773,accuratezza bilanciata,True
+1,mahalanobis,punteggio,0.1434707715260174,R2,False
+1,autoencoder,punteggio,0.8941226936984696,R2,True
+1,kproto_gap,punteggio,0.8754122669362413,R2,True
+1,kproto_gap,cluster,0.9283516200651886,accuratezza bilanciata,True
+1,kproto_k2,punteggio,0.8566647151257448,R2,True
+1,kproto_k2,cluster,0.9593021795901968,accuratezza bilanciata,True
+1,kproto_k4,punteggio,0.8748526557797773,R2,True
+1,kproto_k4,cluster,0.9292238436090217,accuratezza bilanciata,True
+2,gmm_bic,punteggio,0.6653481523345469,R2,False
+2,gmm_bic,cluster,0.8285660320447324,accuratezza bilanciata,True
+2,gmm_k2,punteggio,0.7738164516277342,R2,False
+2,gmm_k2,cluster,0.9157388249451522,accuratezza bilanciata,True
+2,gmm_k4,punteggio,0.6744974227311203,R2,False
+2,gmm_k4,cluster,0.8551937592310597,accuratezza bilanciata,True
+2,kmeans_gap,punteggio,0.8980874070116276,R2,True
+2,kmeans_gap,cluster,0.9214036781250696,accuratezza bilanciata,True
+2,kmeans_k2,punteggio,0.8998153048980031,R2,True
+2,kmeans_k2,cluster,0.937799790286237,accuratezza bilanciata,True
+2,kmeans_k4,punteggio,0.8960089560621409,R2,True
+2,kmeans_k4,cluster,0.949286141790724,accuratezza bilanciata,True
+2,mahalanobis,punteggio,0.5670439760459032,R2,False
+2,autoencoder,punteggio,0.9297838277794236,R2,True
+2,kproto_gap,punteggio,0.909081843806165,R2,True
+2,kproto_gap,cluster,0.9136857120178498,accuratezza bilanciata,True
+2,kproto_k2,punteggio,0.8966917221462004,R2,True
+2,kproto_k2,cluster,0.9529198966408268,accuratezza bilanciata,True
+2,kproto_k4,punteggio,0.9006027703035107,R2,True
+2,kproto_k4,cluster,0.9397211252068569,accuratezza bilanciata,True
+3,gmm_bic,punteggio,0.5848643827109705,R2,False
+3,gmm_bic,cluster,0.8188218847462584,accuratezza bilanciata,True
+3,gmm_k2,punteggio,0.7383344263502742,R2,False
+3,gmm_k2,cluster,0.917369973238423,accuratezza bilanciata,True
+3,gmm_k4,punteggio,0.7080920248111268,R2,False
+3,gmm_k4,cluster,0.8742719414110147,accuratezza bilanciata,True
+3,kmeans_gap,punteggio,0.8756088338632138,R2,True
+3,kmeans_gap,cluster,0.9415841841373757,accuratezza bilanciata,True
+3,kmeans_k2,punteggio,0.8903446827274698,R2,True
+3,kmeans_k2,cluster,0.9749551222960751,accuratezza bilanciata,True
+3,kmeans_k4,punteggio,0.8894901255271804,R2,True
+3,kmeans_k4,cluster,0.9485015318969474,accuratezza bilanciata,True
+3,mahalanobis,punteggio,0.2931899135675079,R2,False
+3,autoencoder,punteggio,0.9020109379810676,R2,True
+3,kproto_gap,punteggio,0.9029996054521008,R2,True
+3,kproto_gap,cluster,0.907376850857056,accuratezza bilanciata,True
+3,kproto_k2,punteggio,0.890281773987459,R2,True
+3,kproto_k2,cluster,0.9764180589744933,accuratezza bilanciata,True
+3,kproto_k4,punteggio,0.9007787747136404,R2,True
+3,kproto_k4,cluster,0.9336592498244335,accuratezza bilanciata,True
+4,gmm_bic,punteggio,0.6617234070661788,R2,False
+4,gmm_bic,cluster,0.8183646528098674,accuratezza bilanciata,True
+4,gmm_k2,punteggio,0.7806988124712337,R2,False
+4,gmm_k2,cluster,0.9310336837041742,accuratezza bilanciata,True
+4,gmm_k4,punteggio,0.7221895478807348,R2,False
+4,gmm_k4,cluster,0.8914549056869525,accuratezza bilanciata,True
+4,kmeans_gap,punteggio,0.836319364683653,R2,True
+4,kmeans_gap,cluster,0.9417768090706584,accuratezza bilanciata,True
+4,kmeans_k2,punteggio,0.8354054463997139,R2,True
+4,kmeans_k2,cluster,0.9709003442909023,accuratezza bilanciata,True
+4,kmeans_k4,punteggio,0.8489075881845034,R2,True
+4,kmeans_k4,cluster,0.9377888190299805,accuratezza bilanciata,True
+4,mahalanobis,punteggio,0.24754673010715322,R2,False
+4,autoencoder,punteggio,0.6638183199830412,R2,False
+4,kproto_gap,punteggio,0.8916930364458588,R2,True
+4,kproto_gap,cluster,0.9001316846009887,accuratezza bilanciata,True
+4,kproto_k2,punteggio,0.8804282155725512,R2,True
+4,kproto_k2,cluster,0.9673392181588902,accuratezza bilanciata,True
+4,kproto_k4,punteggio,0.8849941532472859,R2,True
+4,kproto_k4,cluster,0.9241496855772319,accuratezza bilanciata,True
