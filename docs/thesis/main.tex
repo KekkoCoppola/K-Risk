@@ -1164,7 +1164,96 @@ Dopo il confronto principale restava da capire se un altro algoritmo potesse sup
 
 Nessuno dei 29 soddisfa la regola (Figura~\ref{fig:esplorativi}). Il guadagno più alto appartiene al modello tabellare pre-addestrato, con 0,009 (da $-$0,014 a 0,032), seguito dallo stacking con 0,008 (da $-$0,006 a 0,022). La p corretta più bassa vale 0,994. Neppure togliere la soglia aiuta: i modelli che stimano ACR ed eGFR come valori continui, e applicano la regola KDIGO solo alla fine, guadagnano al massimo 0,006. All'estremo opposto, i modelli a kernel, a vicini e le reti neurali perdono fino a 0,079. Christodoulou e colleghi avevano trovato lo stesso equilibrio fra regressione logistica e machine learning nei confronti a basso rischio di distorsione~\cite{christodoulou_systematic_2019}. Il risultato sul composito è quindi stabile, perché non dipende né dall'algoritmo né dalla soglia.
 
+\section{Modelli non supervisionati}
 
+L'obiettivo di questa parte era verificare se senza etichetta e senza le soglie KDIGO, i dati della coorte di sviluppo contenessero una struttura che corrisponda alla malattia renale. In letteratura il raggruppamento senza etichetta ha riguardato pazienti con una diagnosi già posta~\cite{zheng_subtyping_2021} oppure persone con diabete, divise in sottogruppi con un diverso rischio di nefropatia~\cite{ahlqvist_novel_2018}. Qui riguarda l'intera coorte, e il risultato si confronta con la definizione clinica. La procedura richiede due impieghi distinti, uno esplicativo sugli insiemi \texttt{G} e \texttt{T} e uno predittivo sulle sole variabili ammesse. I due impieghi non si confrontano sulle prestazioni. Negli insiemi G e T entrano gli esami che definiscono il bersaglio, e i modelli stimati su di essi ottengono valori più alti, fino a ricostruire KDIGO quasi alla perfezione quando usano l'etichetta. Quei valori, però, dipendono dalle variabili della definizione, e in un uso predittivo sarebbero leakage~\cite{kapoor_leakage_2023}. Solo l'impiego predittivo, che esclude ogni variabile usata per costruire l'etichetta, stima una capacità reale di riconoscere la malattia.
+
+\subsection{Analisi esplicativa}
+
+Gli insiemi \texttt{G} e \texttt{T} comprendono gli esami renali, e T contiene anche il bersaglio già calcolato nel file originale: i loro risultati ci descrivono come ragiona l'algoritmo e non stimano una capacità predittiva.
+
+L'accordo fra i gruppi trovati e i livelli KDIGO si misura con un indice corretto per il caso, che vale 0 per una corrispondenza casuale e 1 per due partizioni identiche (Figura~\ref{fig:gruppi-kdigo}A). In G nessuna configurazione a gruppi supera 0,03. I  gruppi seguono piuttosto il sesso e l'età, e con due gruppi $k$-means~\cite{lloyd_least_1982} separa di fatto uomini e donne, con un accordo di 0,83. Con quattro gruppi lo schema si ripete in ogni fold. Due gruppi raccolgono quasi solo donne o quasi solo uomini, con una prevalenza fra il 3,6\% e il 7,3\%. Un terzo riunisce i soggetti più anziani, con un'età mediana fra 57,5 e 61 anni, e lì la prevalenza sale fra il 16,8\% e il 26,8\%. L'algoritmo ritrova così l'età, che i punteggi clinici usano come fattore di rischio~\cite{bang_screening_2007}, ma non la definizione KDIGO. In T l'accordo con i livelli arriva al massimo a 0,12.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{../analytics/capitolo4/fig4_7_gruppi_kdigo.png}
+	\caption{Gruppi non supervisionati e livelli KDIGO negli insiemi esplicativi G e T. (A) Accordo delle partizioni di $k$-means con i livelli KDIGO e con classi di età e sesso dello stesso numero, misurato con un indice corretto per il caso e mediato sui cinque fold; il numero di gruppi è fisso o scelto con la gap statistic~\cite{tibshirani_estimating_2001}. (B) AUROC contro il bersaglio KDIGO, con intervallo al 95\% di DeLong~\cite{delong_comparing_1988}, per i punteggi senza etichetta, per i modelli addestrati con l'etichetta su G e per $k$-means su T con e senza le 18 colonne renali e diagnostiche.}
+	\label{fig:gruppi-kdigo}
+\end{figure}
+
+Anche senza ricostruire i livelli, il punteggio di atipicità mette in ordine i soggetti (Figura~\ref{fig:gruppi-kdigo}B). In G la distanza dal centro del gruppo più numeroso raggiunge con $k$-means un'AUROC di 0,706 (IC 95\% 0,680--0,732), calcolata con il metodo di DeLong~\cite{delong_comparing_1988}. L'errore di ricostruzione dell'autoencoder~\cite{hinton_reducing_2006} arriva a 0,713 (0,688--0,738). È il livello della Random Forest~\cite{breiman_random_2001} senza esami renali, da cui $k$-means differisce di 0,003 (da $-$0,020 a 0,026, p = 0,79). Sugli stessi 78 ingressi, però, la Random Forest e XGBoost~\cite{chen_xgboost_2016} addestrati con l'etichetta arrivano a 0,997 (0,995--0,998) e 0,998 (0,997--0,999). L'informazione per ricostruire KDIGO è quindi già in G. Senza etichetta, invece, l'algoritmo non sa quali colonne contino, e creatinina e microalbumina pesano quanto le altre variabili.
+
+In T le AUROC salgono a 0,838 (0,821--0,854) con $k$-means e a 0,840 (0,825--0,856) con l'autoencoder. Il guadagno viene dalle 18 colonne renali e diagnostiche: senza di esse $k$-means scende a 0,649 (0,621--0,677), con le sole 18 arriva a 0,993 (0,991--0,995). In T, dunque, l'algoritmo non scopre la malattia, ma legge la diagnosi già scritta nel file.
+
+La Figura~\ref{fig:fasce-acr} lega il punteggio ottenuto su G all'albuminuria, divisa in fasce di ACR. Sotto 13~mg/g il punteggio medio resta vicino a zero, fra $-$0,17 e 0,05. Oltre la soglia KDIGO cresce con l'ACR, e con $k$-means passa da 0,51 (0,14--0,89) nella fascia fra 30 e 34~mg/g a 1,24 (0,82--1,67) oltre 300~mg/g, dove l'autoencoder arriva a 1,06 (0,59--1,52). Su G la crescita riflette in parte la presenza della microalbumina urinaria, che è il numeratore dell'ACR. Senza etichetta e senza soglia, l'algoritmo dispone comunque i soggetti lungo la scala dell'albuminuria, e i casi più gravi risultano i più atipici.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{../analytics/capitolo4/fig4_8_fasce_acr.png}
+	\caption{Punteggio non supervisionato per fascia di ACR nell'insieme esplicativo G. Il punteggio è standardizzato dentro ogni fold; le barre sono intervalli al 95\% della media e la linea tratteggiata indica la soglia KDIGO di 30~mg/g.}
+	\label{fig:fasce-acr}
+\end{figure}
+
+\section{Analisi predittiva}
+
+Questo impiego analizza il modello che usa soltanto le 74 variabili ammesse, senza esami renali e senza alcuna colonna derivata dal bersaglio, come i modelli predittivi supervisionati. Su queste variabili il $k$-means a quattro gruppi raggiunge un'AUROC di 0,648 (0,619--0,677) e l'autoencoder di 0,657 (0,629--0,685), valori inferiori a quelli dei modelli supervisionati sugli stessi ingressi. Il confronto con la pratica clinica diventa interessante. A parità di esami con la regola R-a, il $k$-means trova esattamente quanti positivi trova la regola delle linee guida, con una differenza di 0 (IC 95\% bootstrap da $-$18 a +16). L'autoencoder ne trova 2 in meno (da $-$19 a +14). Con gli esami più numerosi della regola R-b entrambi ne trovano 13 in più, con intervalli da $-$8 a +35 e da $-$8 a +33.
+
+La regola R-a riassume i fattori di rischio per cui le linee guida raccomandano lo screening~\cite{stevens_kdigo_2024,american_diabetes_association_professional_practice_committee_11_2024}. Il punteggio non supervisionato ottiene la stessa resa dai soli dati di routine, senza aver mai visto un caso positivo e senza sapere che diabete e ipertensione sono fattori di rischio. Su 100 persone mandate all'esame trova tanti malati quanti la regola. Per superarla serve però l'etichetta.
+
+\section{Utilità clinica e confronto con la pratica}
+
+Per capire se il modello migliora la decisione su chi mandare all'esame la discriminazione da sola non basta~\cite{van_calster_evaluation_2025}. Per misurarlo si usano due strumenti. Il net benefit~\cite{van_calster_evaluation_2025} confronta il modello con le due strategie estreme, esaminare tutti o nessuno, e pesa ogni esame inutile secondo la soglia di probabilità scelta da chi decide. Il confronto a parità di esami conta invece i positivi trovati in più rispetto alle regole in uso.
+
+Sulle 37 soglie fra 0,02 e 0,20 la Random Forest~\cite{breiman_random_2001} supera entrambe le strategie in 36 casi, fra 0,020 e 0,040 e fra 0,050 e 0,200. Solo a 0,045 esaminare tutti non è peggio. Gli altri tre modelli prevalgono su un numero di soglie compreso fra 31 e 34. Il vantaggio cresce con la soglia, e a 0,20 equivale a una riduzione netta di 55,5 esami inutili ogni 100 persone rispetto a esaminare tutti. Il net benefit è riportato in forma descrittiva, senza intervalli.
+
+\begin{table}[H]
+	\centering
+	\small
+	\caption{Random Forest alle soglie 0,05 e 0,07, con intervalli al 95\%. Gli esami evitati sono la riduzione netta di esami inutili ogni 100 persone rispetto a esaminare tutti. Le ultime due righe riportano i valori pubblicati da Bragg-Gresham e colleghi, senza intervalli~\cite{bragg-gresham_using_2025}.}
+	\label{tab:soglie-utilita}
+	\begin{tabular}{@{}lcc@{}}
+		\toprule
+		& Soglia 0,05 & Soglia 0,07 \\
+		\midrule
+		\multicolumn{3}{@{}l}{\textit{Tutti, bersaglio composito}} \\
+		Esami evitati ogni 100 & 2,3 & 13,1 \\
+		Quota esaminata & 0,867 (0,856--0,876) & 0,635 (0,621--0,650) \\
+		Sensibilità & 0,944 (0,917--0,962) & 0,833 (0,795--0,865) \\
+		\multicolumn{3}{@{}l}{\textit{Esami evitati ogni 100, per sottogruppo}} \\
+		Diabetici & 0,4 & 1,1 \\
+		Non diabetici & 2,4 & 13,9 \\
+		\multicolumn{3}{@{}l}{\textit{Non diabetici, sola albuminuria}} \\
+		Quota esaminata & 0,858 (0,847--0,869) & 0,613 (0,598--0,627) \\
+		Sensibilità & 0,935 (0,902--0,957) & 0,792 (0,744--0,833) \\
+		\multicolumn{3}{@{}l}{\textit{Bragg-Gresham e colleghi, non diabetici, albuminuria}} \\
+		Quota esaminata & poco meno di 0,5 & 0,377 \\
+		Sensibilità & 0,85 & 0,732 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+La Tabella~\ref{tab:soglie-utilita} riporta i due punti operativi. A 0,07 il modello lascia fuori dall'esame più di un terzo dei soggetti e trova ancora più di quattro malati su cinque. A 0,05 la riduzione netta è piccola, perché il modello manda all'esame quasi nove persone su dieci.
+
+La divisione per diabete chiarisce dove il modello serve. Fra i diabetici la prevalenza è del 25,9\%, e la Random Forest supera entrambe le strategie fra 0,050 e 0,075 e fra 0,085 e 0,200. Il guadagno però non va oltre 16,0 esami evitati ogni 100. Esaminare tutti i diabetici, come chiedono le linee guida, resta quindi quasi equivalente al modello~\cite{american_diabetes_association_professional_practice_committee_11_2024}. Fra i non diabetici, con una prevalenza dell'8,7\%, il modello prevale sugli stessi tratti della popolazione intera e arriva a 58,1 esami evitati ogni 100. Per questo gruppo le linee guida non prevedono uno screening sistematico dell'albuminuria~\cite{bragg-gresham_using_2025}.
+
+Il confronto con Bragg-Gresham e colleghi richiede il loro bersaglio e la loro popolazione, cioè la sola albuminuria negli adulti senza diabete~\cite{bragg-gresham_using_2025}. Alle due soglie la Random Forest trova una quota di casi più alta, ma esamina più persone. Una soglia di probabilità non si trasferisce da un modello all'altro, perché dipende dalla calibrazione e dalla prevalenza~\cite{van_calster_evaluation_2025}. A parità di casi trovati il confronto è sfavorevole, e per raggiungere la quota che il loro modello ottiene a 0,05 la Random Forest esamina il 72,0\% (70,6--73,3) dei non diabetici. Il loro modello finale, però, include fra gli ingressi l'eGFR ridotto, escluso qui per costruzione~\cite{bragg-gresham_using_2025}.
+
+Il confronto a parità di esami riproduce invece la scelta del medico. Agli stessi esami della regola R-a la Random Forest trova 120 positivi, la regola 98. Il guadagno è di 22 positivi (IC 95\% bootstrap da 6 a 38), il 22\% in più dei casi trovati dalla regola. Su 100 persone mandate all'esame, la regola trova 26 malati e il modello 32. Dei 64 positivi trovati da uno solo dei due, 43 li trova il modello e 21 la regola, e il test esatto su questi soggetti dà p = 0,008. Con dieci semi casuali diversi il guadagno resta fra 18 e 25 positivi.
+
+I 43 casi trovati solo dal modello, per costruzione, non hanno diabete nè ipertensione noti. Rispetti ai 21 trovati solo dalla regola sono più anziani, con un'età mediana di 64 anni contro 47. Hanno anche più spesso una filtrazione ridotta (37\% contro 19\%) o un livello KDIGO alto o molto alto (28\% contro 14\%), differenze descrittive su gruppi piccoli. Il modello quindi non aggiunge casi lievi. Porta ll'esame persone più anziane, oggi escluse dalla regola, con una malattia più avanzata. Fra i non diabetici trova 61 positivi contro 30, fra i 50 e 64 anni 46 contro 40, dai 65 anni in su 34 contro 16. Sotto i 50 anni ne trova invece 2 in meno, 40 contro 42.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.85\textwidth]{../analytics/capitolo4/fig4_9_parita.png}
+	\caption{Positivi KDIGO trovati in più rispetto a ciascuna regola, agli stessi esami, con intervallo al 95\% da 1.000 ricampionamenti bootstrap. R-a seleziona chi ha diabete o ipertensione noti, la seconda regola aggiunge chi ha almeno 60 anni e R-b chi ha una pressione misurata di almeno 140/90~mmHg. La logistica usa età, sesso, diabete e ipertensione.}
+	\label{fig:parita}
+\end{figure}
+
+La Figura~\ref{fig:parita} confronta la Random Forest con regole e modelli più semplici. La sola età, con i più anziani esaminati per primi, trova 16 positivi in meno della regola (da $-$40 a +5). Pesare in un modello le informazioni della regola, più età e sesso, recupera dunque circa metà del guadagno, e il resto viene dalle altre variabili di routine. Quando la regola comprende anche chi ha almeno 60 anni, i suoi positivi salgono a 164. Il vantaggio scende allora a 10 positivi per la Random Forest (da $-$6 a +27) e a 4 per la logistica (da $-$1 a +10), con intervalli che comprendono lo zero. Con la regola R-b, che aggiunge la pressione misurata, i positivi della regola sono 162. La Random Forest ne trova 41 in più (da 21 a 62), il 25\% in più.
+
+Nella coorte di sviluppo queste stime non sono cieche. La Random Forest è stata scelta dopo aver confrontato con la stessa regola, sugli stessi soggetti, 71 modelli già salvati. Il vantaggio però non dipende dal solo modello scelto. Dei 71 modelli, 63 trovano più positivi della regola R-a, con una mediana di 114 (da 66 a 127). In 32 l'intervallo è tutto sopra lo zero, in 5 tutto sotto. Una conferma indipendente richiede comunque una coorte che non abbia partecipato alla scelta~\cite{ramspek_external_2021}.
+
+A parità di carico per il laboratorio, il modello porta quindi all'esame più malati della regola delle linee guida. Li trova soprattutto fra le persone più anziane senza diabete né ipertensione noti, che la regola oggi esclude.
 
 \chapter{Conclusioni e sviluppi futuri}
 
