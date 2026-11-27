@@ -1,0 +1,5 @@
+confronto,gruppo,n,morti,eta_mediana,quota_donne,followup_mediano_mesi,morti_cuore_o_cerebro
+V1 positivi KDIGO,solo modello,697,243,73.0,0.43615494978479197,70.0,69
+V1 positivi KDIGO,solo regola,287,43,52.0,0.5644599303135889,78.0,15
+V2 tutti i selezionati,solo modello,2944,585,65.0,0.4201766304347826,80.0,162
+V2 tutti i selezionati,solo regola,2944,170,46.0,0.5146059782608695,90.5,43

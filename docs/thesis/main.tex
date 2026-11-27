@@ -1070,8 +1070,101 @@ Ogni fase della procedura è deterministica o legata a un generatore pseudo-casu
 
 Il codice è accompagnato da test automatici. Verificano, fra l'altro, che nessuna variabile vietata entri fra i predittori, che ogni soggetto abbia una sola previsione out-of-fold e che nessun test legga l'insieme di test. Il codice è disponibile all'indirizzo \url{https://github.com/KekkoCoppola/K-Risk}.
 
-
 \chapter{Risultati ottenuti}
+
+Questo capitolo riporta gli esiti della procedura descritta nel capitolo precedente. Ogni sezione dichiara il tipo di analisi. Quelle predittive non usano esami renali in input mentre quelle esplicative li ammettono per verificare come ragiona il modello rispetto alla definizione clinica. La distanza fra i due tipi di risultato misura quanto della prestazione dipenda dagli esami che definiscono la malattia.
+
+\section{Riconoscimento dei marcatori}
+
+\subsection{Analisi predittiva}
+
+I quattro modelli principali sono stati valutati sul bersaglio composito e poi, senza riaddestrarli, su ciascuno dei due criteri KDIGO contro i 3.925 negativi. Nel training i 425 positivi si dividono in 362 con la sola albuminuria, 38 con la sola filtrazione ridotta e 25 con entrambe. La Figura~\ref{fig:criteri} riassume il risultato.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{../analytics/capitolo4/fig4_2_criteri.png}
+	\caption{Discriminazione per criterio KDIGO, senza riaddestrare i modelli. (A) Curve ROC della Random Forest sul composito, sulla sola albuminuria e sulla filtrazione ridotta, ciascuna contro i 3.925 negativi; fra parentesi il numero di positivi. (B) AUROC con intervallo al 95\% di DeLong per i quattro modelli e i tre bersagli.}
+	\label{fig:criteri}
+\end{figure}
+
+Sul composito la Random Forest raggiunge un'AUROC di 0,703 (IC 95\% 0,676--0,731), contro 0,675 (0,646--0,704) della logistica SCORED a cinque variabli. Il guadagno è 0,029 (da $-$0,008 a 0,066) ha p pari a 0,098 al test di Nadeau e Bengio e a 0,437 dopo la correzione di Holm~\cite{nadeau_inference_2003}. Fra i tre modelli sulle 74 variabili le differenze non superano 0,007. 
+
+Il risultato più netto emerge separando i due criteri. Sulla filtrazione ridotta l'AUROC va da 0,781 di SCORED a 0,837 (0,785--0,890) della logistica penalizzata, con 0,807 per la Random Forest. Sulla sola albuminuria resta fra 0,657 e 0,685. Senza alcun esame renale, dunque, i dati di routine riconoscono la filtrazione ridotta con un'AUROC superiore a 0,80 in tre modelli su quattro. In nessun modello gli intervalli dei due criteri si sovrappingono, nonostante i soli 63 positivi della filtrazione ridotta. Il composito segue l'albuminuria, che riguarda da sola l'85\% dei positivi, e nella Figura~\ref{fig:criteri} A le due curve corrono quasi sovrapposte. La filtrazione ridotta lascia tracce nel sangue, perchè la malattia renale altera variabili ammesse come emoglobina e acido urico~\cite{stevens_kdigo_2024,bang_screening_2007}. L'albuminuria si misura invece nelle urine, e dal sangue se ne colgono soltanto i fattori di rischio, come nei punteggi della letteratura~\cite{muntner_development_2011,bragg-gresham_using_2025}. Il limite sul composto dipende quindi dal criterio che domina l'etichetta, non dal modello.
+
+\begin{table}[H]
+	\centering
+	\small
+	\caption{Prestazioni sul composito oltre l'AUROC. La PR-AUC ha l'intervallo sulla scala logit e va confrontata con la prevalenza, 0,098. Specificità e quota da esaminare sono calcolate alla soglia scelta per una sensibilità di almeno 0,90, che per costruzione vale 0,901 (0,869--0,926), con intervalli di Wilson.}
+	\label{tab:soglia}
+	\begin{tabular}{@{}lccc@{}}
+		\toprule
+		Modello & PR-AUC & Specificità & Quota da esaminare \\
+		\midrule
+		Logistica SCORED & 0,224 (0,187--0,266) & 0,209 (0,197--0,222) & 0,802 (0,789--0,813) \\
+		Logistica penalizzata & 0,242 (0,204--0,285) & 0,223 (0,211--0,237) & 0,789 (0,776--0,801) \\
+		Random Forest & 0,246 (0,207--0,289) & 0,232 (0,219--0,246) & 0,781 (0,768--0,793) \\
+		XGBoost & 0,251 (0,212--0,295) & 0,245 (0,232--0,259) & 0,769 (0,756--0,781) \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+La PR-AUC dipende dalla prevalenza~\cite{van_calster_evaluation_2025}, e nella Tabella~\ref{tab:soglia} vale fra 2,3 e 2,6 volte il valore di un modello senza informazione. Per trovare nove casi su dieci, però,. i modelli devono indicare per l'esame fra il 76,9\% e l'80,2\% dei soggetti. Circa un esaminato su nove risulta positivo.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{../analytics/capitolo4/fig4_3_calibrazione.png}
+	\caption{Calibrazione dei quattro modelli. La curva è una regressione logistica su una spline cubica ristretta del logit della probabilità, con banda al 95\%. I punti sono i decili di probabilità stimata e la diagonale tratteggiata indica la calibrazione perfetta.}
+	\label{fig:calibrazione}
+\end{figure}
+
+In media le probabilità sono attendibili: in tutti i modelli il rapporto fra eventi osservati e attesi va da 0,99 a 1,01(Figura~\ref{fig:calibrazione}). Le pendenze di SCORED e della logistica penalizzata sono vicine a 1, quella di XGBoost vale 0,86 (0,75--0,98). La Random Forest arriva a 1,31 (1,13--1,49), con probabilità compresse verso la media. È il comportamento atteso di un insieme di alberi che media i voti~\cite{niculescu-mizil_predicting_2005}. Soglia, fasce e confronti a parità di esami dipendono solo dall'ordinamento e non ne risentono. Per leggere le probabilità della Random Forest come rischio assoluto, invece, serve una ricalibrazione. Il Brier score, fra 0,082 e 0,083, resta sotto lo 0,088 di un modello che assegna a tutti la prevalenza.
+
+\section{Rischio stimato e livelli KDIGO}
+
+KDIGO divide i malati in quattro livelli di rischio, i modelli con l'etichetta binaria invece no. Il modello però per la sua predizione si basa su una probabilità, se la probabilità stimata rispetta comunque l'ordine dei livelli KDIGO possiamo dire che il modello ha colto anche la gravità del caso singolo (Figura~\ref{fig:livelli}).
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{../analytics/capitolo4/fig4_4_livelli.png}
+	\caption{Rischio stimato per livello KDIGO; fra parentesi il numero di soggetti. (A) Probabilità media con intervallo al 95\% da bootstrap stratificato sul livello; la linea tratteggiata è la prevalenza. (B) Sensibilità per livello alla soglia che dà una sensibilità complessiva di 0,90 (linea punteggiata), con intervalli di Wilson.}
+	\label{fig:livelli}
+\end{figure}
+
+In tutti e quattro i modelli principali la probabilità media sale a ogni livello. Nella Random Forest passa da 0,093 nel livello basso a 0,195 nel molto alto, in XGBoost da 0,086 a 0,284, cioè più del triplo. Con 4.350 soggetti il test di Jonckheere-Terpstra~\cite{hollander_nonparametric_2013} dà p inferiore a $10^{-32}$ in ogni modello, e conta quindi la dimensione dell'effetto. La concordanza della Random Forest vale 0,702 (IC 95\% 0,674--0,728): presa una coppia di persone di livello diverso, sette volte su dieci la più grave riceve la probabilità più alta. SCORED si ferma a 0,674 (0,646--0,702).
+
+Fra i casi gravi la soglia funziona almeno quanto sul totale (Figura~\ref{fig:livelli}B). Nel livello alto i modelli trovano fra 46 e 47 persone su 50, nel molto alto fra 18 e 20 su 21. Sui 71 casi gravi la sensibilità va da 0,901 (0,810--0,951) della Random Forest a 0,944 (0,864--0,978) della logistica penalizzata. Con soli 21 soggetti nel livello più alto, tuttavia, gli intervalli arrivano a un'ampiezza di 0,30 e non permettono di distinguere i modelli.
+
+Poiché le fasce del modello hanno le stesse proporzioni dei livelli KDIGO, le due classificazioni si possono confrontare in maniera diretta. L'accordo grezzo supera l'85\% in tutti i modelli. Gran parte di questo accordo viene però dal livello basso, che raccoglie il 90\% dei soggetti, e il kappa pesato~\cite{cohen_weighted_1968}, che corregge per il caso, scende fra 0,197 (0,156--0,236) di SCORED e 0,228 (0,183--0,266) di XGBoost. Il modello mette in ordine i livelli, ma non li ricostruisce uno per uno.
+
+\section{Bilanciamento delle classi}
+
+Nei dati di screening i malati sono pochi, e riequilibrare le classi è una correzione frequente ~\cite{song_machine_2023}. Sei tecniche principali e due esplorative sono state confrontate con l'assenza di correzione sui quattro modelli. L'esito primario conta i casi gravi trovati a una sensibilità complessiva di 0,90, e la Figura~\ref{fig:bilanciamento} lo affianca alla valutazione più comune, alla soglia di 0,5.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{../analytics/capitolo4/fig4_5_bilanciamento.png}
+	\caption{Effetto delle tecniche di bilanciamento sui quattro modelli; la riga grigia è l'assenza di correzione. (A) Sensibilità alla soglia di 0,5. (B) Casi gravi trovati su 71 alla soglia che dà una sensibilità complessiva di 0,90. (C) Probabilità media stimata prima della ricalibrazione; la linea tratteggiata è la prevalenza.}
+	\label{fig:bilanciamento}
+\end{figure}
+
+Alla soglia di 0,5 il bilanciamento appare efficace. Senza correzione la Random Forest non riconosce alcun positivo (sensibilità 0,000, IC 0,000--0,009), perchè con il 0,8\% di malati quasi nessuna probabilità raggiunge 0,5. Dopo il sottocampionamento ne riconosce 62,6\% (57,9--67,1). A sensibilità complessiva fissata, però, il vantaggio scompare (Figura~\ref{fig:bilanciamento}B). Senza correzionei modelli trovano fra 54 e 67 dei 71 casi gravi, con le sei tecniche principali fra 63 e 68. La Random Forest guadagna al massimo 3 casi, con pesi di classe, sovracampionamento o SMOTE-NC~\cite{chawla_smote_2002} per livello. Nel confronto appaiato sugli stessi soggetti la p corretta per confronti multipli vale 1 in tutti i 24 casi.
+
+L'apparente vantaggio nasce in realtà da una probabilità sovrastimata (Figura~\ref{fig:bilanciamento}C). Con il sottocampionamento la Random Forest assegna in media una probabilità di 0,466, quasi cinque volte la prevalenza, e il Brier score~\cite{van_calster_evaluation_2025} sale da 0,083 a 0,222. Van den Goorbergh e colleghi avevano descritto lo stesso effetto nella regressione logistica~\cite{van_den_goorbergh_harm_2022}. Qui compare anche negli insiemi di alberi. La ricalibrazione di Platt~\cite{platt_probabilities_2000} riporta il Brier a 0,083, il valore di partenza. Le varianti con CTGAN~\cite{xu_modeling_2019} peggiorano anche la discriminazione, con AUROC fra 0,569 e 0,669 contro i valori fra 0,675 e 0,703 dei modelli senza correzione. Spostare la soglia dà lo stesso equilibrio fra sensibilità e specificità e lascia intatti i dati~\cite{van_den_goorbergh_harm_2022}.
+
+\section{Modelli esplorativi}
+
+Dopo il confronto principale restava da capire se un altro algoritmo potesse superare il limite osservato sul composito. Sono stati provati 29 candidati, in due serie. La prima comprendeva altri metodi di boosting, un modello tabellare pre-addestrato e varianti del bersaglio, la seconda undici famiglie nuove, modelli che stimano ACR ed eGFR come valori continui e combinazioni di modelli. Prima dei calcoli era stata fissata una regola: un candidato migliora se supera la Random Forest (attuale modello migliore) Di almeno 0,01, con limite inferiore dell'intervallo sopra zero e p corretta per confronti multipli sotto 0,05.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.85\textwidth]{../analytics/capitolo4/fig4_6_esplorativi.png}
+	\caption{Differenza di AUROC fra ciascun candidato e la Random Forest, calcolata sulla media dei cinque fold con intervallo al 95\% di Nadeau e Bengio~\cite{nadeau_inference_2003}. La linea tratteggiata indica la soglia di miglioramento di 0,01.}
+	\label{fig:esplorativi}
+\end{figure}
+
+Nessuno dei 29 soddisfa la regola (Figura~\ref{fig:esplorativi}). Il guadagno più alto appartiene al modello tabellare pre-addestrato, con 0,009 (da $-$0,014 a 0,032), seguito dallo stacking con 0,008 (da $-$0,006 a 0,022). La p corretta più bassa vale 0,994. Neppure togliere la soglia aiuta: i modelli che stimano ACR ed eGFR come valori continui, e applicano la regola KDIGO solo alla fine, guadagnano al massimo 0,006. All'estremo opposto, i modelli a kernel, a vicini e le reti neurali perdono fino a 0,079. Christodoulou e colleghi avevano trovato lo stesso equilibrio fra regressione logistica e machine learning nei confronti a basso rischio di distorsione~\cite{christodoulou_systematic_2019}. Il risultato sul composito è quindi stabile, perché non dipende né dall'algoritmo né dalla soglia.
+
+
 
 \chapter{Conclusioni e sviluppi futuri}
 
