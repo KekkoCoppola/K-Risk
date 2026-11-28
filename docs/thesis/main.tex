@@ -538,7 +538,7 @@ La coorte di sviluppo non consente due verifiche: osservare se il comportamento 
 
 \paragraph{Follow-up.} Il tempo di osservazione ha mediana 87 mesi; la chiusura del follow-up è il 31 dicembre 2019. Nel campione si contano 3.590 morti, di cui 1.102 per cause cardiovascolari.
 
-\paragraph{Limiti.} Diabete e ipertensione sono riferiti dal partecipante, mentre nella coorte di sviluppo la variabile del diabete non coincide con la sola diagnosi nota. L'anamnesi di ipertensione è compilata solo nel 3,4\% della coorte di sviluppo, e la regola R-a vi esamina l'8,7\% dei soggetti, contro il 40,0\% di NHANES. L'ACR deriva da una sola misura. Nei file pubblici il NCHS sostituisce alcuni tempi e alcune cause di morte con valori sintetici, per tutela della riservatezza.
+\paragraph{Limiti.} Diabete e ipertensione sono riferiti dal partecipante, mentre nella coorte di sviluppo la variabile del diabete non coincide con la sola diagnosi nota. L'anamnesi di ipertensione è compilata solo nel 3,4\% della coorte di sviluppo, e la regola delle linee guida basata su diabete o ipertensione noti (indicata come R-a nella Sezione 3.6.4) vi esamina l'8,7\%. dei soggetti, contro il 40,0\% di NHANES. L'ACR deriva da una sola misura. Nei file pubblici il NCHS sostituisce alcuni tempi e alcune cause di morte con valori sintetici, per tutela della riservatezza.
 
 \section{Pre-elaborazione e preparazione del dato}
 
@@ -570,7 +570,7 @@ Sono state scartate due alternative.
 
 L'insieme di test viene separato prima di qualsiasi stima che impari dai dati. Deve conservare la prevalenza reale e i livelli KDIGO veri dei soggetti, perché su di esso si verificano le conclusioni.
 
-La separazione è un holdout 75/25 stratificato su otto strati (quattro livelli KDIGO per due stati di diabete), con seme 42. La proporzione è stata scelta in base al numero di eventi nel test (Tabella~\ref{tab:proporzioni}). La proporzione 80/20 lascerebbe nel test 5 casi molto alti e 18 diabetici positivi; la 70/30 toglierebbe al training 28 positivi rispetto a quella scelta.
+La separazione è un holdout 75/25 stratificato su otto strati (quattro livelli KDIGO per due stati di diabete), con seme 42. La proporzione è stata scelta in base al numero di eventi nel test (Tabella~\ref{tab:proporzioni}). La proporzione 80/20 lascerebbe nel test 5 casi molto alti e 18 diabetici positivi; la 70/30 toglierebbe al training 28 positivi rispetto a quella scelta. Nel training (4.350 soggetti) i 425 positivi si dividono in 354 di livello moderato, 50 alto e 21 molto alto (71 casi gravi); nel test (1.451 soggetti) i 142 positivi sono 119 moderati, 17 alti e 6 molto alti.
 
 \begin{table}[H]
 	\centering
@@ -1016,7 +1016,7 @@ La validazione sulla popolazione NHANES ha l'obiettivo di verificare se il model
 	\end{tabularx}
 \end{table}
 
-Il confronto avviene a parità di esami con la regola R-a, che in NHANES usa il diabete e l'ipertensione riferiti dal partecipante e seleziona 13.788 soggetti. $\Delta N$ si calcola come nella coorte di sviluppo. Il trasporto riesce se $\Delta N > 0$ con un intervallo che esclude lo zero.
+Il confronto avviene a parità di esami con la regola R-a, che in NHANES usa il diabete e l'ipertensione riferiti dal partecipante e seleziona 13.788 soggetti. $\Delta N$ si calcola come nella coorte di sviluppo. Il trasporto riesce se $\Delta N > 0$ con un intervallo che esclude lo zero. Per valutare il peso clinico dei positivi aggiunti, i positivi trovati da uno solo dei due, il modello o la regola, sono confrontati sulla mortalità con un modello di Cox~\cite{cox_regression_1972} aggiustato per età e sesso. L'analisi è stata aggiunta dopo i risultati principali, con una regola di lettura fissata prima del calcolo. Si stimano la mortalità totale e quella per causa, e le cause con meno di 30 morti sono soltanto descrittive.
 
 \subsubsection{Modello per la filtrazione ridotta}
 
@@ -1147,7 +1147,7 @@ Nei dati di screening i malati sono pochi, e riequilibrare le classi è una corr
 	\label{fig:bilanciamento}
 \end{figure}
 
-Alla soglia di 0,5 il bilanciamento appare efficace. Senza correzione la Random Forest non riconosce alcun positivo (sensibilità 0,000, IC 0,000--0,009), perchè con il 0,8\% di malati quasi nessuna probabilità raggiunge 0,5. Dopo il sottocampionamento ne riconosce 62,6\% (57,9--67,1). A sensibilità complessiva fissata, però, il vantaggio scompare (Figura~\ref{fig:bilanciamento}B). Senza correzionei modelli trovano fra 54 e 67 dei 71 casi gravi, con le sei tecniche principali fra 63 e 68. La Random Forest guadagna al massimo 3 casi, con pesi di classe, sovracampionamento o SMOTE-NC~\cite{chawla_smote_2002} per livello. Nel confronto appaiato sugli stessi soggetti la p corretta per confronti multipli vale 1 in tutti i 24 casi.
+Alla soglia di 0,5 il bilanciamento appare efficace. Senza correzione la Random Forest non riconosce alcun positivo (sensibilità 0,000, IC 0,000--0,009), perchè con il 9,8\% di malati quasi nessuna probabilità raggiunge 0,5. Dopo il sottocampionamento ne riconosce 62,6\% (57,9--67,1). A sensibilità complessiva fissata, però, il vantaggio scompare (Figura~\ref{fig:bilanciamento}B). Senza correzionei modelli trovano fra 54 e 67 dei 71 casi gravi, con le sei tecniche principali fra 63 e 68. La Random Forest guadagna al massimo 3 casi, con pesi di classe, sovracampionamento o SMOTE-NC~\cite{chawla_smote_2002} per livello. Nel confronto appaiato sugli stessi soggetti la p corretta per confronti multipli vale 1 in tutti i 24 casi.
 
 L'apparente vantaggio nasce in realtà da una probabilità sovrastimata (Figura~\ref{fig:bilanciamento}C). Con il sottocampionamento la Random Forest assegna in media una probabilità di 0,466, quasi cinque volte la prevalenza, e il Brier score~\cite{van_calster_evaluation_2025} sale da 0,083 a 0,222. Van den Goorbergh e colleghi avevano descritto lo stesso effetto nella regressione logistica~\cite{van_den_goorbergh_harm_2022}. Qui compare anche negli insiemi di alberi. La ricalibrazione di Platt~\cite{platt_probabilities_2000} riporta il Brier a 0,083, il valore di partenza. Le varianti con CTGAN~\cite{xu_modeling_2019} peggiorano anche la discriminazione, con AUROC fra 0,569 e 0,669 contro i valori fra 0,675 e 0,703 dei modelli senza correzione. Spostare la soglia dà lo stesso equilibrio fra sensibilità e specificità e lascia intatti i dati~\cite{van_den_goorbergh_harm_2022}.
 
@@ -1194,7 +1194,7 @@ La Figura~\ref{fig:fasce-acr} lega il punteggio ottenuto su G all'albuminuria, d
 	\label{fig:fasce-acr}
 \end{figure}
 
-\section{Analisi predittiva}
+\subsection{Analisi predittiva}
 
 Questo impiego analizza il modello che usa soltanto le 74 variabili ammesse, senza esami renali e senza alcuna colonna derivata dal bersaglio, come i modelli predittivi supervisionati. Su queste variabili il $k$-means a quattro gruppi raggiunge un'AUROC di 0,648 (0,619--0,677) e l'autoencoder di 0,657 (0,629--0,685), valori inferiori a quelli dei modelli supervisionati sugli stessi ingressi. Il confronto con la pratica clinica diventa interessante. A parità di esami con la regola R-a, il $k$-means trova esattamente quanti positivi trova la regola delle linee guida, con una differenza di 0 (IC 95\% bootstrap da $-$18 a +16). L'autoencoder ne trova 2 in meno (da $-$19 a +14). Con gli esami più numerosi della regola R-b entrambi ne trovano 13 in più, con intervalli da $-$8 a +35 e da $-$8 a +33.
 
@@ -1240,7 +1240,7 @@ Il confronto con Bragg-Gresham e colleghi richiede il loro bersaglio e la loro p
 
 Il confronto a parità di esami riproduce invece la scelta del medico. Agli stessi esami della regola R-a la Random Forest trova 120 positivi, la regola 98. Il guadagno è di 22 positivi (IC 95\% bootstrap da 6 a 38), il 22\% in più dei casi trovati dalla regola. Su 100 persone mandate all'esame, la regola trova 26 malati e il modello 32. Dei 64 positivi trovati da uno solo dei due, 43 li trova il modello e 21 la regola, e il test esatto su questi soggetti dà p = 0,008. Con dieci semi casuali diversi il guadagno resta fra 18 e 25 positivi.
 
-I 43 casi trovati solo dal modello, per costruzione, non hanno diabete nè ipertensione noti. Rispetti ai 21 trovati solo dalla regola sono più anziani, con un'età mediana di 64 anni contro 47. Hanno anche più spesso una filtrazione ridotta (37\% contro 19\%) o un livello KDIGO alto o molto alto (28\% contro 14\%), differenze descrittive su gruppi piccoli. Il modello quindi non aggiunge casi lievi. Porta ll'esame persone più anziane, oggi escluse dalla regola, con una malattia più avanzata. Fra i non diabetici trova 61 positivi contro 30, fra i 50 e 64 anni 46 contro 40, dai 65 anni in su 34 contro 16. Sotto i 50 anni ne trova invece 2 in meno, 40 contro 42.
+I 43 casi trovati solo dal modello, per costruzione, non hanno diabete nè ipertensione noti. Rispetti ai 21 trovati solo dalla regola sono più anziani, con un'età mediana di 64 anni contro 47. Hanno anche più spesso una filtrazione ridotta (37\% contro 19\%) o un livello KDIGO alto o molto alto (28\% contro 14\%), differenze descrittive su gruppi piccoli. Il modello quindi non aggiunge casi lievi. Porta ll'esame persone più anziane, oggi escluse dalla regola, con una malattia più avanzata. Fra i non diabetici trova 61 positivi contro 30, fra i 50 e 64 anni 46 contro 40, dai 65 anni in su 34 contro 16. Sotto i 50 anni ne trova invece 2 in meno, 40 contro 42 (21 casi su 22 restano tali anche correggendo per la massa muscolare).
 
 \begin{figure}[H]
 	\centering
@@ -1254,6 +1254,92 @@ La Figura~\ref{fig:parita} confronta la Random Forest con regole e modelli più 
 Nella coorte di sviluppo queste stime non sono cieche. La Random Forest è stata scelta dopo aver confrontato con la stessa regola, sugli stessi soggetti, 71 modelli già salvati. Il vantaggio però non dipende dal solo modello scelto. Dei 71 modelli, 63 trovano più positivi della regola R-a, con una mediana di 114 (da 66 a 127). In 32 l'intervallo è tutto sopra lo zero, in 5 tutto sotto. Una conferma indipendente richiede comunque una coorte che non abbia partecipato alla scelta~\cite{ramspek_external_2021}.
 
 A parità di carico per il laboratorio, il modello porta quindi all'esame più malati della regola delle linee guida. Li trova soprattutto fra le persone più anziane senza diabete né ipertensione noti, che la regola oggi esclude.
+
+\section{Conferma sull'insieme di test}
+
+Le analisi di questa sezione sono predittive. L'insieme di test comprende 1.451 soggetti, con 142 positivi, 23 casi gravi e 88 diabetici, ed è stato aperto una sola volta, dopo aver fissato modelli, soglie e criteri di lettura (Tabella~\ref{tab:affermazioni}). La Tabella~\ref{tab:test} ne riporta le prestazioni principali.
+
+\begin{table}[H]
+	\centering
+	\small
+	\caption{Prestazioni sull'insieme di test dei quattro modelli principali: logistica SCORED~\cite{bang_screening_2007}, logistica penalizzata, Random Forest~\cite{breiman_random_2001} e XGBoost~\cite{chen_xgboost_2016}. L'AUROC ha l'intervallo al 95\% di DeLong~\cite{delong_comparing_1988}. Sensibilità e quota da esaminare sono calcolate alla soglia fissata in validazione incrociata per una sensibilità di 0,90, con intervalli al 95\%.}
+	\label{tab:test}
+	\begin{tabular}{@{}lccc@{}}
+		\toprule
+		Modello & AUROC & Sensibilità & Quota da esaminare \\
+		\midrule
+		Logistica SCORED & 0,723 (0,677--0,769) & 0,937 (0,884--0,966) & 0,813 (0,792--0,832) \\
+		Logistica penalizzata & 0,714 (0,668--0,760) & 0,894 (0,833--0,935) & 0,713 (0,689--0,735) \\
+		Random Forest & 0,743 (0,699--0,786) & 0,894 (0,833--0,935) & 0,700 (0,675--0,723) \\
+		XGBoost & 0,725 (0,680--0,771) & 0,887 (0,825--0,929) & 0,734 (0,711--0,756) \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+La discriminazione regge su soggetti mai visti. In tre modelli su quattro l'AUROC della validazione incrociata cade dentro l'intervallo del test, mentre per la logistica SCORED~\cite{bang_screening_2007} resta appena sotto il limite inferiore, perché sul test il modello va meglio. L'affermazione supera quindi il criterio fissato prima.  Anche la soglia, congelata prima dell'apertura, trova sul test circa nove positivi su dieci. Con la Random Forest~\cite{breiman_random_2001} la quota da esaminare è anzi più bassa che in validazione incrociata, e la sua AUROC resta la più alta dei quattro, con intervalli che si sovrappongono.
+
+Le altre quattro affermazioni trovano conferma. Nessuna tecnica di bilanciamento riconosce più casi gravi rispetto all'assenza di correzione: sui 23 del test le differenze vanno da $-$2 a +2 casi, con p corretta per confronti multipli pari a 1. Fra i diabetici l'allerta è quasi totale. Alla soglia unica, la stessa per tutti, i modelli mandano all'esame fra il 97,7 e il 100\% dei diabetici e riproducono così la raccomandazione di esaminarli tutti~\cite{american_diabetes_association_professional_practice_committee_11_2024}. Anche l'utilità clinica trova conferma sul test. Alle soglie di 0,07 e 0,10 tutti e quattro i modelli superano sia l'esame di tutti sia quello di nessuno, e a 0,10 evitano fra 29,5 e 33,1 esami inutili ogni 100 persone. A 0,07 la riduzione scende fra 12,8 e 19,2. Alla soglia di 0,5, infine, il bilanciamento appare ancora efficace. La sensibilità media sale da 0,044 senza correzione a valori fra 0,403 e 0,646, lo stesso effetto apparente della validazione incrociata, che scompare quando la sensibilità complessiva è la stessa.
+
+Il confronto a parità di esami con le linee guida non compare fra le affermazioni. È stato definito dopo l'apertura del test, e valutarlo sugli stessi soggetti avrebbe tolto al test la sua indipendenza, per cui la sua verifica è affidata alla popolazione esterna. Su soggetti mai visti, in sintesi, le stime della validazione incrociata non risultano ottimistiche.
+
+\section{Validazione esterna}
+
+Anche le analisi di questa sezione sono predittive. NHANES offre al progetto le verifiche che mancano. Il modello trasportato usa le sole 14 variabili comuni ai due dataset, e nessuno dei suoi parametri è stato stimato su NHANES~\cite{ramspek_external_2021}.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{../analytics/capitolo4/fig4_10_nhanes_parita.png}
+	\caption{Confronto a parità di esami in NHANES con la regola R-a, che seleziona chi ha diabete o ipertensione noti. La Random Forest è stimata sulla coorte di sviluppo con le 14 variabili comuni e applicata senza riaddestramento. (A) Positivi KDIGO trovati da entrambe le strategie e da una sola; la linea punteggiata indica il totale della regola, la barra l'intervallo al 95\% da 1.000 ricampionamenti bootstrap della differenza. (B) Positivi trovati da una sola delle due strategie, divisi fra filtrazione ridotta e sola albuminuria.}
+	\label{fig:nhanes-parita}
+\end{figure}
+
+La regola trova 4.300 positivi, la Random Forest 4.710 (Figura~\ref{fig:nhanes-parita}A). Il guadagno è di 410 positivi (IC 95\% bootstrap da 351 a 469), il 9,5\% in più, e soddisfa il criterio fissato prima del calcolo. Su 100 persone mandate all'esame la regola trova 31 malati, il modello 34. Dei 984 positivi trovati da uno solo dei due, 697 li trova il modello e 287 la regola, e il test esatto su questi soggetti dà $p < 10^{-39}$. Il guadagno relativo è minore che nella coorte di sviluppo, ma poggia su un campione quasi otto volte più grande e su un modello che non ha partecipato ad alcuna scelta.
+
+In NHANES sale invece la discriminazione del modello. Con le stesse 14 variabili l'AUROC passa da 0,690 (IC 95\% di DeLong~\cite{delong_comparing_1988} 0,662--0,719) nella coorte di sviluppo a 0,790 (0,783--0,796) in NHANES. Il modello non diventa migliore; cambia la popolazione. In NHANES il 45,1\% dei positivi ha una filtrazione ridotta, contro il 14,8\% della coorte di sviluppo, e la filtrazione ridotta è il criterio che i dati di routine riconoscono meglio. Le probabilità, invece, sottostimano il rischio: la media stimata è 14,6\%, sotto la prevalenza osservata. Il confronto a parità di esami dipende solo dall'ordinamento e non ne risente, ma un uso del rischio assoluto richiederebbe una ricalibrazione.
+
+I casi aggiunti non sono casi lievi. Fra i positivi trovati solo dal modello il 43,6\% ha una filtrazione ridotta, contro il 33,8\% di quelli trovati solo dalla regola (Figura~\ref{fig:nhanes-parita}B). Sono anche più anziani, con un'età mediana di 73 anni contro 52.
+
+Resta da capire se questi casi in più abbiano un peso clinico, e il collegamento con i registri di morte permette di misurarlo con un esito reale. L'analisi è stata decisa dopo i risultati principali, con la regola di lettura fissata prima del calcolo. Fra i positivi trovati solo dal modello muore il 34,9\%, fra quelli trovati solo dalla regola il 15,0\%. La differenza viene dall'età. Con un modello di Cox~\cite{cox_regression_1972} aggiustato per età e sesso, l'hazard ratio dei casi aggiunti rispetto a quelli della regola vale 0,92 (IC 95\% 0,65--1,30). Per le malattie cardiache è 0,81 (0,41--1,60), per i tumori 1,21 (0,57--2,59). Le altre cause contano meno di 30 morti e restano descrittive. A parità di età e sesso, quindi, i casi che il modello aggiunge hanno un rischio di morte compatibile con quello dei casi che la regola già manda all'esame. Non si tratta quindi di diagnosi marginali.
+
+\subsection{Modello per la filtrazione ridotta}
+
+L'analisi primaria su questo bersaglio dà esito negativo. XGBoost~\cite{chen_xgboost_2016} perde 0,053 di AUROC rispetto a SCORED~\cite{bang_screening_2007} (IC 95\% di DeLong da $-$0,059 a $-$0,047, $p < 0{,}001$), mentre la Random Forest e la logistica sulle 14 variabili restano entro 0,005 dal punteggio di riferimento. Con così pochi positivi nel training un modello flessibile si adatta troppo ai casi visti, e il vantaggio non si trasporta. Il guadagno viene dal modello più semplice.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{../analytics/capitolo4/fig4_11_filtrazione.png}
+	\caption{Filtrazione ridotta (eGFR $<60$) in NHANES, con modelli stimati sulla coorte di sviluppo e applicati senza riaddestramento. (A) AUROC con intervallo al 95\% di DeLong~\cite{delong_comparing_1988}, su tutto il campione e per fascia d'età; SCORED usa età, sesso, emoglobina, pressione sistolica e diabete~\cite{bang_screening_2007}. (B) Casi trovati esaminando il 5, il 10 e il 20\% dei soggetti con il punteggio più alto.}
+	\label{fig:filtrazione}
+\end{figure}
+
+Aggiungere l'acido urico ai cinque predittori di SCORED porta l'AUROC a 0,914 (0,909--0,919), con un guadagno di 0,028 (da 0,024 a 0,033, $p < 0{,}001$). Il vantaggio non è un effetto dell'età. Rispetto a un modello con età e sesso, l'acido urico aggiunge 0,032 (da 0,027 a 0,037), e il guadagno su SCORED resta in entrambe le fasce d'età (Figura~\ref{fig:filtrazione}A). La scelta dell'acido urico è avvenuta sulla coorte di sviluppo, e i coefficienti non sono ristimati su NHANES.
+
+In termini di casi trovati il guadagno è concreto (Figura~\ref{fig:filtrazione}B). Esaminando il 5\% di NHANES con il punteggio più alto, SCORED con l'acido urico trova 1.076 persone con filtrazione ridotta e SCORED 841, cioè 235 in più (IC 95\% bootstrap da 180 a 294). Su 100 persone esaminate ne trova 62 invece di 49. Al 10\% il guadagno è di 236 casi (da 180 a 290), al 20\% di 175 (da 135 a 219), mentre XGBoost ne trova meno di SCORED a tutte e tre le quote. Sull'albuminuria il guadagno quasi scompare, con 0,005 di AUROC e 8 casi in più al 5\% (da $-$25 a +38). La filtrazione ridotta lascia quindi nel sangue tracce che si trasportano da una popolazione all'altra, e un punteggio semplice con l'acido urico le coglie meglio del riferimento della letteratura. Entrambi i risultati principali reggono così fuori dalla coorte in cui sono nati.
+
+\section{Spiegabilità e verifiche}
+
+\subsection{Interpretazione dei modelli}
+
+L'analisi è esplicativa. Secondo i valori SHAP~\cite{lundberg_unified_2017}, la Random Forest~\cite{breiman_random_2001} e XGBoost~\cite{chen_xgboost_2016} si basano soprattutto su età, fosfatasi alcalina, indice epatico FIB-4 e peptide C, e valori più alti alzano il rischio stimato. Nella logistica penalizzata pesa di più la retinopatia, l'ipertensione nota e l'emoglobina bassa. Nessun modello trova un sostituto degli esami renali.
+
+\subsection{Verifiche sulla pipeline e sull'etichetta}
+
+Nel controllo positivo, esplicativo, l'albumina urinaria fra i predittori porta l'AUROC di XGBoost da 0,696 (IC 95\% di DeLong~\cite{delong_comparing_1988} 0,668--0,724) a 0,933 (0,917--0,949), e la pipeline riconosce quindi un segnale quando c'è. Le verifiche predittive confermano il resto. Senza le sette variabili alterate dalla malattia renale l'AUROC dei quattro modelli cambia non significativamente. Con l'altra unità possibile dell'ACR, che porta la soglia a 53 nei dati, la Random Forest ottiene 0,706 (0,673--0,738). Dal 60 al 100\% del training l'AUROC media sale da 0,694 a 0,700 nella logistica penalizzata e da 0,690 a 0,698 in XGBoost. Più dati della stessa popolazione cambierebbero poco.
+
+\subsection{Verifiche sul segnale appreso}
+
+Queste analisi sono esplicative, mentre i riconteggi a parità di esami restano predittivi. Solo il 16\% dell'associazione fra il punteggio della Random Forest e l'ACR passa dalla creatinina urinaria (IC 95\% bootstrap dall'8 al 23\%), e la regola fissata prima, un intervallo tutto sopra il 10\%, non è soddisfatta. Con l'ACR riportato alla creatinina urinaria mediana il modello mantiene 21 dei 22 positivi aggiunti nella coorte di sviluppo (IC 6--35) e 377 dei 410 in NHANES (IC 317--440). Il vantaggio non è quindi un effetto della massa muscolare.
+
+In NHANES la mortalità cresce con l'ACR senza salti~\cite{matsushita_association_2010} (Figura~\ref{fig:sotto-soglia}A). In un modello di Cox~\cite{cox_regression_1972} aggiustato per età, sesso ed eGFR, un gradino a 30~mg/g migliora il criterio d'informazione meno dei due punti richiesti. A 10~mg/g il rischio di morte è già 1,38 volte (1,31--1,45) quello a 5~mg/g.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{../analytics/capitolo4/fig4_12_sotto_soglia.png}
+	\caption{Mortalità e ACR in NHANES, con intervalli al 95\%. (A) Hazard ratio di morte rispetto a un ACR di 5~mg/g, da un modello di Cox~\cite{cox_regression_1972} con spline dell'ACR aggiustato per età, sesso ed eGFR; la linea punteggiata è la soglia KDIGO. (B) Nei soggetti sotto la soglia KDIGO, hazard ratio per deviazione standard dei due punteggi, aggiustati per età e sesso; le morti per incidente sono il controllo negativo.}
+	\label{fig:sotto-soglia}
+\end{figure}
+
+Il punteggio non supervisionato intercetta questo rischio graduale già prima della soglia clinica. Fra i 28.433 soggetti di NHANES classificati come sani da KDIGO, a parità di età e sesso il punteggio cresce di 0,092 deviazioni standard (IC 95\% 0,080--0,104) per ogni raddoppio dell'ACR. A ogni deviazione standard in più, il rischio di morte cardiovascolare sale del 38\% (HR 1,38; 1,20--1,58) — e del 28\% anche a parità di ACR (HR 1,28; 1,12--1,47) — mentre resta nullo per le morti accidentali (Figura~\ref{fig:sotto-soglia}B). Senza aver mai visto né etichetta né soglie, l'algoritmo riconosce quindi un danno progressivo già sotto la soglia KDIGO.
 
 \chapter{Conclusioni e sviluppi futuri}
 
